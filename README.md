@@ -77,14 +77,22 @@ Ejecuta suites de prueba concurrentes y oprime logs de tests aprobados para no s
 ~/.agents/skills/token-optimizer/scripts/test_runner.sh [tests]
 ```
 
-### 6. Post-Procesamiento y Linters Determinísticos
-Ejecución local inmediata tras cada edición para evitar turnos de corrección en la nube:
+### 6. Gobernanza Automatizada de Git Hooks (pre-commit / pre-push)
+Instala ganchos automáticos para validar `__init__.py` de 0 bytes, formateo y el Guantelete de Restricciones antes de cada commit o push:
 ```bash
-# Python
-ruff check --fix <archivo> && ruff format <archivo>
+~/.agents/skills/token-optimizer/scripts/install_git_hooks.sh [directorio_repo]
+```
 
-# TypeScript / JavaScript
-npx eslint --fix <archivo>
+### 7. Scaffolder de Especificaciones SDD SSOT (Ahorro >1.500 Tokens en /plan)
+Genera la estructura estricta de 5 secciones con metadatos de Git auto-completados:
+```bash
+python3 ~/.agents/skills/token-optimizer/scripts/spec_scaffold.py [backend|frontend] [ruta_salida]
+```
+
+### 8. Dashboard y Monitor de Ahorro de Tokens y ROI ($ USD)
+Rastrea métricas de ahorro y costo evitado en USD en tiempo real:
+```bash
+python3 ~/.agents/skills/token-optimizer/scripts/token_tracker.py stats
 ```
 
 ---

@@ -98,3 +98,31 @@ Execute test suites across all CPU threads with dense, low-token error reporting
 ```bash
 /home/agustin/.agents/skills/token-optimizer/scripts/test_runner.sh [ruta_o_test]
 ```
+
+---
+
+## 7. Automated Git Governance Hooks (pre-commit / pre-push)
+Install automatic Constraint Gauntlet blockers in any repository:
+```bash
+/home/agustin/.agents/skills/token-optimizer/scripts/install_git_hooks.sh [directorio_repo]
+```
+
+---
+
+## 8. SDD SSOT Spec Scaffolding (Save >1,500 Output Tokens in /plan)
+Pre-populate the formal 5-section SSOT spec template with Git metadata:
+```bash
+python3 /home/agustin/.agents/skills/token-optimizer/scripts/spec_scaffold.py [backend|frontend] [ruta_salida]
+```
+
+---
+
+## 9. Token Savings & ROI Dashboard (Local Hardware Analytics)
+Track tokens and dollars saved per tool in SQLite (`~/.agents/cache/metrics.db`):
+```bash
+# View dashboard
+python3 /home/agustin/.agents/skills/token-optimizer/scripts/token_tracker.py stats
+
+# Log savings
+python3 /home/agustin/.agents/skills/token-optimizer/scripts/token_tracker.py log --tool "AST Pruning" --input-saved 5000 --output-saved 0
+```

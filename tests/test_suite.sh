@@ -3,7 +3,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-echo "==> Ejecutando suite de pruebas de agy-token-optimizer (Fase 3)..."
+echo "==> Ejecutando suite de pruebas de agy-token-optimizer (Fase 4)..."
 
 echo "1. Probando poda de AST Python..."
 python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/prune_python_ast.py" "$SCRIPT_DIR/skills/token-optimizer/scripts/local_search.py" > /dev/null
@@ -33,10 +33,30 @@ else
     exit 1
 fi
 
-echo "5. Probando Runner de Tests Multihilo..."
-test -x "$SCRIPT_DIR/skills/token-optimizer/scripts/test_runner.sh"
-echo "   [✓] Test Runner: OK"
+echo "5. Probando Scaffolder SDD SSOT..."
+python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/spec_scaffold.py" backend /tmp/test_spec_scaffold.md > /dev/null
+if [ -f "/tmp/test_spec_scaffold.md" ] && grep -q "SRS-SPECS" "/tmp/test_spec_scaffold.md"; then
+    echo "   [✓] SDD Spec Scaffolder: OK"
+    rm -f "/tmp/test_spec_scaffold.md"
+else
+    echo "   [!] SDD Spec Scaffolder Falló"
+    exit 1
+fi
+
+echo "6. Probando Token Savings Tracker & Dashboard..."
+python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/token_tracker.py" log --tool "Unit Test" --input-saved 1000 --output-saved 500 > /dev/null
+TRACKER_STATS=$(python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/token_tracker.py" stats)
+if [[ "$TRACKER_STATS" == *"DASHBOARD DE AHORRO DE TOKENS"* ]]; then
+    echo "   [✓] Token Savings Tracker: OK"
+else
+    echo "   [!] Token Savings Tracker Falló"
+    exit 1
+fi
+
+echo "7. Probando Git Hooks Installer..."
+test -x "$SCRIPT_DIR/skills/token-optimizer/scripts/install_git_hooks.sh"
+echo "   [✓] Git Hooks Installer: OK"
 
 echo "=========================================================="
-echo "✅ Todos los tests pasaron exitosamente (Fase 3 OK)."
+echo "✅ Todos los tests pasaron exitosamente (Fase 4 OK - 7/7)."
 echo "=========================================================="
