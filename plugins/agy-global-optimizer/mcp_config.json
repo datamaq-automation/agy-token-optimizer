@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "tokenix-filter": {
+      "command": "/home/agustin/.local/bin/tokenix",
+      "args": ["mcp"]
+    },
+    "codebase-memory": {
+      "command": "/home/agustin/.local/bin/codebase-memory-mcp",
+      "args": ["stdio"]
+    }
+  }
+}

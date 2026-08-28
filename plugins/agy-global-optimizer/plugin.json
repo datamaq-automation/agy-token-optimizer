@@ -1,0 +1,4 @@
+{
+  "name": "agy-global-optimizer",
+  "description": "Configuración global de AGY para optimización de tokens con recursos locales, pre/post-procesamiento, Guantelete de Restricciones y modos /ask, /build, /plan."
+}
