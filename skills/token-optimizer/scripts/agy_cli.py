@@ -53,6 +53,8 @@ COMMANDS = {
     "intercept": "token_proxy_interceptor.py",
     "simd": "simd_vector_accelerator.py",
     "sandbox": "local_sandbox_runner.sh",
+    "vps-run": "vps_exec.py",
+    "vps-read": "vps_reader.py",
 }
 
 

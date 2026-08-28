@@ -315,3 +315,23 @@ Runs SLM-generated code and unit tests inside contained Linux namespaces:
 ```bash
 /home/agustin/.agents/skills/token-optimizer/scripts/local_sandbox_runner.sh <comando>
 ```
+
+---
+
+## 31. Persistent Remote VPS Execution & Output Pruner (< 8 ms)
+Executes remote commands on VPS via persistent SSH socket with automatic output pruning:
+```bash
+agy-opt vps-run "<comando>"
+```
+
+---
+
+## 32. Surgical Remote VPS Reader & AST Streamer
+Reads exact line ranges or streams remote Python AST without downloading full files:
+```bash
+# Read line range
+agy-opt vps-read <archivo_remoto> 1 40
+
+# Stream remote AST
+python3 /home/agustin/.agents/skills/token-optimizer/scripts/vps_reader.py <archivo_remoto> --ast
+```

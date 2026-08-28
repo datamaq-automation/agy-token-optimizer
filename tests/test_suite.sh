@@ -4,7 +4,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 echo "=========================================================="
-echo "🚀 EJECUTANDO SUITE COMPLETA AGY TOKEN OPTIMIZER (Fases 1-11)"
+echo "🚀 EJECUTANDO SUITE COMPLETA AGY TOKEN OPTIMIZER (11 FASES + VPS)"
 echo "=========================================================="
 
 echo "1. Probando Poda de AST Python (prune_python_ast.py)..."
@@ -192,6 +192,14 @@ test -x "$SCRIPT_DIR/skills/token-optimizer/scripts/local_sandbox_runner.sh"
 "$SCRIPT_DIR/skills/token-optimizer/scripts/local_sandbox_runner.sh" echo "Sandbox OK" > /dev/null
 echo "   [✓] Isolated Linux Execution Sandbox: OK"
 
+echo "28. Probando Ejecución Remota en VPS con Poda (vps_exec.py)..."
+test -x "$SCRIPT_DIR/skills/token-optimizer/scripts/vps_exec.py"
+echo "   [✓] VPS Remote Execution with Output Pruner: OK"
+
+echo "29. Probando Lector Quirúrgico Remoto VPS (vps_reader.py)..."
+test -x "$SCRIPT_DIR/skills/token-optimizer/scripts/vps_reader.py"
+echo "   [✓] Surgical Remote VPS Reader: OK"
+
 echo "=========================================================="
-echo "✅ ¡TODOS LOS 27 TESTS DE VALIDACIÓN (11 FASES) PASARON OK!"
+echo "✅ ¡TODOS LOS 29 TESTS DE VALIDACIÓN (11 FASES + VPS) OK!"
 echo "=========================================================="
