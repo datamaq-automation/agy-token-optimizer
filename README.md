@@ -27,13 +27,32 @@ Una vez instalado, el agente AGY reconoce automáticamente el modo al inicio del
 | :--- | :--- | :--- | :--- | :--- |
 | **`/ask`** | Consultas técnicas, explicación de arquitectura y auditoría de código. | **Económico** (`flash_lite` / `flash`) | **Low / Mínimo** | **Solo lectura.** Citas obligatorias a archivo y rango de líneas (`[archivo.py#L10-L25]`). Prohibido modificar o crear archivos. |
 | **`/plan`** | Especificación técnica formal (`spec.md` SSOT de 5 secciones) y contratos de tests en `tests/`. | **Avanzado** (`pro` / alta capacidad) | **High / Alto** | Modificación permitida **solo** en `spec.md`, `specs/**` y `tests/**`. **PROHIBIDO modificar `src/`**. |
-| **`/build`** | Implementador Autónomo TDD (Green-to-Red) y superación del Guantelete. | **Intermedio** (`flash` / balanceado) | **Medium / Low** | **Requisito Bloqueante:** Exige `spec.md` previo antes de tocar `src/`. Aplica ciclo TDD y supera `test_architecture.py`. |
+| **`/build`** | Implementador Autónomo TDD (Green-to-Red) y superación del Guantelete. | **Intermedio** (`flash` / balanceado) | **Medium / Low** | **Requisito Bloqueante:** Exige `spec.md` previo antes de tocar `src/`. Aplica ciclo TDD y supera `ci_local.sh`. |
 
 ---
 
 ## 🛠️ Herramientas Locales de Pre/Post-Procesamiento ($0 Tokens)
 
-### 1. Poda de AST Determinística en CPU (~92% Ahorro de Tokens)
+### 1. Inyector Quirúrgico de Contexto (< 500 Tokens Bundle)
+Empaqueta firmas exactas, llamadas y esqueletos de dependencias en un bloque ultradenso:
+```bash
+# Por Símbolo
+python3 ~/.agents/skills/token-optimizer/scripts/context_injector.py --symbol <nombre_simbolo>
+
+# Por Archivo
+python3 ~/.agents/skills/token-optimizer/scripts/context_injector.py --file <archivo.py>
+
+# Por Requerimiento en Lenguaje Natural
+python3 ~/.agents/skills/token-optimizer/scripts/context_injector.py --query "<requerimiento>" [directorio]
+```
+
+### 2. Pipeline Local Zero-Trust CI en CPU (1.5 segundos)
+Ejecuta las 5 etapas inmutables de validación local antes de dar por completada cualquier tarea:
+```bash
+~/.agents/skills/token-optimizer/scripts/ci_local.sh [directorio_repo]
+```
+
+### 3. Poda de AST Determinística en CPU (~92% Ahorro de Tokens)
 Para inspeccionar módulos o dependencias sin cargar archivos completos (>100 líneas):
 ```bash
 # Python
@@ -43,7 +62,7 @@ python3 ~/.agents/skills/token-optimizer/scripts/prune_python_ast.py <archivo.py
 node ~/.agents/skills/token-optimizer/scripts/prune_ts_ast.js <archivo.ts>
 ```
 
-### 2. Grafo de Símbolos y Relaciones en RAM/SQLite (Zero-Token Architecture)
+### 4. Grafo de Símbolos y Relaciones en RAM/SQLite (Zero-Token Architecture)
 Indexa definiciones, callers/callees y mapeo de interfaces abstractas (`abc.ABC`) a adaptadores en < 50 ms:
 ```bash
 # Indexar base de código
@@ -59,37 +78,37 @@ python3 ~/.agents/skills/token-optimizer/scripts/symbol_graph.py implementations
 python3 ~/.agents/skills/token-optimizer/scripts/symbol_graph.py callers <nombre_funcion>
 ```
 
-### 3. Búsqueda Semántica Vectorial con Caché SQLite (180 ms)
+### 5. Búsqueda Semántica Vectorial con Caché SQLite (180 ms)
 Búsqueda de fragmentos exactos usando `nomic-embed-text` de Ollama indexado incrementalmente en `~/.agents/cache/vectors.db`:
 ```bash
 python3 ~/.agents/skills/token-optimizer/scripts/local_search.py "<query>" [directorio] [top_k]
 ```
 
-### 4. Compresor Determinístico de Git Diffs (70% - 90% Ahorro en PRs/Diffs)
+### 6. Compresor Determinístico de Git Diffs (70% - 90% Ahorro en PRs/Diffs)
 Filtra lockfiles (`package-lock.json`, `poetry.lock`, `Cargo.lock`), blobs binarios, assets minificados y cambios triviales de espacios:
 ```bash
 git diff | python3 ~/.agents/skills/token-optimizer/scripts/diff_compressor.py
 ```
 
-### 5. Runner de Pruebas Multihilo (8 Núcleos) con Reporte Denso
+### 7. Runner de Pruebas Multihilo (8 Núcleos) con Reporte Denso
 Ejecuta suites de prueba concurrentes y oprime logs de tests aprobados para no saturar el contexto:
 ```bash
 ~/.agents/skills/token-optimizer/scripts/test_runner.sh [tests]
 ```
 
-### 6. Gobernanza Automatizada de Git Hooks (pre-commit / pre-push)
+### 8. Gobernanza Automatizada de Git Hooks (pre-commit / pre-push)
 Instala ganchos automáticos para validar `__init__.py` de 0 bytes, formateo y el Guantelete de Restricciones antes de cada commit o push:
 ```bash
 ~/.agents/skills/token-optimizer/scripts/install_git_hooks.sh [directorio_repo]
 ```
 
-### 7. Scaffolder de Especificaciones SDD SSOT (Ahorro >1.500 Tokens en /plan)
+### 9. Scaffolder de Especificaciones SDD SSOT (Ahorro >1.500 Tokens en /plan)
 Genera la estructura estricta de 5 secciones con metadatos de Git auto-completados:
 ```bash
 python3 ~/.agents/skills/token-optimizer/scripts/spec_scaffold.py [backend|frontend] [ruta_salida]
 ```
 
-### 8. Dashboard y Monitor de Ahorro de Tokens y ROI ($ USD)
+### 10. Dashboard y Monitor de Ahorro de Tokens y ROI ($ USD)
 Rastrea métricas de ahorro y costo evitado en USD en tiempo real:
 ```bash
 python3 ~/.agents/skills/token-optimizer/scripts/token_tracker.py stats

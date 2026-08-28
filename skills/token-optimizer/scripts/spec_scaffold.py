@@ -4,32 +4,37 @@ spec_scaffold.py: Generador determinístico de especificaciones técnicas SDD SS
 Pre-rellena metadatos de Git y genera la estructura estricta ahorrando >1.500 tokens de salida en /plan.
 Uso: python3 spec_scaffold.py [backend|frontend] [ruta_salida]
 """
-import sys
+
 import os
 import subprocess
+import sys
 from datetime import datetime
+
 
 def get_git_info():
     try:
         repo_name = os.path.basename(os.path.abspath("."))
         branch = subprocess.check_output(["git", "branch", "--show-current"], text=True).strip()
-        user_name = subprocess.check_output(["git", "config", "user.name"], text=True).strip() or "Ingeniería de Software"
+        user_name = (
+            subprocess.check_output(["git", "config", "user.name"], text=True).strip() or "Ingeniería de Software"
+        )
     except Exception:
         repo_name = "proyecto-software"
         branch = "main"
         user_name = "Desarrollador"
     return repo_name, branch, user_name
 
+
 def generate_backend_spec(repo_name: str, branch: str, user_name: str) -> str:
     now_str = datetime.now().strftime("%Y-%m-%d")
     return f"""# SRS-SPECS: {repo_name} — Single Source of Truth (SSOT) & Especificación del Sistema
 
-> **Documento:** `spec.md`  
-> **Versión:** `1.0.0`  
-> **Estado:** `Borrador en Revisión`  
-> **Fecha:** `{now_str}`  
-> **Autor(es):** `{user_name}`  
-> **Repositorio / Rama:** `{repo_name} ({branch})`  
+> **Documento:** `spec.md`
+> **Versión:** `1.0.0`
+> **Estado:** `Borrador en Revisión`
+> **Fecha:** `{now_str}`
+> **Autor(es):** `{user_name}`
+> **Repositorio / Rama:** `{repo_name} ({branch})`
 
 ---
 
@@ -102,18 +107,22 @@ class BaseRepository(ABC):
 | **TC-03** | `Validación estática de tipos con Pyright estricto` | `pyright` | 0 diagnósticos |
 """
 
+
 def main():
-    tipo = sys.argv[1] if len(sys.argv) > 1 else "backend"
+    sys.argv[1] if len(sys.argv) > 1 else "backend"
     out_file = sys.argv[2] if len(sys.argv) > 2 else "spec.md"
-    
+
     repo_name, branch, user_name = get_git_info()
     content = generate_backend_spec(repo_name, branch, user_name)
-    
+
     os.makedirs(os.path.dirname(os.path.abspath(out_file)), exist_ok=True)
     with open(out_file, "w", encoding="utf-8") as f:
         f.write(content)
-        
-    print(f"✅ Plantilla SSOT SDD generada exitosamente en '{out_file}' ({len(content.splitlines())} líneas pre-llenadas).")
+
+    print(
+        f"✅ Plantilla SSOT SDD generada exitosamente en '{out_file}' ({len(content.splitlines())} líneas pre-llenadas)."
+    )
+
 
 if __name__ == "__main__":
     main()

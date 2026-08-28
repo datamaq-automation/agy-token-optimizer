@@ -6,10 +6,11 @@ Reduce entre un 70% y un 90% el consumo de tokens al inspeccionar cambios o PRs.
 Uso: git diff | python3 diff_compressor.py
 O bien: python3 diff_compressor.py [ruta_repo_o_archivo_diff]
 """
-import sys
+
 import os
 import re
 import subprocess
+import sys
 
 IGNORED_PATTERNS = [
     r"package-lock\.json",
@@ -25,11 +26,13 @@ IGNORED_PATTERNS = [
     r".*\.lock",
 ]
 
+
 def should_ignore_file(file_path: str) -> bool:
     for pat in IGNORED_PATTERNS:
         if re.search(pat, file_path, re.IGNORECASE):
             return True
     return False
+
 
 def compress_diff(raw_diff: str) -> str:
     lines = raw_diff.splitlines()
@@ -48,7 +51,10 @@ def compress_diff(raw_diff: str) -> str:
             current_file = match.group(2)
             if should_ignore_file(current_file):
                 skipping_file = True
-                current_block = [line, f"[DIFF OMITIDO: {current_file} es un archivo de dependencias/blobs de bajo valor]"]
+                current_block = [
+                    line,
+                    f"[DIFF OMITIDO: {current_file} es un archivo de dependencias/blobs de bajo valor]",
+                ]
             else:
                 skipping_file = False
                 current_block = [line]
@@ -58,11 +64,7 @@ def compress_diff(raw_diff: str) -> str:
             continue
 
         # Filtrar líneas vacías o de sólo comentarios de licencia gigantes
-        if line.startswith("+") and not line.startswith("+++"):
-            stripped = line[1:].strip()
-            if not stripped:
-                continue
-        elif line.startswith("-") and not line.startswith("---"):
+        if line.startswith("+") and not line.startswith("+++") or line.startswith("-") and not line.startswith("---"):
             stripped = line[1:].strip()
             if not stripped:
                 continue
@@ -74,6 +76,7 @@ def compress_diff(raw_diff: str) -> str:
 
     return "\n".join(output_blocks)
 
+
 def main():
     if not sys.stdin.isatty():
         raw_diff = sys.stdin.read()
@@ -81,10 +84,20 @@ def main():
         target = sys.argv[1] if len(sys.argv) > 1 else "."
         if os.path.isdir(target):
             try:
-                res = subprocess.run(["git", "-C", target, "diff", "HEAD"], capture_output=True, text=True, check=True)
+                res = subprocess.run(
+                    ["git", "-C", target, "diff", "HEAD"],
+                    capture_output=True,
+                    text=True,
+                    check=True,
+                )
                 raw_diff = res.stdout
                 if not raw_diff.strip():
-                    res = subprocess.run(["git", "-C", target, "diff", "HEAD~1"], capture_output=True, text=True, check=False)
+                    res = subprocess.run(
+                        ["git", "-C", target, "diff", "HEAD~1"],
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                    )
                     raw_diff = res.stdout
             except Exception as e:
                 print(f"[ERROR] No se pudo obtener git diff: {e}", file=sys.stderr)
@@ -101,6 +114,7 @@ def main():
         print("[No hay cambios detectados o todos los archivos fueron omitidos por ruido/lockfiles]")
     else:
         print(compressed)
+
 
 if __name__ == "__main__":
     main()

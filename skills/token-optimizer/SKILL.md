@@ -126,3 +126,34 @@ python3 /home/agustin/.agents/skills/token-optimizer/scripts/token_tracker.py st
 # Log savings
 python3 /home/agustin/.agents/skills/token-optimizer/scripts/token_tracker.py log --tool "AST Pruning" --input-saved 5000 --output-saved 0
 ```
+
+---
+
+## 10. Surgical Context Injector (< 500 Tokens Bundle)
+Package symbol definitions, callers, and AST skeletons into an ultra-compact context bundle before prompting the LLM:
+```bash
+# By Symbol
+python3 /home/agustin/.agents/skills/token-optimizer/scripts/context_injector.py --symbol <nombre_simbolo>
+
+# By File
+python3 /home/agustin/.agents/skills/token-optimizer/scripts/context_injector.py --file <archivo.py>
+
+# By Natural Language Query
+python3 /home/agustin/.agents/skills/token-optimizer/scripts/context_injector.py --query "<requerimiento>" [directorio]
+```
+
+---
+
+## 11. Zero-Trust Local CI Pipeline (Uncle Bob Gauntlet)
+Execute all 5 stages of static validation and tests locally in ~1.5s:
+```bash
+/home/agustin/.agents/skills/token-optimizer/scripts/ci_local.sh [directorio_repo]
+```
+
+---
+
+## 12. Multi-Tier Subagents Orchestration Guidelines
+When delegating work via `invoke_subagent`:
+- **`researcher`**: Use `Model: 'flash_lite'` for fast read-only symbol and file discovery.
+- **`auditor`**: Use `Model: 'flash'` for checking Clean Architecture compliance.
+- **`architect`**: Use `Model: 'pro'` for designing 5-section SSOT specifications.

@@ -4,9 +4,11 @@ prune_python_ast.py: Poda determinista de archivos Python usando el módulo est�
 Elimina comentarios, docstrings y cuerpos de funciones reemplazándolos por `...`.
 Reduce el tamaño de tokens entre un 70% y un 90% preservando firmas y tipos.
 """
+
 import ast
-import sys
 import os
+import sys
+
 
 class DeterministicCodePruner(ast.NodeTransformer):
     def __init__(self, keep_docstrings: bool = False, keep_bodies: bool = False):
@@ -16,7 +18,13 @@ class DeterministicCodePruner(ast.NodeTransformer):
     def _prune_body(self, node):
         self.generic_visit(node)
         if not self.keep_bodies:
-            if self.keep_docstrings and node.body and isinstance(node.body[0], ast.Expr) and isinstance(node.body[0].value, ast.Constant) and isinstance(node.body[0].value.value, str):
+            if (
+                self.keep_docstrings
+                and node.body
+                and isinstance(node.body[0], ast.Expr)
+                and isinstance(node.body[0].value, ast.Constant)
+                and isinstance(node.body[0].value.value, str)
+            ):
                 node.body = [node.body[0], ast.Expr(value=ast.Constant(value=Ellipsis))]
             else:
                 node.body = [ast.Expr(value=ast.Constant(value=Ellipsis))]
@@ -30,15 +38,28 @@ class DeterministicCodePruner(ast.NodeTransformer):
 
     def visit_ClassDef(self, node):
         self.generic_visit(node)
-        if not self.keep_docstrings and node.body and isinstance(node.body[0], ast.Expr) and isinstance(node.body[0].value, ast.Constant) and isinstance(node.body[0].value.value, str):
+        if (
+            not self.keep_docstrings
+            and node.body
+            and isinstance(node.body[0], ast.Expr)
+            and isinstance(node.body[0].value, ast.Constant)
+            and isinstance(node.body[0].value.value, str)
+        ):
             node.body = node.body[1:]
         return node
 
     def visit_Module(self, node):
         self.generic_visit(node)
-        if not self.keep_docstrings and node.body and isinstance(node.body[0], ast.Expr) and isinstance(node.body[0].value, ast.Constant) and isinstance(node.body[0].value.value, str):
+        if (
+            not self.keep_docstrings
+            and node.body
+            and isinstance(node.body[0], ast.Expr)
+            and isinstance(node.body[0].value, ast.Constant)
+            and isinstance(node.body[0].value.value, str)
+        ):
             node.body = node.body[1:]
         return node
+
 
 def prune_file(filepath: str, keep_docstrings: bool = False) -> str:
     if not os.path.exists(filepath):
@@ -50,6 +71,7 @@ def prune_file(filepath: str, keep_docstrings: bool = False) -> str:
     pruned_tree = pruner.visit(tree)
     ast.fix_missing_locations(pruned_tree)
     return ast.unparse(pruned_tree)
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:

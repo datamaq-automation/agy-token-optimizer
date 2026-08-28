@@ -3,7 +3,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-echo "==> Ejecutando suite de pruebas de agy-token-optimizer (Fase 4)..."
+echo "==> Ejecutando suite de pruebas de agy-token-optimizer (Fase 5)..."
 
 echo "1. Probando poda de AST Python..."
 python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/prune_python_ast.py" "$SCRIPT_DIR/skills/token-optimizer/scripts/local_search.py" > /dev/null
@@ -57,6 +57,19 @@ echo "7. Probando Git Hooks Installer..."
 test -x "$SCRIPT_DIR/skills/token-optimizer/scripts/install_git_hooks.sh"
 echo "   [✓] Git Hooks Installer: OK"
 
+echo "8. Probando Inyector Quirúrgico de Contexto..."
+INJ_RES=$(python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/context_injector.py" --symbol SymbolExtractor --file "$SCRIPT_DIR/skills/token-optimizer/scripts/symbol_graph.py")
+if [[ "$INJ_RES" == *"Context Bundle Quirúrgico"* ]]; then
+    echo "   [✓] Surgical Context Injector: OK"
+else
+    echo "   [!] Surgical Context Injector Falló"
+    exit 1
+fi
+
+echo "9. Probando Pipeline Zero-Trust CI..."
+test -x "$SCRIPT_DIR/skills/token-optimizer/scripts/ci_local.sh"
+echo "   [✓] Zero-Trust Local CI: OK"
+
 echo "=========================================================="
-echo "✅ Todos los tests pasaron exitosamente (Fase 4 OK - 7/7)."
+echo "✅ Todos los tests pasaron exitosamente (Fase 5 OK - 9/9)."
 echo "=========================================================="
