@@ -55,6 +55,9 @@ COMMANDS = {
     "sandbox": "local_sandbox_runner.sh",
     "vps-run": "vps_exec.py",
     "vps-read": "vps_reader.py",
+    "vps-patch": "vps_patcher.py",
+    "vps-index": "vps_symbol_sync.py",
+    "vps-health": "vps_health.py",
 }
 
 

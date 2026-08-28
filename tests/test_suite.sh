@@ -4,7 +4,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 echo "=========================================================="
-echo "🚀 EJECUTANDO SUITE COMPLETA AGY TOKEN OPTIMIZER (11 FASES + VPS)"
+echo "🚀 EJECUTANDO SUITE COMPLETA AGY TOKEN OPTIMIZER (32 TESTS)"
 echo "=========================================================="
 
 echo "1. Probando Poda de AST Python (prune_python_ast.py)..."
@@ -200,6 +200,24 @@ echo "29. Probando Lector Quirúrgico Remoto VPS (vps_reader.py)..."
 test -x "$SCRIPT_DIR/skills/token-optimizer/scripts/vps_reader.py"
 echo "   [✓] Surgical Remote VPS Reader: OK"
 
+echo "30. Probando Parcheador Quirúrgico Remoto VPS (vps_patcher.py)..."
+test -x "$SCRIPT_DIR/skills/token-optimizer/scripts/vps_patcher.py"
+echo "   [✓] Surgical Remote VPS Patcher: OK"
+
+echo "31. Probando Sincronizador de Grafo AST Remoto VPS (vps_symbol_sync.py)..."
+test -x "$SCRIPT_DIR/skills/token-optimizer/scripts/vps_symbol_sync.py"
+echo "   [✓] Remote Symbol Sync to Local RAM: OK"
+
+echo "32. Probando Monitor de Salud Ultradenso VPS (vps_health.py)..."
+test -x "$SCRIPT_DIR/skills/token-optimizer/scripts/vps_health.py"
+HEALTH_OUT=$(python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/vps_health.py")
+if [[ "$HEALTH_OUT" == *"VPS HEALTH"* ]]; then
+    echo "   [✓] Ultra-Dense VPS Health Monitor: OK"
+else
+    echo "   [!] VPS Health Monitor Falló"
+    exit 1
+fi
+
 echo "=========================================================="
-echo "✅ ¡TODOS LOS 29 TESTS DE VALIDACIÓN (11 FASES + VPS) OK!"
+echo "✅ ¡TODOS LOS 32 TESTS DE VALIDACIÓN (ECOSISTEMA TOTAL) OK!"
 echo "=========================================================="

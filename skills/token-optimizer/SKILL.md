@@ -335,3 +335,27 @@ agy-opt vps-read <archivo_remoto> 1 40
 # Stream remote AST
 python3 /home/agustin/.agents/skills/token-optimizer/scripts/vps_reader.py <archivo_remoto> --ast
 ```
+
+---
+
+## 33. Surgical Remote VPS Patcher (In-Place Modifications)
+Applies targeted 5-line patches directly to files on the VPS with syntax validation:
+```bash
+agy-opt vps-patch <archivo_remoto> --target "<viejo>" --replacement "<nuevo>"
+```
+
+---
+
+## 34. Remote Symbol Sync to Local RAM (0 ms Navigation)
+Downloads and indexes remote VPS project symbols directly into your local RAM `symbols.db`:
+```bash
+agy-opt vps-index [directorio_remoto]
+```
+
+---
+
+## 35. Ultra-Dense VPS Health Monitor (< 50 Tokens)
+Summarizes CPU load, RAM, disk, and Docker containers in a 4-line consolidated block:
+```bash
+agy-opt vps-health
+```
