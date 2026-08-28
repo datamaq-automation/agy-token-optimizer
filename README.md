@@ -43,19 +43,41 @@ python3 ~/.agents/skills/token-optimizer/scripts/prune_python_ast.py <archivo.py
 node ~/.agents/skills/token-optimizer/scripts/prune_ts_ast.js <archivo.ts>
 ```
 
-### 2. Búsqueda Semántica Vectorial con Caché SQLite (180 ms)
-Búsqueda de fragmentos exactos usando el modelo local `nomic-embed-text` de Ollama indexado incrementalmente en `~/.agents/cache/vectors.db` con hash SHA-256:
+### 2. Grafo de Símbolos y Relaciones en RAM/SQLite (Zero-Token Architecture)
+Indexa definiciones, callers/callees y mapeo de interfaces abstractas (`abc.ABC`) a adaptadores en < 50 ms:
+```bash
+# Indexar base de código
+python3 ~/.agents/skills/token-optimizer/scripts/symbol_graph.py index [directorio]
+
+# Buscar símbolos y firmas exactas
+python3 ~/.agents/skills/token-optimizer/scripts/symbol_graph.py find <nombre_simbolo>
+
+# Mapear implementaciones de puertos
+python3 ~/.agents/skills/token-optimizer/scripts/symbol_graph.py implementations <nombre_puerto>
+
+# Rastrear llamadas entrantes
+python3 ~/.agents/skills/token-optimizer/scripts/symbol_graph.py callers <nombre_funcion>
+```
+
+### 3. Búsqueda Semántica Vectorial con Caché SQLite (180 ms)
+Búsqueda de fragmentos exactos usando `nomic-embed-text` de Ollama indexado incrementalmente en `~/.agents/cache/vectors.db`:
 ```bash
 python3 ~/.agents/skills/token-optimizer/scripts/local_search.py "<query>" [directorio] [top_k]
 ```
 
-### 3. Compresor Determinístico de Git Diffs (70% - 90% Ahorro en PRs/Diffs)
+### 4. Compresor Determinístico de Git Diffs (70% - 90% Ahorro en PRs/Diffs)
 Filtra lockfiles (`package-lock.json`, `poetry.lock`, `Cargo.lock`), blobs binarios, assets minificados y cambios triviales de espacios:
 ```bash
 git diff | python3 ~/.agents/skills/token-optimizer/scripts/diff_compressor.py
 ```
 
-### 4. Post-Procesamiento y Linters Determinísticos
+### 5. Runner de Pruebas Multihilo (8 Núcleos) con Reporte Denso
+Ejecuta suites de prueba concurrentes y oprime logs de tests aprobados para no saturar el contexto:
+```bash
+~/.agents/skills/token-optimizer/scripts/test_runner.sh [tests]
+```
+
+### 6. Post-Procesamiento y Linters Determinísticos
 Ejecución local inmediata tras cada edición para evitar turnos de corrección en la nube:
 ```bash
 # Python
@@ -75,25 +97,6 @@ El ecosistema aplica las siguientes directivas estáticas inmutables:
 3. **Imports 100% Absolutos:** Prohibidos imports relativos (`from .` o `from ..`). Obligatorio `from src...` o `@/...`.
 4. **Tipado Estricto al 100%:** Anotaciones explícitas en todos los parámetros y retornos. Prohibido `any`.
 5. **Zero Evasión:** Prohibido relajar tests o usar `# type: ignore`, `# noqa`, `@ts-ignore`.
-
----
-
-## 📊 Matriz de Ahorro Cuantitativo
-
-```
-Turno Promedio de Edición Tradicional:
-  Input:  ~8.000 tokens (Lecturas completas de archivos)
-  Output: ~2.000 tokens (Reescritura de archivos enteros + Verbosidad)
-  Costo:  Modelo Pro en toda la sesión
-
-Turno Promedio con AGY Token Optimizer:
-  Input:  ~700 tokens (Poda AST + Búsqueda Semántica local)
-  Output: ~120 tokens (replace_file_content + Cero Verbosidad)
-  Costo:  Tiering económico Flash para /ask y /build
-
-  ===> AHORRO NETO DE TOKENS: ~91.8%
-  ===> REDUCCIÓN DE COSTO API: ~95%
-```
 
 ---
 

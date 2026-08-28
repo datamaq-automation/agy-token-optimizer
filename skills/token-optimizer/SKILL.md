@@ -72,3 +72,29 @@ Or directly:
 python3 /home/agustin/.agents/skills/token-optimizer/scripts/diff_compressor.py [directorio]
 ```
 Reduces git diff token consumption by 70% to 90%.
+
+---
+
+## 5. In-Memory Symbol Graph & Call-Stack Discovery (Zero-Token Architecture)
+Index definitions, caller/callee relationships, and abstract port (`abc.ABC`) implementations in SQLite:
+```bash
+# Index codebase
+python3 /home/agustin/.agents/skills/token-optimizer/scripts/symbol_graph.py index [directorio]
+
+# Find symbols and exact signatures
+python3 /home/agustin/.agents/skills/token-optimizer/scripts/symbol_graph.py find <nombre_simbolo>
+
+# Find port/interface implementations
+python3 /home/agustin/.agents/skills/token-optimizer/scripts/symbol_graph.py implementations <nombre_puerto>
+
+# Find callers
+python3 /home/agustin/.agents/skills/token-optimizer/scripts/symbol_graph.py callers <nombre_funcion>
+```
+
+---
+
+## 6. Multi-Threaded Parallel Test Runner (8 Cores)
+Execute test suites across all CPU threads with dense, low-token error reporting:
+```bash
+/home/agustin/.agents/skills/token-optimizer/scripts/test_runner.sh [ruta_o_test]
+```

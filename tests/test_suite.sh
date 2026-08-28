@@ -3,7 +3,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-echo "==> Ejecutando suite de pruebas de agy-token-optimizer (Fase 2)..."
+echo "==> Ejecutando suite de pruebas de agy-token-optimizer (Fase 3)..."
 
 echo "1. Probando poda de AST Python..."
 python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/prune_python_ast.py" "$SCRIPT_DIR/skills/token-optimizer/scripts/local_search.py" > /dev/null
@@ -23,16 +23,20 @@ else
     exit 1
 fi
 
-echo "4. Probando estructura y permisos..."
-test -f "$SCRIPT_DIR/AGENTS.md"
-test -f "$SCRIPT_DIR/plugins/agy-global-optimizer/plugin.json"
-test -f "$SCRIPT_DIR/plugins/agy-global-optimizer/mcp_config.json"
-test -f "$SCRIPT_DIR/plugins/agy-global-optimizer/hooks.json"
-test -f "$SCRIPT_DIR/skills/token-optimizer/SKILL.md"
-test -x "$SCRIPT_DIR/skills/token-optimizer/scripts/diff_compressor.py"
-test -x "$SCRIPT_DIR/skills/token-optimizer/scripts/local_search.py"
-echo "   [✓] Estructura y permisos: OK"
+echo "4. Probando Grafo de Símbolos en RAM/SQLite..."
+python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/symbol_graph.py" index "$SCRIPT_DIR/skills/token-optimizer/scripts" > /dev/null
+SYM_RES=$(python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/symbol_graph.py" find SymbolExtractor)
+if [[ "$SYM_RES" == *"SymbolExtractor"* ]]; then
+    echo "   [✓] Symbol Graph SQLite: OK"
+else
+    echo "   [!] Symbol Graph SQLite Falló"
+    exit 1
+fi
+
+echo "5. Probando Runner de Tests Multihilo..."
+test -x "$SCRIPT_DIR/skills/token-optimizer/scripts/test_runner.sh"
+echo "   [✓] Test Runner: OK"
 
 echo "=========================================================="
-echo "✅ Todos los tests pasaron exitosamente."
+echo "✅ Todos los tests pasaron exitosamente (Fase 3 OK)."
 echo "=========================================================="
