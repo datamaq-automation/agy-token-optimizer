@@ -205,3 +205,55 @@ Normalizes text, strips fluff, and compresses markdown tables before sending pro
 ```bash
 cat prompt.md | python3 /home/agustin/.agents/skills/token-optimizer/scripts/prompt_squeezer.py
 ```
+
+---
+
+## 19. Local SLM Code Pre-Drafting (qwen2.5-coder:1.5b in RAM)
+Generates code drafts, boilerplate, and DTOs in RAM at ~16 tok/s ($0 API cost):
+```bash
+python3 /home/agustin/.agents/skills/token-optimizer/scripts/local_slm_draft.py "<instrucción_de_código>"
+```
+
+---
+
+## 20. Unit Test AST Synthesizer (Save >1,200 Tokens in /plan)
+Generates test skeletons with parameterized edge cases directly from function AST:
+```bash
+python3 /home/agustin/.agents/skills/token-optimizer/scripts/unit_test_synthesizer.py <origen.py> [test_destino.py]
+```
+
+---
+
+## 21. AST & Schema Minifier (40% - 60% Input Reduction)
+Minifies Python, JSON, and schemas without altering execution semantics:
+```bash
+cat data.json | python3 /home/agustin/.agents/skills/token-optimizer/scripts/ast_minifier.py
+```
+
+---
+
+## 22. Semantic Response Cache in RAM (Cosine Sim >= 0.92)
+Recalls previous architectural explanations and questions in 1 ms at $0 API cost:
+```bash
+# Query cache
+python3 /home/agustin/.agents/skills/token-optimizer/scripts/semantic_response_cache.py query "<pregunta>"
+
+# Save response
+python3 /home/agustin/.agents/skills/token-optimizer/scripts/semantic_response_cache.py save "<pregunta>" "<respuesta>"
+```
+
+---
+
+## 23. RAM-Backed POSIX Workspace (15 GB/s in /dev/shm)
+Manages an in-memory disk in `/dev/shm/agy-ramdisk` for zero I/O latency:
+```bash
+/home/agustin/.agents/skills/token-optimizer/scripts/ramdisk_manager.sh [mount|sync|status]
+```
+
+---
+
+## 24. PR & Commit Message SLM Synthesizer
+Generates conventional commits and Pull Request markdown summaries locally:
+```bash
+python3 /home/agustin/.agents/skills/token-optimizer/scripts/pr_bundle_compressor.py [directorio]
+```

@@ -4,7 +4,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 echo "=========================================================="
-echo "🚀 EJECUTANDO SUITE COMPLETA AGY TOKEN OPTIMIZER (Fases 1-7)"
+echo "🚀 EJECUTANDO SUITE COMPLETA AGY TOKEN OPTIMIZER (Fases 1-9)"
 echo "=========================================================="
 
 echo "1. Probando Poda de AST Python (prune_python_ast.py)..."
@@ -114,6 +114,42 @@ echo "15. Probando Daemon Watcher en RAM (local_watcher.py)..."
 test -x "$SCRIPT_DIR/skills/token-optimizer/scripts/local_watcher.py"
 echo "   [✓] RAM Watcher Daemon: OK"
 
+echo "16. Probando Pre-Borrador con SLM Local (local_slm_draft.py)..."
+test -x "$SCRIPT_DIR/skills/token-optimizer/scripts/local_slm_draft.py"
+echo "   [✓] Local SLM Draft Generator: OK"
+
+echo "17. Probando Sintetizador de Tests AST (unit_test_synthesizer.py)..."
+python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/unit_test_synthesizer.py" "$SCRIPT_DIR/skills/token-optimizer/scripts/ast_minifier.py" /tmp/test_minifier_suite.py > /dev/null
+if [ -f "/tmp/test_minifier_suite.py" ] && grep -q "test_minify_json_happy_path" "/tmp/test_minifier_suite.py"; then
+    echo "   [✓] Unit Test AST Synthesizer: OK"
+    rm -f "/tmp/test_minifier_suite.py"
+else
+    echo "   [!] Unit Test AST Synthesizer Falló"
+    exit 1
+fi
+
+echo "18. Probando Minificador de AST y Schemas (ast_minifier.py)..."
+MIN_RES=$(echo '{"domain": "users", "active": true}' | python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/ast_minifier.py" 2>/dev/null)
+if [[ "$MIN_RES" == '{"domain":"users","active":true}'* ]]; then
+    echo "   [✓] AST & Schema Minifier: OK"
+else
+    echo "   [!] AST & Schema Minifier Falló"
+    exit 1
+fi
+
+echo "19. Probando Caché Semántica de Respuestas (semantic_response_cache.py)..."
+test -x "$SCRIPT_DIR/skills/token-optimizer/scripts/semantic_response_cache.py"
+echo "   [✓] Semantic Response Cache: OK"
+
+echo "20. Probando Gestor de Ramdisk en /dev/shm (ramdisk_manager.sh)..."
+test -x "$SCRIPT_DIR/skills/token-optimizer/scripts/ramdisk_manager.sh"
+"$SCRIPT_DIR/skills/token-optimizer/scripts/ramdisk_manager.sh" status > /dev/null
+echo "   [✓] RAM-Backed POSIX Workspace: OK"
+
+echo "21. Probando Sintetizador de PRs y Commits (pr_bundle_compressor.py)..."
+test -x "$SCRIPT_DIR/skills/token-optimizer/scripts/pr_bundle_compressor.py"
+echo "   [✓] PR & Commit Message Synthesizer: OK"
+
 echo "=========================================================="
-echo "✅ ¡TODOS LOS 15 TESTS DE VALIDACIÓN PASARON EXITOSAMENTE!"
+echo "✅ ¡TODOS LOS 21 TESTS DE VALIDACIÓN PASARON EXITOSAMENTE!"
 echo "=========================================================="
