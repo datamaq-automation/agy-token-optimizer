@@ -33,7 +33,12 @@ if [ -f "$DEST_AGENTS_MD" ]; then
 fi
 cp "$SCRIPT_DIR/AGENTS.md" "$DEST_AGENTS_MD"
 
-echo "==> 6. Verificando dependencias del sistema..."
+echo "==> 6. Creando enlace simbólico del CLI maestro 'agy-opt'..."
+mkdir -p "$HOME/.local/bin"
+ln -sf "$DEST_SKILLS/token-optimizer/scripts/agy_cli.py" "$HOME/.local/bin/agy-opt"
+echo "  [✓] 'agy-opt' disponible en $HOME/.local/bin/agy-opt"
+
+echo "==> 7. Verificando dependencias del sistema..."
 command -v python3 >/dev/null 2>&1 && echo "  [✓] Python3 detectado" || echo "  [!] Python3 no encontrado"
 command -v node >/dev/null 2>&1 && echo "  [✓] Node.js detectado" || echo "  [!] Node.js no encontrado (opcional para TS)"
 command -v ruff >/dev/null 2>&1 && echo "  [✓] Ruff linter detectado" || echo "  [!] Ruff no encontrado (recomendado)"
@@ -41,5 +46,5 @@ command -v ollama >/dev/null 2>&1 && echo "  [✓] Ollama detectado" || echo "  
 
 echo "=========================================================="
 echo "✅ ¡Instalación global completada con éxito!"
-echo "   Ahora puedes usar /ask, /plan y /build en cualquier sesión de AGY."
+echo "   Ahora puedes ejecutar 'agy-opt' y usar /ask, /plan y /build en AGY."
 echo "=========================================================="

@@ -257,3 +257,37 @@ Generates conventional commits and Pull Request markdown summaries locally:
 ```bash
 python3 /home/agustin/.agents/skills/token-optimizer/scripts/pr_bundle_compressor.py [directorio]
 ```
+
+---
+
+## 25. Master Sidecar Orchestrator (`agy-opt` CLI)
+Consolidates all 24 tools under a unified global CLI:
+```bash
+# General help and command list
+agy-opt help
+
+# Run Zero-Trust CI
+agy-opt ci .
+
+# View ROI and token savings
+agy-opt stats
+
+# Run closed-loop self-healing
+agy-opt heal [test_file]
+```
+
+---
+
+## 26. Closed-Loop Recursive Self-Healing (qwen2.5-coder in RAM)
+Automatically catches test and linter failures, queries local SLM, and applies patches in RAM until green:
+```bash
+python3 /home/agustin/.agents/skills/token-optimizer/scripts/self_healing_runner.py [test_target]
+```
+
+---
+
+## 27. Adaptive Project Rules Engine
+Scans repository stack and generates/updates `AGENTS.md` tailored to the project:
+```bash
+python3 /home/agustin/.agents/skills/token-optimizer/scripts/adaptive_rules_engine.py [directorio_repo]
+```

@@ -4,7 +4,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 echo "=========================================================="
-echo "🚀 EJECUTANDO SUITE COMPLETA AGY TOKEN OPTIMIZER (Fases 1-9)"
+echo "🚀 EJECUTANDO SUITE COMPLETA AGY TOKEN OPTIMIZER (Fases 1-10)"
 echo "=========================================================="
 
 echo "1. Probando Poda de AST Python (prune_python_ast.py)..."
@@ -150,6 +150,30 @@ echo "21. Probando Sintetizador de PRs y Commits (pr_bundle_compressor.py)..."
 test -x "$SCRIPT_DIR/skills/token-optimizer/scripts/pr_bundle_compressor.py"
 echo "   [✓] PR & Commit Message Synthesizer: OK"
 
+echo "22. Probando Auto-Sanador Recursivo (self_healing_runner.py)..."
+test -x "$SCRIPT_DIR/skills/token-optimizer/scripts/self_healing_runner.py"
+echo "   [✓] Closed-Loop Self-Healing Runner: OK"
+
+echo "23. Probando CLI Maestro Sidecar 'agy-opt' (agy_cli.py)..."
+test -x "$SCRIPT_DIR/skills/token-optimizer/scripts/agy_cli.py"
+CLI_HELP=$(python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/agy_cli.py" help)
+if [[ "$CLI_HELP" == *"AGY-OPT: ORQUESTADOR MAESTRO LOCAL"* ]]; then
+    echo "   [✓] Master Sidecar CLI (agy-opt): OK"
+else
+    echo "   [!] Master Sidecar CLI Falló"
+    exit 1
+fi
+
+echo "24. Probando Motor de Reglas Adaptativo (adaptive_rules_engine.py)..."
+python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/adaptive_rules_engine.py" "$SCRIPT_DIR" /tmp/test_adaptive_agents.md > /dev/null
+if [ -f "/tmp/test_adaptive_agents.md" ] && grep -q "Guantelete de Restricciones" "/tmp/test_adaptive_agents.md"; then
+    echo "   [✓] Adaptive Rules Engine: OK"
+    rm -f "/tmp/test_adaptive_agents.md"
+else
+    echo "   [!] Adaptive Rules Engine Falló"
+    exit 1
+fi
+
 echo "=========================================================="
-echo "✅ ¡TODOS LOS 21 TESTS DE VALIDACIÓN PASARON EXITOSAMENTE!"
+echo "✅ ¡TODOS LOS 24 TESTS DE VALIDACIÓN (10 FASES) PASARON OK!"
 echo "=========================================================="
