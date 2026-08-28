@@ -157,3 +157,51 @@ When delegating work via `invoke_subagent`:
 - **`researcher`**: Use `Model: 'flash_lite'` for fast read-only symbol and file discovery.
 - **`auditor`**: Use `Model: 'flash'` for checking Clean Architecture compliance.
 - **`architect`**: Use `Model: 'pro'` for designing 5-section SSOT specifications.
+
+---
+
+## 13. Background RAM Watcher Daemon (0 ms Indexing)
+Monitors files in real time and keeps `symbols.db` and `vectors.db` synchronized in RAM:
+```bash
+python3 /home/agustin/.agents/skills/token-optimizer/scripts/local_watcher.py [directorio] &
+```
+
+---
+
+## 14. Architecture Mermaid Diagram Generator ($0 Tokens)
+Automatically generates Mermaid architecture diagrams from SQLite symbol relationships:
+```bash
+python3 /home/agustin/.agents/skills/token-optimizer/scripts/arch_diagram.py [directorio]
+```
+
+---
+
+## 15. Zero-Leak Static Security & Secret Auditor
+Scans for hardcoded secrets, private keys, and vulnerable dependencies:
+```bash
+/home/agustin/.agents/skills/token-optimizer/scripts/security_audit.sh [directorio]
+```
+
+---
+
+## 16. 2nd-Order Semantic Reranker (Top 2 Chunks < 500 Tokens)
+Reranks vector search candidates using token density scoring to extract only the 2 most relevant snippets:
+```bash
+python3 /home/agustin/.agents/skills/token-optimizer/scripts/local_reranker.py "<query>" [directorio] [top_n]
+```
+
+---
+
+## 17. Automatic Interface Stub Generator (.pyi)
+Generates `.pyi` type signature stubs for modules in `src/`, reducing read overhead from 600 tokens to ~50 tokens:
+```bash
+python3 /home/agustin/.agents/skills/token-optimizer/scripts/stub_generator.py [src_dir] [.stubs_dir]
+```
+
+---
+
+## 18. Prompt & Context Squeezer (30% - 50% Reduction)
+Normalizes text, strips fluff, and compresses markdown tables before sending prompts:
+```bash
+cat prompt.md | python3 /home/agustin/.agents/skills/token-optimizer/scripts/prompt_squeezer.py
+```
