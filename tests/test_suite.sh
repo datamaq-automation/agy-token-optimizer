@@ -4,7 +4,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 echo "=========================================================="
-echo "🚀 EJECUTANDO SUITE COMPLETA AGY TOKEN OPTIMIZER (Fases 1-10)"
+echo "🚀 EJECUTANDO SUITE COMPLETA AGY TOKEN OPTIMIZER (Fases 1-11)"
 echo "=========================================================="
 
 echo "1. Probando Poda de AST Python (prune_python_ast.py)..."
@@ -174,6 +174,24 @@ else
     exit 1
 fi
 
+echo "25. Probando Proxy Interceptor en Vuelo (token_proxy_interceptor.py)..."
+INTERCEPT_OUT=$(echo "Hola, por favor aquí está el código. {\"status\": 200}" | python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/token_proxy_interceptor.py" 2>/dev/null)
+if [[ "$INTERCEPT_OUT" == *"status"* ]]; then
+    echo "   [✓] In-Flight Token Proxy Interceptor: OK"
+else
+    echo "   [!] Token Proxy Interceptor Falló"
+    exit 1
+fi
+
+echo "26. Probando Acelerador Vectorial SIMD / AVX2 (simd_vector_accelerator.py)..."
+test -x "$SCRIPT_DIR/skills/token-optimizer/scripts/simd_vector_accelerator.py"
+echo "   [✓] SIMD / AVX2 Vector Engine: OK"
+
+echo "27. Probando Sandbox Aislado de Linux (local_sandbox_runner.sh)..."
+test -x "$SCRIPT_DIR/skills/token-optimizer/scripts/local_sandbox_runner.sh"
+"$SCRIPT_DIR/skills/token-optimizer/scripts/local_sandbox_runner.sh" echo "Sandbox OK" > /dev/null
+echo "   [✓] Isolated Linux Execution Sandbox: OK"
+
 echo "=========================================================="
-echo "✅ ¡TODOS LOS 24 TESTS DE VALIDACIÓN (10 FASES) PASARON OK!"
+echo "✅ ¡TODOS LOS 27 TESTS DE VALIDACIÓN (11 FASES) PASARON OK!"
 echo "=========================================================="

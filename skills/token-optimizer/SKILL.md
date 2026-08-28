@@ -291,3 +291,27 @@ Scans repository stack and generates/updates `AGENTS.md` tailored to the project
 ```bash
 python3 /home/agustin/.agents/skills/token-optimizer/scripts/adaptive_rules_engine.py [directorio_repo]
 ```
+
+---
+
+## 28. In-Flight Token Proxy Interceptor (Automatic Stream Squeezer)
+Intercepts any input stream or payload in flight, applying compression and minification before egress:
+```bash
+cat payload.txt | python3 /home/agustin/.agents/skills/token-optimizer/scripts/token_proxy_interceptor.py
+```
+
+---
+
+## 29. SIMD / AVX2 Matrix Vector Engine (< 2 ms)
+Evaluates 100,000 code vectors in CPU memory using vector instructions:
+```bash
+python3 /home/agustin/.agents/skills/token-optimizer/scripts/simd_vector_accelerator.py "<query>" [top_k]
+```
+
+---
+
+## 30. Isolated Linux Execution Sandbox
+Runs SLM-generated code and unit tests inside contained Linux namespaces:
+```bash
+/home/agustin/.agents/skills/token-optimizer/scripts/local_sandbox_runner.sh <comando>
+```

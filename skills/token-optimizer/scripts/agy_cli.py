@@ -50,6 +50,9 @@ COMMANDS = {
     "test": "test_runner.sh",
     "hooks": "install_git_hooks.sh",
     "scaffold": "spec_scaffold.py",
+    "intercept": "token_proxy_interceptor.py",
+    "simd": "simd_vector_accelerator.py",
+    "sandbox": "local_sandbox_runner.sh",
 }
 
 
