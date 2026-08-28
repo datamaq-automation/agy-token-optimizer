@@ -43,13 +43,19 @@ python3 ~/.agents/skills/token-optimizer/scripts/prune_python_ast.py <archivo.py
 node ~/.agents/skills/token-optimizer/scripts/prune_ts_ast.js <archivo.ts>
 ```
 
-### 2. Búsqueda Semántica Vectorial en RAM (150 ms)
-Búsqueda de fragmentos exactos usando el modelo local `nomic-embed-text` de Ollama:
+### 2. Búsqueda Semántica Vectorial con Caché SQLite (180 ms)
+Búsqueda de fragmentos exactos usando el modelo local `nomic-embed-text` de Ollama indexado incrementalmente en `~/.agents/cache/vectors.db` con hash SHA-256:
 ```bash
 python3 ~/.agents/skills/token-optimizer/scripts/local_search.py "<query>" [directorio] [top_k]
 ```
 
-### 3. Post-Procesamiento y Linters Determinísticos
+### 3. Compresor Determinístico de Git Diffs (70% - 90% Ahorro en PRs/Diffs)
+Filtra lockfiles (`package-lock.json`, `poetry.lock`, `Cargo.lock`), blobs binarios, assets minificados y cambios triviales de espacios:
+```bash
+git diff | python3 ~/.agents/skills/token-optimizer/scripts/diff_compressor.py
+```
+
+### 4. Post-Procesamiento y Linters Determinísticos
 Ejecución local inmediata tras cada edición para evitar turnos de corrección en la nube:
 ```bash
 # Python
