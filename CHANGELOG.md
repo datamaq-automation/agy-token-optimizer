@@ -6,6 +6,7 @@ El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com
 ## [No Publicado / Último Release] - 2026-08-28
 
 ### 🚀 Nuevas Características (Features)
+- feat(repo-topology): integrate repository topology and canonical destination validator into preplan (46 tools)
 - feat(repo-diataxis): apply complete Diataxis documentation structure and foundational ADRs (ADR-0001 to ADR-0004)
 - feat(docs-linter): implement documentation link/ADR linter and automated CHANGELOG.md generator (45 tools complete)
 - feat(docs-diataxis): implement Diataxis documentation initializer, sequential ADR generator, and SDD spec archiver (43 tools)
@@ -20,4 +21,3 @@ El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com
 - feat(phase6-7): add local watcher daemon, mermaid diagram generator, security audit, local reranker, stub generator, and prompt squeezer
 - feat(phase5): add surgical context injector, zero-trust local CI pipeline, and subagent guidelines
 - feat(phase4): add git hooks installer, SDD spec scaffolder, and token savings tracker
-- feat(phase3): add in-memory symbol graph and multi-threaded test runner
