@@ -12,6 +12,7 @@ El proyecto cuenta con documentación técnica formal organizada según el está
 * 🛠️ **[Guía de Desarrollo Local](docs/how-to/development.md):** Cómo contribuir, correr linters y ejecutar los 57 tests automatizados.
 * 🌐 **[Operaciones Remotas en VPS](docs/how-to/vps_operations.md):** Gestión de servidores remotos sobre sockets SSH multiplexados a < 8 ms.
 * 🚀 **[Flujo de Trabajo AGY + OpenCode](docs/how-to/opencode_workflow.md):** Operación en 1 sola terminal con cascada de tokens gratuitos y DeepSeek.
+* 🎁 **[Guía de Proveedores Gratuitos (Free Tiers)](docs/reference/free_providers_guide.md):** Comparativa de Gemini, Groq, OpenRouter, Mistral, Cerebras y configuración de `.env`.
 * 📋 **[Manual de Comandos CLI (57 Herramientas)](docs/reference/cli_commands.md):** Catálogo exhaustivo de todos los subcomandos de `agy-opt`.
 * 🛡️ **[Convenciones del Guantelete](docs/reference/conventions.md):** Las 5 baterías inmutables de Clean Architecture.
 * 🏛️ **[Registro de Decisiones Arquitectónicas (ADRs)](docs/adr/):** Histórico formal de decisiones desde ADR-0001 hasta ADR-0005.
