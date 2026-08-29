@@ -17,6 +17,8 @@ import urllib.request
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 
+from src.application.load_credentials import load_structured_credentials
+
 ENV_FILE = Path.home() / ".agy-optimizer" / ".env"
 
 
@@ -44,6 +46,14 @@ def load_env_keys() -> dict:
         except Exception:
             pass
     return keys
+
+
+def load_structured_keys() -> list[dict]:
+    """Carga credenciales estructuradas (JSON/YAML/.env) y las expone como lista de dicts.
+
+    Conserva la retrocompatibilidad con .env y variables de entorno del sistema (FR-02).
+    """
+    return load_structured_credentials()
 
 
 def parse_key_pool(raw_keys: str) -> list[str]:

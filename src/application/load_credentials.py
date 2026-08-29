@@ -41,4 +41,4 @@ def parse_yaml_credentials(config_path: str) -> List[ProviderCredential]:
     path = Path(config_path)
     if not path.is_file():
         return []
-    return loader._parse_yaml_file(path)  # noqa: SLF001
+    return loader.parse_yaml_credentials_from(config_path)

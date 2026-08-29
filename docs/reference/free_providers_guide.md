@@ -95,7 +95,105 @@ OLLAMA_HOST="http://localhost:11434"
 
 ---
 
-## 6. Diagrama de Conmutación Multi-Key
+## 6. Credenciales Estructuradas: `keys.json` y `keys.yaml` (Metadata Enriquecida)
+
+> **Jerarquía de precedencia determinística (FR-02 de `spec.md`):**
+> `keys.json` / `keys.yaml` / `config.json` / `config.yaml` **(mayor prioridad)** →
+> `~/.agy-optimizer/.env` (compatibilidad retroactiva) → variables de entorno del sistema.
+
+Cuando existe un archivo estructurado, se usa en lugar de `.env`, permitiendo asociar a cada
+API key metadatos como nombre de cuenta, correo, límites de rpm/cuota diaria, prioridad de
+fallback, endpoint personalizado, modelo por defecto y estado habilitado/deshabilitado.
+
+### 6.1. Esquema `keys.json`
+
+```json
+{
+  "providers": [
+    {
+      "name": "Gemini Principal",
+      "provider": "gemini",
+      "api_key": "AIzaSy_CuentaGoogle1...",
+      "email": "cuenta1@gmail.com",
+      "model": "gemini-2.0-flash",
+      "priority": 1,
+      "rpm_limit": 15,
+      "daily_limit": 1500,
+      "base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
+      "enabled": true
+    },
+    {
+      "name": "Groq Respaldo",
+      "provider": "groq",
+      "api_key": "gsk_CuentaGroq1...",
+      "email": "groq@test.com",
+      "model": "llama-3.3-70b-versatile",
+      "priority": 2,
+      "rpm_limit": 30,
+      "enabled": true
+    },
+    {
+      "name": "Gemini Pausada",
+      "provider": "gemini",
+      "api_key": "AIzaSy_Inactiva...",
+      "enabled": false
+    }
+  ]
+}
+```
+
+### 6.2. Esquema `keys.yaml`
+
+```yaml
+providers:
+  - name: "Groq Principal"
+    provider: "groq"
+    api_key: "gsk_yaml_test_1"
+    email: "yaml@test.com"
+    model: "llama-3.3-70b-versatile"
+    priority: 1
+    rpm_limit: 30
+    enabled: true
+
+  - name: "Gemini Principal"
+    provider: "gemini"
+    api_key: "AIzaSy_yaml_gemini_1"
+    email: "primary@test.com"
+    model: "gemini-2.0-flash"
+    priority: 1
+    rpm_limit: 15
+    base_url: "https://generativelanguage.googleapis.com/v1beta/openai"
+    enabled: true
+```
+
+### 6.3. Campos Soportados (Según `spec.md` §FR-03)
+
+| Campo | Tipo | Descripción |
+| :--- | :--- | :--- |
+| `name` / `account_tag` | string | Identificador amigable de la cuenta. |
+| `provider` | string | `gemini` \| `groq` \| `deepseek` \| `mistral` \| `cerebras` \| `openai` \| `custom` \| `ollama`. |
+| `api_key` | string | Clave de acceso (requerida). |
+| `email` | string | Correo asociado (control de cuota multi-cuenta). |
+| `model` | string | Modelo predeterminado o alias de reemplazo. |
+| `priority` | int | Orden en la cascada de fallbacks (menor = primero). |
+| `rpm_limit` | int | Límite de peticiones por minuto (estrangulamiento preventivo). |
+| `daily_limit` | int | Cuota diaria estimada. |
+| `enabled` | bool | Activa/pausa la clave individualmente. Por defecto `true`. |
+| `base_url` | string | Endpoint personalizado (opcional). |
+
+### 6.4. Comportamiento del Cargador (FR-01 / FR-04)
+
+- **Cero dependencias externas:** JSON usa el módulo estándar `json`; YAML usa un parser nativo
+  liviano sin requerir `PyYAML` (NFR-02).
+- **Omisión de claves desactivadas:** `enabled: false` excluye la credencial de la lista activa.
+- **Ordenación por `priority`:** la lista retornada se ordena de forma ascendente.
+- **Tolerancia a fallos:** un archivo corrupto o inexistente o una sintaxis inválida no aborta el
+  proceso; el cargador continúa con el siguiente nivel de la jerarquía (fallback).
+- **Latencia:** lectura e indexación en CPU local < 5 ms (NFR-01).
+
+---
+
+## 7. Diagrama de Conmutación Multi-Key
 
 ```
                       [Petición de OpenCode /build]

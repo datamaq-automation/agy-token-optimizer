@@ -2,7 +2,7 @@
 
 > **Documento:** `spec.md`  
 > **Versión:** `1.1.0`  
-> **Estado:** `Especificación Consolidada (Dudas = 0)`  
+> **Estado:** `GREEN / Implementación Validada (57/57 Tests OK)`  
 > **Fecha:** `2026-08-29`  
 > **Autor(es):** `Antigravity SDD Architect`  
 > **Repositorio / Rama:** `agy-token-optimizer (main)`  
@@ -115,8 +115,9 @@ class IModelCascade(ABC):
 
 | ID Escenario | Caso de Prueba / Gherkin | Archivo de Test | Criterio de Aprobación |
 | :--- | :--- | :--- | :--- |
-| **TC-01** | `Dado un archivo keys.json con cuentas Gemini y Groq, Cuando se ejecuta load(), Entonces retorna la lista ordenada por prioridad` | `tests/test_credentials_loader.py` | Test pasa verde |
-| **TC-02** | `Dado un archivo keys.yaml, Cuando se carga sin dependencias externas, Entonces extrae correctamente las claves y metadatos` | `tests/test_credentials_loader.py` | Test pasa verde |
-| **TC-03** | `Dado un entorno donde solo existe ~/.agy-optimizer/.env, Cuando se ejecuta load(), Entonces preserva la compatibilidad legacy` | `tests/test_credentials_loader.py` | Test pasa verde |
-| **TC-04** | `Dado un archivo JSON corrupto, Cuando se ejecuta la carga, Entonces hace fallback a .env o env vars sin lanzar excepción fatal` | `tests/test_credentials_loader.py` | Test pasa verde |
-| **TC-05** | `Verificación estática de Clean Architecture y Guantelete (0 bytes en __init__.py)` | `tests/test_architecture.py` | 100% cumplimiento |
+| **TC-01** | `Dado un archivo keys.json con cuentas Gemini y Groq, Cuando se ejecuta load(), Entonces retorna la lista ordenada por prioridad` | `tests/test_credentials_loader.py` | ✅ PASSED |
+| **TC-02** | `Dado un archivo keys.yaml, Cuando se carga sin dependencias externas, Entonces extrae correctamente las claves y metadatos` | `tests/test_credentials_loader.py` | ✅ PASSED |
+| **TC-03** | `Dado un entorno donde solo existe ~/.agy-optimizer/.env, Cuando se ejecuta load(), Entonces preserva la compatibilidad legacy` | `tests/test_credentials_loader.py` | ✅ PASSED |
+| **TC-04** | `Dado un archivo JSON corrupto, Cuando se ejecuta la carga, Entonces hace fallback a .env o env vars sin lanzar excepción fatal` | `tests/test_credentials_loader.py` | ✅ PASSED |
+| **TC-05** | `Verificación estática de Clean Architecture y Guantelete (0 bytes en __init__.py)` | `tests/test_architecture.py` | ✅ PASSED (4/4 baterías) |
+| **TC-06** | `Ecosistema completo y suites de regresión (57 tests)` | `tests/test_suite.sh` | ✅ PASSED (57/57 OK) |

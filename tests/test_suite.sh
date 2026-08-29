@@ -2,6 +2,7 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export PYTHONPATH="$SCRIPT_DIR:${PYTHONPATH:-}"
 
 echo "=========================================================="
 echo "🚀 EJECUTANDO SUITE COMPLETA AGY TOKEN OPTIMIZER (57 TESTS)"

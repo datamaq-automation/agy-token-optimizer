@@ -86,6 +86,14 @@ class CredentialLoader(ICredentialLoader):
         providers = document.get("providers", []) if isinstance(document, dict) else document
         return self._normalize_providers(providers)
 
+    def parse_yaml_credentials_from(self, path: str) -> List[ProviderCredential]:
+        """Contrato público: parsea un archivo YAML y retorna sus credenciales normalizadas.
+
+        Usado por la capa de aplicación para exponer `parse_yaml_credentials` sin
+        acceder a implementaciones privadas (batería 4 del Gauntlete).
+        """
+        return self._parse_yaml_file(Path(path))
+
     def _load_env_file(self, path: Path) -> List[ProviderCredential]:
         env_vars: Dict[str, str] = {}
         with open(path, "r", encoding="utf-8") as fh:
