@@ -503,3 +503,11 @@ Generates canonical `.github/workflows/ci.yml` with 0-byte `__init__.py`, Ruff, 
 ```bash
 agy-opt scaffold-ci [directorio_repo]
 ```
+
+---
+
+## 54. AGY Plan Exporter & OpenCode Synchronizer (spec.md Sync)
+Exports AGY plan artifacts to `spec.md` and `specs/active/` for seamless OpenCode `/build` execution:
+```bash
+agy-opt export-plan <archivo_plan.md> [directorio_repo]
+```

@@ -4,7 +4,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 echo "=========================================================="
-echo "🚀 EJECUTANDO SUITE COMPLETA AGY TOKEN OPTIMIZER (50 TESTS)"
+echo "🚀 EJECUTANDO SUITE COMPLETA AGY TOKEN OPTIMIZER (51 TESTS)"
 echo "=========================================================="
 
 echo "1. Probando Poda de AST Python (prune_python_ast.py)..."
@@ -363,6 +363,18 @@ else
     exit 1
 fi
 
+echo "51. Probando Exportador y Sincronizador de Planes (plan_exporter.py)..."
+python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/spec_scaffold.py" backend /tmp/test_plan_sync_suite.md > /dev/null
+mkdir -p /tmp/test_sync_repo_dir
+python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/plan_exporter.py" /tmp/test_plan_sync_suite.md /tmp/test_sync_repo_dir > /dev/null
+if [ -f "/tmp/test_sync_repo_dir/spec.md" ] && [ -f "/tmp/test_sync_repo_dir/specs/active/test_plan_sync_suite.md" ]; then
+    echo "   [✓] AGY Plan Exporter & OpenCode Synchronizer: OK"
+    rm -rf /tmp/test_sync_repo_dir /tmp/test_plan_sync_suite.md
+else
+    echo "   [!] Plan Exporter Falló"
+    exit 1
+fi
+
 echo "=========================================================="
-echo "✅ ¡TODOS LOS 50 TESTS DE VALIDACIÓN (ECOSISTEMA TOTAL) OK!"
+echo "✅ ¡TODOS LOS 51 TESTS DE VALIDACIÓN (ECOSISTEMA TOTAL) OK!"
 echo "=========================================================="

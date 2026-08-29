@@ -76,6 +76,7 @@ COMMANDS = {
     "test-matrix": "plan_test_matrix_generator.py",
     "plan-ci": "plan_ci_detector.py",
     "scaffold-ci": "ci_workflow_scaffolder.py",
+    "export-plan": "plan_exporter.py",
 }
 
 
