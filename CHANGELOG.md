@@ -6,6 +6,7 @@ El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com
 ## [No Publicado / Último Release] - 2026-08-28
 
 ### 🚀 Nuevas Características (Features)
+- feat(plan-testing): implement plan test selector and edge-case matrix generator (48 tools total)
 - feat(repo-topology-v2): upgrade repo topology validator to v2 with dependency parsing and linter audit (46 tools)
 - feat(repo-topology): integrate repository topology and canonical destination validator into preplan (46 tools)
 - feat(repo-diataxis): apply complete Diataxis documentation structure and foundational ADRs (ADR-0001 to ADR-0004)
@@ -20,4 +21,3 @@ El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com
 - feat(phase10): complete ultimate AGY local optimizer with agy-opt master CLI, closed-loop self-healing runner, and adaptive rules engine
 - feat(phase8-9): complete local hardware optimizer with SLM pre-drafts, test synthesizer, schema minifier, semantic cache, ramdisk manager, and PR synthesizer
 - feat(phase6-7): add local watcher daemon, mermaid diagram generator, security audit, local reranker, stub generator, and prompt squeezer
-- feat(phase5): add surgical context injector, zero-trust local CI pipeline, and subagent guidelines

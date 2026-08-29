@@ -4,7 +4,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 echo "=========================================================="
-echo "🚀 EJECUTANDO SUITE COMPLETA AGY TOKEN OPTIMIZER (48 TESTS)"
+echo "🚀 EJECUTANDO SUITE COMPLETA AGY TOKEN OPTIMIZER (50 TESTS)"
 echo "=========================================================="
 
 echo "1. Probando Poda de AST Python (prune_python_ast.py)..."
@@ -343,6 +343,26 @@ else
     exit 1
 fi
 
+echo "49. Probando Detector de Pipelines CI/CD (plan_ci_detector.py)..."
+CI_DET=$(python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/plan_ci_detector.py" "$SCRIPT_DIR")
+if [[ "$CI_DET" == *"Pipeline CI/CD Detectado"* ]]; then
+    echo "   [✓] Plan CI/CD Pipeline Detector: OK"
+else
+    echo "   [!] Plan CI Detector Falló"
+    exit 1
+fi
+
+echo "50. Probando Scaffolder de GitHub Actions CI (ci_workflow_scaffolder.py)..."
+mkdir -p /tmp/test_ci_scaffold_dir
+python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/ci_workflow_scaffolder.py" /tmp/test_ci_scaffold_dir > /dev/null
+if [ -f "/tmp/test_ci_scaffold_dir/.github/workflows/ci.yml" ] && grep -q "Zero-Trust" "/tmp/test_ci_scaffold_dir/.github/workflows/ci.yml"; then
+    echo "   [✓] Zero-Trust CI Workflow Scaffolder: OK"
+    rm -rf /tmp/test_ci_scaffold_dir
+else
+    echo "   [!] CI Workflow Scaffolder Falló"
+    exit 1
+fi
+
 echo "=========================================================="
-echo "✅ ¡TODOS LOS 48 TESTS DE VALIDACIÓN (ECOSISTEMA TOTAL) OK!"
+echo "✅ ¡TODOS LOS 50 TESTS DE VALIDACIÓN (ECOSISTEMA TOTAL) OK!"
 echo "=========================================================="

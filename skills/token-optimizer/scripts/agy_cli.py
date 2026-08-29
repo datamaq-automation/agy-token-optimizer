@@ -74,6 +74,8 @@ COMMANDS = {
     "validate-tree": "repo_structure_validator.py",
     "test-impact": "plan_test_selector.py",
     "test-matrix": "plan_test_matrix_generator.py",
+    "plan-ci": "plan_ci_detector.py",
+    "scaffold-ci": "ci_workflow_scaffolder.py",
 }
 
 

@@ -487,3 +487,19 @@ Synthesizes canonical test matrix (Happy Path, Null, Timeout, Validation Error) 
 ```bash
 agy-opt test-matrix <archivo_puerto.py>
 ```
+
+---
+
+## 52. CI/CD Pipeline Detector for Plan Verification (GitHub Actions & GitLab)
+Analyzes remote CI/CD configs (< 5 ms) and provides a dense workflow summary in < 60 tokens:
+```bash
+agy-opt plan-ci [directorio_repo]
+```
+
+---
+
+## 53. Zero-Trust GitHub Actions Workflow Scaffolder (Uncle Bob Gauntlet)
+Generates canonical `.github/workflows/ci.yml` with 0-byte `__init__.py`, Ruff, Pyright, and VPS Deploy:
+```bash
+agy-opt scaffold-ci [directorio_repo]
+```
