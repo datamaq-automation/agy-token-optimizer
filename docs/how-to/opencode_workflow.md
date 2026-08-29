@@ -43,6 +43,8 @@ agy
    ```
 5. Cierra o sal de AGY (`exit` o `Ctrl+C`).
 
+> **💡 Consejo de Cuota:** La cuota gratuita de AGY se renueva **semanalmente** (o cada 5 horas con planes AI Pro / descuento de estudiantes). Al usar AGY solo para planificar y delegar la construcción masiva a OpenCode + Cascada Gratuita, tu cuota de AGY rinde toda la semana sin agotarse.
+
 ---
 
 ## 3. Fase de Construcción con OpenCode (`/build`)

@@ -1,6 +1,6 @@
-# Guía de Proveedores Gratuitos (Free Tiers) y APIs de Respaldo para AGY & OpenCode
+# Guía de Proveedores Gratuitos (Free Tiers), Cuotas de AGY y APIs de Respaldo
 
-Esta guía detalla los mejores proveedores de LLMs con **capas 100% gratuitas (*Free Tiers*)** para programación y desarrollo autónomo, cómo obtener sus claves de API y cómo configurar la cascada inteligente en `~/.agy-optimizer/.env`.
+Esta guía detalla los mejores proveedores de LLMs con **capas 100% gratuitas (*Free Tiers*)** para programación y desarrollo autónomo, el funcionamiento de las **cuotas gratuitas y descuentos para estudiantes en Google Antigravity (AGY)**, cómo obtener sus claves de API y cómo configurar la cascada inteligente en `~/.agy-optimizer/.env`.
 
 ---
 
@@ -16,7 +16,24 @@ Esta guía detalla los mejores proveedores de LLMs con **capas 100% gratuitas (*
 
 ---
 
-## 2. Proveedor de Respaldo de Pago Ultra-Económico
+## 2. Google Antigravity (AGY): Cuota Gratuita, Ciclos de Renovación y Descuento de Estudiantes
+
+Google Antigravity cuenta con su propio esquema de cuotas para el agente en CLI e IDE:
+
+* **Cuota Base Gratuita (Baseline Free Tier):**
+  - Cualquier usuario con cuenta de Google tiene acceso gratuito a una **cuota semanal** para interactuar con AGY y ejecutar planes de arquitectura (`/plan`).
+  - *Ciclo de Renovación:* Se restablece **semanalmente**.
+* **Planes de Alto Rendimiento (Google AI Pro / AI Ultra):**
+  - Incluyen cuotas mucho más generosas que se restablecen en **ciclos dinámicos de 5 horas**, además de un límite semanal significativamente mayor y soporte para créditos adicionales.
+* **🎓 Descuento y Beneficios para Estudiantes:**
+  - Google ofrece promociones y suscripciones educativas a precio reducido (o períodos promocionales extendidos) a través del programa **Google Gemini for Students / Google One AI Premium for Students** verificando el estado de estudiante con correo `.edu` o vía SheerID en [gemini.google/students](https://gemini.google/students/).
+* **💡 Estrategia de Ahorro Máximo:**
+  - **Usa AGY exclusivamente para `/plan` y `/ask`:** Como la cuota gratuita de AGY es semanal, protégela reservándola solo para el diseño arquitectónico de alto nivel (`spec.md`).
+  - **Usa OpenCode para `/build`:** Delega toda la escritura masiva de código a OpenCode conectado al router en cascada (`Gemini Flash / Groq` gratis ➔ `DeepSeek` ➔ `Hardware Local`). De esta forma, **nunca agotarás tu cuota semanal de AGY**.
+
+---
+
+## 3. Proveedor de Respaldo de Pago Ultra-Económico
 
 Cuando se agotan las cuotas gratuitas diarias de Gemini o Groq (error HTTP 429), el router conmuta en **10 milisegundos** a:
 
@@ -26,7 +43,7 @@ Cuando se agotan las cuotas gratuitas diarias de Gemini o Groq (error HTTP 429),
 
 ---
 
-## 3. Configuración Canónica del Archivo `.env`
+## 4. Configuración Canónica del Archivo `.env`
 
 El enrutador (`agy-opt router`) lee automáticamente las credenciales desde `~/.agy-optimizer/.env` o desde las variables de entorno de tu shell:
 
@@ -54,7 +71,7 @@ OLLAMA_HOST="http://localhost:11434"
 
 ---
 
-## 4. Cómo Opera la Cascada Automática
+## 5. Cómo Opera la Cascada Automática
 
 ```
                       [Petición de OpenCode /build]

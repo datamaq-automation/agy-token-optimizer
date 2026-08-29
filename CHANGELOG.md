@@ -23,4 +23,5 @@ El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com
 - feat(vps-suite): complete total VPS remote suite with vps-health, vps-patcher, and vps-symbol-sync (32 tools)
 
 ### 📚 Documentación & Gobernanza
+- docs(free-providers): add comprehensive guide for Free Tier models (Gemini, Groq, OpenRouter, Mistral, Cerebras)
 - docs(diataxis): add opencode_workflow, cli_commands reference, ADR-0005, and update README.md
