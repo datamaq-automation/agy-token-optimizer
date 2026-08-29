@@ -60,6 +60,9 @@ COMMANDS = {
     "vps-health": "vps_health.py",
     "audit-plan": "plan_auditor.py",
     "audit-edits": "edit_auditor.py",
+    "preplan": "plan_context_precompiler.py",
+    "scaffold-plan": "plan_artifact_scaffolder.py",
+    "plan-impact": "plan_impact_simulator.py",
 }
 
 

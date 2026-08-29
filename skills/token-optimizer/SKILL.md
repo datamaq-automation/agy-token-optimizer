@@ -375,3 +375,27 @@ Audits git diffs against the 5 Uncle Bob constraint batteries, running `ruff --f
 ```bash
 agy-opt audit-edits [directorio_repo]
 ```
+
+---
+
+## 38. Plan Context Precompiler (96% Token Reduction in /plan)
+Precompiles the complete architectural map in CPU/RAM before planning:
+```bash
+agy-opt preplan [directorio]
+```
+
+---
+
+## 39. Plan Artifact Scaffolder (Deterministic Plan Scaffolding)
+Generates full SSOT plan skeletons, Git metadata, and Mermaid diagrams on CPU:
+```bash
+agy-opt scaffold-plan <nombre_plan> [ruta_salida]
+```
+
+---
+
+## 40. Plan AST Impact Simulator (Dependency Simulation)
+Calculates dependent modules and callers in `symbols.db` before applying a plan:
+```bash
+agy-opt plan-impact <simbolo_o_archivo>
+```

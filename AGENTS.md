@@ -21,6 +21,8 @@ Cuando el prompt del usuario comience o declare explícitamente un modo, el agen
 ### B. Modo `/plan` (Arquitecto SDD & SSOT)
 - **Perfil Recomendado:** Modelo Avanzado (`pro` / alta capacidad), Razonamiento: **High / Alto**.
 - **Propósito:** Analizar requerimientos y redactar formalmente la especificación técnica (`spec.md` / `specs/<modulo>.md`) en 5 secciones modulares (SSOT) y los esqueletos de tests en `tests/`.
+- **Pre-Condición Obligatoria:** Ejecutar `agy-opt preplan [dir]` para compilar el mapa de arquitectura en CPU/RAM (< 300 tokens) antes de realizar lecturas masivas de archivos.
+- **Validación:** Validar la especificación generada con `agy-opt audit-plan [spec.md]`.
 - **Restricción Inmutable:** EXCLUSIVAMENTE puede crear/modificar `spec.md`, `specs/**` y `tests/**`. **PROHIBIDO modificar código en `src/`**.
 
 ### C. Modo `/build` (Implementador Autónomo TDD & Gauntlet Runner)

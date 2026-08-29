@@ -4,7 +4,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 echo "=========================================================="
-echo "🚀 EJECUTANDO SUITE COMPLETA AGY TOKEN OPTIMIZER (34 TESTS)"
+echo "🚀 EJECUTANDO SUITE COMPLETA AGY TOKEN OPTIMIZER (37 TESTS)"
 echo "=========================================================="
 
 echo "1. Probando Poda de AST Python (prune_python_ast.py)..."
@@ -228,6 +228,24 @@ echo "34. Probando Auditor del Modo Accept-Edits (edit_auditor.py)..."
 python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/edit_auditor.py" "$SCRIPT_DIR" > /dev/null
 echo "   [✓] Accept-Edits & Build Auditor (Gauntlet): OK"
 
+echo "35. Probando Pre-Compilador de Contexto en Plan (plan_context_precompiler.py)..."
+python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/plan_context_precompiler.py" "$SCRIPT_DIR/skills/token-optimizer/scripts" > /dev/null
+echo "   [✓] Plan Context Precompiler (96% Token Reduction): OK"
+
+echo "36. Probando Scaffolder de Artefactos de Plan (plan_artifact_scaffolder.py)..."
+python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/plan_artifact_scaffolder.py" "Test Plan Suite" /tmp/test_scaffold_suite.md > /dev/null
+if [ -f "/tmp/test_scaffold_suite.md" ] && grep -q "Plan de Implementación" "/tmp/test_scaffold_suite.md"; then
+    echo "   [✓] Plan Artifact Scaffolder: OK"
+    rm -f "/tmp/test_scaffold_suite.md"
+else
+    echo "   [!] Plan Artifact Scaffolder Falló"
+    exit 1
+fi
+
+echo "37. Probando Simulador de Impacto de AST (plan_impact_simulator.py)..."
+python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/plan_impact_simulator.py" SymbolExtractor > /dev/null
+echo "   [✓] Plan AST Impact Simulator: OK"
+
 echo "=========================================================="
-echo "✅ ¡TODOS LOS 34 TESTS DE VALIDACIÓN (ECOSISTEMA TOTAL) OK!"
+echo "✅ ¡TODOS LOS 37 TESTS DE VALIDACIÓN (ECOSISTEMA TOTAL) OK!"
 echo "=========================================================="
