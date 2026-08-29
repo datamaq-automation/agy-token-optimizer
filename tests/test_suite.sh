@@ -4,7 +4,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 echo "=========================================================="
-echo "🚀 EJECUTANDO SUITE COMPLETA AGY TOKEN OPTIMIZER (53 TESTS)"
+echo "🚀 EJECUTANDO SUITE COMPLETA AGY TOKEN OPTIMIZER (56 TESTS)"
 echo "=========================================================="
 
 echo "1. Probando Poda de AST Python (prune_python_ast.py)..."
@@ -386,6 +386,23 @@ echo "53. Probando Sincronizador de Configuración de OpenCode (opencode_config_
 python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/opencode_config_sync.py" > /dev/null
 echo "   [✓] OpenCode Configuration Synchronizer: OK"
 
+echo "54. Probando Auto-Sanador en Hardware Local (build_hardware_healer.py)..."
+python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/build_hardware_healer.py" "$SCRIPT_DIR/skills/token-optimizer/scripts/igpu_vulkan_optimizer.py" > /dev/null
+echo "   [✓] Fast Local Closed-Loop Healer (CPU/RAM): OK"
+
+echo "55. Probando Workspace en RAMDisk /dev/shm (build_ramdisk_workspace.py)..."
+python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/build_ramdisk_workspace.py" "$SCRIPT_DIR" > /dev/null
+echo "   [✓] High-Throughput RAMDisk Workspace (15 GB/s): OK"
+
+echo "56. Probando Optimizador de Hardware e iGPU (igpu_vulkan_optimizer.py)..."
+HW_OUT=$(python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/igpu_vulkan_optimizer.py")
+if [[ "$HW_OUT" == *"AGY Hardware Profile"* ]]; then
+    echo "   [✓] Hardware Profiler & iGPU/AVX2 Optimizer: OK"
+else
+    echo "   [!] Hardware Profiler Falló"
+    exit 1
+fi
+
 echo "=========================================================="
-echo "✅ ¡TODOS LOS 53 TESTS DE VALIDACIÓN (ECOSISTEMA TOTAL) OK!"
+echo "✅ ¡TODOS LOS 56 TESTS DE VALIDACIÓN (ECOSISTEMA TOTAL) OK!"
 echo "=========================================================="

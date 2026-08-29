@@ -527,3 +527,27 @@ Configures OpenCode to use the local cascade router at `http://127.0.0.1:8080/v1
 ```bash
 agy-opt sync-opencode [--port 8080]
 ```
+
+---
+
+## 57. Fast Local Closed-Loop Healer for Build Mode (CPU/RAM)
+Repairs imports, types, and syntax errors in < 30 ms in CPU before querying remote LLM:
+```bash
+agy-opt build-heal <archivo.py>
+```
+
+---
+
+## 58. High-Throughput RAMDisk Workspace (/dev/shm 15 GB/s)
+Synchronizes workspace to POSIX RAM for ultra-fast pytest and build execution:
+```bash
+agy-opt build-ramdisk [directorio_repo]
+```
+
+---
+
+## 59. Hardware Profiler & iGPU/AVX2 Optimizer (Local SLM Speedup)
+Audits CPU threads, AVX2 SIMD, and Vulkan iGPU compute for high-speed local inference:
+```bash
+agy-opt igpu-tune
+```

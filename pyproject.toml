@@ -1,7 +1,7 @@
 [project]
 name = "agy-token-optimizer"
-version = "2.0.0"
-description = "Deterministic local token optimizer, cascade model router, and architecture suite for Google Antigravity & OpenCode"
+version = "2.1.0"
+description = "Deterministic local token optimizer, cascade model router, and hardware acceleration suite for Google Antigravity & OpenCode"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }

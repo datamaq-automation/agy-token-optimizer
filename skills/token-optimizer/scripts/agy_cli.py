@@ -79,6 +79,9 @@ COMMANDS = {
     "export-plan": "plan_exporter.py",
     "router": "model_cascade_router.py",
     "sync-opencode": "opencode_config_sync.py",
+    "build-heal": "build_hardware_healer.py",
+    "build-ramdisk": "build_ramdisk_workspace.py",
+    "igpu-tune": "igpu_vulkan_optimizer.py",
 }
 
 
