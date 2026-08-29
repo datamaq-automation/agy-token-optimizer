@@ -399,3 +399,27 @@ Calculates dependent modules and callers in `symbols.db` before applying a plan:
 ```bash
 agy-opt plan-impact <simbolo_o_archivo>
 ```
+
+---
+
+## 41. Plan Test Scaffolder (TDD Test Generator with Mocks)
+Generates `@pytest.mark.parametrize` suites with `abc.ABC` mock classes directly on CPU:
+```bash
+agy-opt scaffold-tests [ports_file.py] [salida_test.py]
+```
+
+---
+
+## 42. Clean Architecture DIP Auditor (Layer Direction Invariance)
+Audits the Dependency Inversion Principle via AST to verify inward-only dependencies:
+```bash
+agy-opt audit-dip [directorio_src]
+```
+
+---
+
+## 43. Plan Differential Optimizer (Surgical Section Updates)
+Replaces individual markdown sections (`## 1` to `## 5`) in `spec.md` without re-emitting the full document:
+```bash
+agy-opt plan-diff --section <1-5> --content "<nuevo_texto>" [spec.md]
+```

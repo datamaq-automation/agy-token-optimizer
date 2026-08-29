@@ -1,6 +1,6 @@
 # ⚡ AGY Token Optimizer (Antigravity Global)
 
-Paquete integral de aceleración en hardware local, pre/post-procesamiento determinístico en CPU/RAM, gobernanza estática, control remoto total de VPS y optimización del modo `/plan` para **Google Antigravity (AGY)**. Reduce entre un **85% y 96% el consumo de tokens** de entrada y salida mediante el aprovechamiento exhaustivo de tu máquina local (CPU Ryzen de 8 hilos con AVX2/SIMD, 18 GiB de RAM libre, inferencia local con Ollama `qwen2.5-coder:1.5b` y `nomic-embed-text`, VFS en `/dev/shm` a 15 GB/s y túneles SSH persistentes a < 8 ms), auto-sanación en RAM, intercepción de tráfico en vuelo, parches remotos quirúrgicos y el **Guantelete de Restricciones (*Constraint Gauntlet*)** de Uncle Bob.
+Paquete integral de aceleración en hardware local, pre/post-procesamiento determinístico en CPU/RAM, gobernanza estática, control remoto total de VPS y compilación diferencial del modo `/plan` para **Google Antigravity (AGY)**. Reduce entre un **85% y 96% el consumo de tokens** de entrada y salida mediante el aprovechamiento exhaustivo de tu máquina local (CPU Ryzen de 8 hilos con AVX2/SIMD, 18 GiB de RAM libre, inferencia local con Ollama `qwen2.5-coder:1.5b` y `nomic-embed-text`, VFS en `/dev/shm` a 15 GB/s y túneles SSH persistentes a < 8 ms), auto-sanación en RAM, intercepción de tráfico en vuelo, parches remotos quirúrgicos y el **Guantelete de Restricciones (*Constraint Gauntlet*)** de Uncle Bob.
 
 ---
 
@@ -27,9 +27,12 @@ Una vez instalado, tienes acceso global al comando `agy-opt` en tu terminal:
 # Iniciar watcher en RAM y sincronizar índices
 agy-opt preflight
 
-# 🧠 OPTIMIZACIÓN EXCLUSIVA DEL MODO /plan (📉 96% Ahorro)
+# 🧠 SUITE AVANZADA DEL MODO /plan (📉 96% Ahorro)
 agy-opt preplan [dir]                                         # Pre-compila el mapa de arquitectura en < 300 tokens
 agy-opt scaffold-plan <nombre_plan> [salida]                  # Genera el esqueleto SSOT completo en 5 ms
+agy-opt scaffold-tests [ports.py] [salida_test.py]            # Genera suites TDD con mocks de abc.ABC en CPU
+agy-opt audit-dip [src_dir]                                   # Audita la Inversión de Dependencias (DIP) por AST
+agy-opt plan-diff --section <1-5> --content "<texto>" [spec.md]# Actualiza secciones individuales en 5 ms
 agy-opt plan-impact <simbolo>                                 # Simula dependencias y callers afectados en symbols.db
 agy-opt audit-plan [spec.md]                                  # Valida SSOT 5 secciones y contratos ports.py
 
@@ -81,52 +84,55 @@ agy-opt vps-index /root/proyectos_software                    # Sincroniza símb
 | Modo | Propósito | Nivel de Modelo | Razonamiento | Reglas & Permisos |
 | :--- | :--- | :--- | :--- | :--- |
 | **`/ask`** | Consultas técnicas, explicación de arquitectura y auditoría de código. | **Económico** (`flash_lite` / `flash`) | **Low / Mínimo** | **Solo lectura.** Citas obligatorias a archivo y rango de líneas (`[archivo.py#L10-L25]`). Prohibido modificar o crear archivos. |
-| **`/plan`** | Especificación técnica formal (`spec.md` SSOT de 5 secciones) y contratos de tests en `tests/`. | **Avanzado** (`pro` / alta capacidad) | **High / Alto** | **Pre-Condición:** Ejecuta `agy-opt preplan` (< 300 tok). Modificación permitida **solo** en `spec.md`, `specs/**` y `tests/**`. **PROHIBIDO modificar `src/`**. Auditado por `agy-opt audit-plan`. |
+| **`/plan`** | Especificación técnica formal (`spec.md` SSOT de 5 secciones) y contratos de tests en `tests/`. | **Avanzado** (`pro` / alta capacidad) | **High / Alto** | **Pre-Condición:** Ejecuta `agy-opt preplan` (< 300 tok). Modificación permitida **solo** en `spec.md`, `specs/**` y `tests/**`. **PROHIBIDO modificar `src/`**. Auditado por `agy-opt audit-plan` y `agy-opt audit-dip`. |
 | **`/build`** | Implementador Autónomo TDD (Green-to-Red) y superación del Guantelete. | **Intermedio** (`flash` / balanceado) | **Medium / Low** | **Requisito Bloqueante:** Exige `spec.md` previo antes de tocar `src/`. Aplica ciclo TDD y supera `agy-opt audit-edits` y `agy-opt ci`. |
 
 ---
 
-## 🛠️ Catálogo Completo de 37 Herramientas Locales ($0 Tokens)
+## 🛠️ Catálogo Completo de 40 Herramientas Locales ($0 Tokens)
 
 | Herramienta | Comando `agy-opt` / Script | Propósito | Tiempo / Ahorro |
 | :--- | :--- | :--- | :--- |
-| **1. Pre-Plan Context** | `agy-opt preplan` / `plan_context_precompiler.py` | Compila contexto de arquitectura en < 300 tokens. | 40 ms / **📉 96% entrada** |
-| **2. Scaffolder Planes** | `agy-opt scaffold-plan` / `plan_artifact_scaffolder.py` | Genera esqueleto SSOT de plan en markdown. | 5 ms / **📉 60% salida** |
-| **3. Simulador Impacto** | `agy-opt plan-impact` / `plan_impact_simulator.py` | Calcula callers y dependencias en `symbols.db`. | 5 ms / **$0 API** |
-| **4. Auditor Modo Plan** | `agy-opt audit-plan` / `plan_auditor.py` | Valida 5 secciones SSOT y bloquea código en `src/`.| 10 ms / **$0 API** |
-| **5. Auditor Modo Edición**| `agy-opt audit-edits` / `edit_auditor.py` | Valida diffs contra el Guantelete y formatea con Ruff. | 20 ms / **$0 API** |
-| **6. Monitor Salud VPS** | `agy-opt vps-health` / `vps_health.py` | Diagnóstico de 4 líneas (CPU, RAM, Disco, Docker). | < 200 ms / **< 50 tokens** |
-| **7. Parcheador Remoto** | `agy-opt vps-patch` / `vps_patcher.py` | Modifica 5 líneas en la VPS sin reescribir archivos. | 10 ms / **📉 95% salida** |
-| **8. Sincronizador Remoto**| `agy-opt vps-index` / `vps_symbol_sync.py` | Guarda el mapa AST de la VPS en tu RAM local. | ~200 ms / **0 ms nav ($0 API)**|
-| **9. Ejecutor VPS Podado** | `agy-opt vps-run` / `vps_exec.py` | Ejecuta en VPS sobre socket SSH y poda logs masivos. | < 8 ms / **📉 80% tokens** |
-| **10. Lector Quirúrgico VPS**| `agy-opt vps-read` / `vps_reader.py` | Lee rangos de líneas o extrae AST remoto de la VPS. | 15 ms / **📉 90% tokens** |
-| **11. Orquestador Maestro** | `agy-opt` / `agy_cli.py` | CLI unificado que orquesta las 37 herramientas. | < 5 ms |
-| **12. Proxy Interceptor** | `agy-opt intercept` / `token_proxy_interceptor.py` | Comprime streams en vuelo antes de salir a la API. | 5 ms / **📉 30-50% tokens** |
-| **13. Acelerador SIMD** | `agy-opt simd` / `simd_vector_accelerator.py` | Búsqueda matricial AVX2 de 100.000 vectores en RAM. | **< 2 ms** en CPU |
-| **14. Linux Sandbox** | `agy-opt sandbox` / `local_sandbox_runner.sh` | Ejecuta código de prueba en namespaces aislados. | 10 ms / **$0 Riesgo** |
-| **15. Auto-Sanador Recursivo**| `agy-opt heal` / `self_healing_runner.py` | Corrige tests con `qwen2.5-coder` en RAM en bucle cerrado. | ~3 s / **📉 100% en debug** |
-| **16. Reglas Adaptativas** | `agy-opt rules` / `adaptive_rules_engine.py` | Genera `AGENTS.md` adaptado a la pila tecnológica. | 10 ms / **Ahorra >1.500 tok** |
-| **17. Pre-Borrador SLM** | `agy-opt draft` / `local_slm_draft.py` | Genera código base en RAM con `qwen2.5-coder:1.5b`. | ~1.5 s / **📉 90% salida** |
-| **18. Sintetizador de Tests**| `agy-opt test-synth` / `unit_test_synthesizer.py` | Genera suites `@pytest.mark.parametrize` desde AST. | 15 ms / **Ahorra >1.200 tok** |
-| **19. Minificador Schemas**| `agy-opt minify` / `ast_minifier.py` | Compacta payloads Python/JSON al formato más denso. | 5 ms / **📉 40-60% entrada** |
-| **20. Memoria Semántica** | `agy-opt cache` / `semantic_response_cache.py` | Responde consultas repetidas desde RAM si similitud $\ge 0.92$.| 1 ms / **📉 100% ($0 API)** |
-| **21. Ramdisk Workspace** | `agy-opt ramdisk` / `ramdisk_manager.sh` | Almacenamiento en `/dev/shm` a **15 GB/s** sin sudo. | 0 ms I/O lag |
-| **22. Compresor de PRs** | `agy-opt commit` / `pr_bundle_compressor.py` | Genera commits y descripciones de PR con SLM local. | ~1.2 s / **Ahorra >1.000 tok** |
-| **23. Inyector Contexto** | `agy-opt inject` / `context_injector.py` | Empaqueta firmas, relaciones y fragmentos en < 500 tokens. | < 30 ms / **< 500 tokens** |
-| **24. Zero-Trust CI** | `agy-opt ci` / `ci_local.sh` | Valida `__init__.py` 0 bytes, Ruff, Pyright, AST y tests. | ~1.5 s / **100% Calidad** |
-| **25. Poda de AST** | `prune_python_ast.py` / `prune_ts_ast.js` | Skeletoniza dependencias reemplazando cuerpos por `...`. | 10 ms / **📉 92% tokens** |
-| **26. Grafo de Símbolos** | `agy-opt symbols` / `symbol_graph.py` | Indexa definiciones, callers/callees y puertos `abc.ABC`. | 8 ms / **$0 API** |
-| **27. Búsqueda Vectorial** | `agy-opt search` / `local_search.py` | Búsqueda semántica con `nomic-embed-text` y caché SQLite. | 180 ms / **📉 90% tokens** |
-| **28. Compresor Diffs** | `agy-opt diff` / `diff_compressor.py` | Filtra lockfiles, binarios y espacios en `git diff`. | 15 ms / **📉 80% tokens** |
-| **29. Reranker Semántico** | `local_reranker.py` | Filtra los 2 fragmentos más densos de búsqueda vectorial. | 25 ms / **< 500 tokens** |
-| **30. Generador de Stubs** | `agy-opt stubs` / `stub_generator.py` | Crea stubs de tipo `.pyi` de 50 tokens para contratos. | 40 ms / **📉 90% tokens** |
-| **31. Squeezer de Prompts** | `agy-opt squeeze` / `prompt_squeezer.py` | Normaliza texto, elimina redundancias y compacta markdown.| 5 ms / **📉 30-50% tokens** |
-| **32. Diagramas Mermaid** | `agy-opt diagram` / `arch_diagram.py` | Genera diagramas de arquitectura automáticos desde `symbols.db`. | 10 ms / **Ahorra >800 tok** |
-| **33. Runner Multihilo** | `agy-opt test` / `test_runner.sh` | Ejecuta tests concurrentes en los 8 núcleos de CPU. | < 300 ms |
-| **34. Git Hooks** | `agy-opt hooks` / `install_git_hooks.sh` | Bloquea commits/pushes que violen el Guantelete de Uncle Bob. | < 50 ms |
-| **35. Scaffolder SDD** | `spec_scaffold.py` | Genera plantilla SSOT de 5 secciones con metadatos de Git.| < 10 ms / **Ahorra >1.500 tok** |
-| **36. ROI Tracker** | `agy-opt stats` / `token_tracker.py` | Dashboard CLI de métricas de tokens y dólares (USD) ahorrados. | < 5 ms |
-| **37. Daemon Watcher** | `agy-opt preflight` / `local_watcher.py` | Monitorea archivos en tiempo real y mantiene RAM sincronizada.| 0 ms en consulta |
+| **1. Scaffolder Tests TDD**| `agy-opt scaffold-tests` / `plan_test_scaffolder.py` | Genera suites pytest con mocks de `abc.ABC`. | 10 ms / **Ahorra >1.500 tok** |
+| **2. Auditor DIP** | `agy-opt audit-dip` / `plan_dip_auditor.py` | Valida dirección canónica de capas por AST. | 8 ms / **$0 API** |
+| **3. Plan Diff Optimizer**| `agy-opt plan-diff` / `plan_diff_optimizer.py` | Actualiza secciones de planes sin reemitir todo.| 5 ms / **📉 80% salida** |
+| **4. Pre-Plan Context** | `agy-opt preplan` / `plan_context_precompiler.py` | Compila contexto de arquitectura en < 300 tokens. | 40 ms / **📉 96% entrada** |
+| **5. Scaffolder Planes** | `agy-opt scaffold-plan` / `plan_artifact_scaffolder.py` | Genera esqueleto SSOT de plan en markdown. | 5 ms / **📉 60% salida** |
+| **6. Simulador Impacto** | `agy-opt plan-impact` / `plan_impact_simulator.py` | Calcula callers y dependencias en `symbols.db`. | 5 ms / **$0 API** |
+| **7. Auditor Modo Plan** | `agy-opt audit-plan` / `plan_auditor.py` | Valida 5 secciones SSOT y bloquea código en `src/`.| 10 ms / **$0 API** |
+| **8. Auditor Modo Edición**| `agy-opt audit-edits` / `edit_auditor.py` | Valida diffs contra el Guantelete y formatea con Ruff. | 20 ms / **$0 API** |
+| **9. Monitor Salud VPS** | `agy-opt vps-health` / `vps_health.py` | Diagnóstico de 4 líneas (CPU, RAM, Disco, Docker). | < 200 ms / **< 50 tokens** |
+| **10. Parcheador Remoto** | `agy-opt vps-patch` / `vps_patcher.py` | Modifica 5 líneas en la VPS sin reescribir archivos. | 10 ms / **📉 95% salida** |
+| **11. Sincronizador Remoto**| `agy-opt vps-index` / `vps_symbol_sync.py` | Guarda el mapa AST de la VPS en tu RAM local. | ~200 ms / **0 ms nav ($0 API)**|
+| **12. Ejecutor VPS Podado**| `agy-opt vps-run` / `vps_exec.py` | Ejecuta en VPS sobre socket SSH y poda logs masivos. | < 8 ms / **📉 80% tokens** |
+| **13. Lector Quirúrgico VPS**| `agy-opt vps-read` / `vps_reader.py` | Lee rangos de líneas o extrae AST remoto de la VPS. | 15 ms / **📉 90% tokens** |
+| **14. Orquestador Maestro**| `agy-opt` / `agy_cli.py` | CLI unificado que orquesta las 40 herramientas. | < 5 ms |
+| **15. Proxy Interceptor** | `agy-opt intercept` / `token_proxy_interceptor.py` | Comprime streams en vuelo antes de salir a la API. | 5 ms / **📉 30-50% tokens** |
+| **16. Acelerador SIMD** | `agy-opt simd` / `simd_vector_accelerator.py` | Búsqueda matricial AVX2 de 100.000 vectores en RAM. | **< 2 ms** en CPU |
+| **17. Linux Sandbox** | `agy-opt sandbox` / `local_sandbox_runner.sh` | Ejecuta código de prueba en namespaces aislados. | 10 ms / **$0 Riesgo** |
+| **18. Auto-Sanador Recursivo**| `agy-opt heal` / `self_healing_runner.py` | Corrige tests con `qwen2.5-coder` en RAM en bucle cerrado. | ~3 s / **📉 100% en debug** |
+| **19. Reglas Adaptativas** | `agy-opt rules` / `adaptive_rules_engine.py` | Genera `AGENTS.md` adaptado a la pila tecnológica. | 10 ms / **Ahorra >1.500 tok** |
+| **20. Pre-Borrador SLM** | `agy-opt draft` / `local_slm_draft.py` | Genera código base en RAM con `qwen2.5-coder:1.5b`. | ~1.5 s / **📉 90% salida** |
+| **21. Sintetizador de Tests**| `agy-opt test-synth` / `unit_test_synthesizer.py` | Genera suites `@pytest.mark.parametrize` desde AST. | 15 ms / **Ahorra >1.200 tok** |
+| **22. Minificador Schemas**| `agy-opt minify` / `ast_minifier.py` | Compacta payloads Python/JSON al formato más denso. | 5 ms / **📉 40-60% entrada** |
+| **23. Memoria Semántica** | `agy-opt cache` / `semantic_response_cache.py` | Responde consultas repetidas desde RAM si similitud $\ge 0.92$.| 1 ms / **📉 100% ($0 API)** |
+| **24. Ramdisk Workspace** | `agy-opt ramdisk` / `ramdisk_manager.sh` | Almacenamiento en `/dev/shm` a **15 GB/s** sin sudo. | 0 ms I/O lag |
+| **25. Compresor de PRs** | `agy-opt commit` / `pr_bundle_compressor.py` | Genera commits y descripciones de PR con SLM local. | ~1.2 s / **Ahorra >1.000 tok** |
+| **26. Inyector Contexto** | `agy-opt inject` / `context_injector.py` | Empaqueta firmas, relaciones y fragmentos en < 500 tokens. | < 30 ms / **< 500 tokens** |
+| **27. Zero-Trust CI** | `agy-opt ci` / `ci_local.sh` | Valida `__init__.py` 0 bytes, Ruff, Pyright, AST y tests. | ~1.5 s / **100% Calidad** |
+| **28. Poda de AST** | `prune_python_ast.py` / `prune_ts_ast.js` | Skeletoniza dependencias reemplazando cuerpos por `...`. | 10 ms / **📉 92% tokens** |
+| **29. Grafo de Símbolos** | `agy-opt symbols` / `symbol_graph.py` | Indexa definiciones, callers/callees y puertos `abc.ABC`. | 8 ms / **$0 API** |
+| **30. Búsqueda Vectorial** | `agy-opt search` / `local_search.py` | Búsqueda semántica con `nomic-embed-text` y caché SQLite. | 180 ms / **📉 90% tokens** |
+| **31. Compresor Diffs** | `agy-opt diff` / `diff_compressor.py` | Filtra lockfiles, binarios y espacios en `git diff`. | 15 ms / **📉 80% tokens** |
+| **32. Reranker Semántico**| `local_reranker.py` | Filtra los 2 fragmentos más densos de búsqueda vectorial. | 25 ms / **< 500 tokens** |
+| **33. Generador de Stubs** | `agy-opt stubs` / `stub_generator.py` | Crea stubs de tipo `.pyi` de 50 tokens para contratos. | 40 ms / **📉 90% tokens** |
+| **34. Squeezer de Prompts**| `agy-opt squeeze` / `prompt_squeezer.py` | Normaliza texto, elimina redundancias y compacta markdown.| 5 ms / **📉 30-50% tokens** |
+| **35. Diagramas Mermaid** | `agy-opt diagram` / `arch_diagram.py` | Genera diagramas de arquitectura automáticos desde `symbols.db`. | 10 ms / **Ahorra >800 tok** |
+| **36. Runner Multihilo** | `agy-opt test` / `test_runner.sh` | Ejecuta tests concurrentes en los 8 núcleos de CPU. | < 300 ms |
+| **37. Git Hooks** | `agy-opt hooks` / `install_git_hooks.sh` | Bloquea commits/pushes que violen el Guantelete de Uncle Bob. | < 50 ms |
+| **38. Scaffolder SDD** | `spec_scaffold.py` | Genera plantilla SSOT de 5 secciones con metadatos de Git.| < 10 ms / **Ahorra >1.500 tok** |
+| **39. ROI Tracker** | `agy-opt stats` / `token_tracker.py` | Dashboard CLI de métricas de tokens y dólares (USD) ahorrados. | < 5 ms |
+| **40. Daemon Watcher** | `agy-opt preflight` / `local_watcher.py` | Monitorea archivos en tiempo real y mantiene RAM sincronizada.| 0 ms en consulta |
 
 ---
 

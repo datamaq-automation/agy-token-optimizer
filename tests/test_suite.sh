@@ -4,7 +4,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 echo "=========================================================="
-echo "🚀 EJECUTANDO SUITE COMPLETA AGY TOKEN OPTIMIZER (37 TESTS)"
+echo "🚀 EJECUTANDO SUITE COMPLETA AGY TOKEN OPTIMIZER (40 TESTS)"
 echo "=========================================================="
 
 echo "1. Probando Poda de AST Python (prune_python_ast.py)..."
@@ -246,6 +246,31 @@ echo "37. Probando Simulador de Impacto de AST (plan_impact_simulator.py)..."
 python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/plan_impact_simulator.py" SymbolExtractor > /dev/null
 echo "   [✓] Plan AST Impact Simulator: OK"
 
+echo "38. Probando Scaffolder de Tests TDD con Mocks (plan_test_scaffolder.py)..."
+python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/plan_test_scaffolder.py" "$SCRIPT_DIR/skills/token-optimizer/scripts/symbol_graph.py" /tmp/test_scaffold_unit_suite.py > /dev/null
+if [ -f "/tmp/test_scaffold_unit_suite.py" ] && grep -q "pytest" "/tmp/test_scaffold_unit_suite.py"; then
+    echo "   [✓] Plan Test Scaffolder (TDD RED Suite Generator): OK"
+    rm -f "/tmp/test_scaffold_unit_suite.py"
+else
+    echo "   [!] Plan Test Scaffolder Falló"
+    exit 1
+fi
+
+echo "39. Probando Auditor DIP de Clean Architecture (plan_dip_auditor.py)..."
+python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/plan_dip_auditor.py" "$SCRIPT_DIR/skills" > /dev/null
+echo "   [✓] Clean Architecture DIP Auditor: OK"
+
+echo "40. Probando Compilador Diferencial de Planes (plan_diff_optimizer.py)..."
+python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/spec_scaffold.py" backend /tmp/test_diff_spec_suite.md > /dev/null
+python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/plan_diff_optimizer.py" --section 3 --content "Requisitos Actualizados Suite Test" /tmp/test_diff_spec_suite.md > /dev/null
+if grep -q "Requisitos Actualizados Suite Test" "/tmp/test_diff_spec_suite.md"; then
+    echo "   [✓] Plan Differential Optimizer: OK"
+    rm -f "/tmp/test_diff_spec_suite.md"
+else
+    echo "   [!] Plan Differential Optimizer Falló"
+    exit 1
+fi
+
 echo "=========================================================="
-echo "✅ ¡TODOS LOS 37 TESTS DE VALIDACIÓN (ECOSISTEMA TOTAL) OK!"
+echo "✅ ¡TODOS LOS 40 TESTS DE VALIDACIÓN (ECOSISTEMA TOTAL) OK!"
 echo "=========================================================="

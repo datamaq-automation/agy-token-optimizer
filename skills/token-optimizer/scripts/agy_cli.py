@@ -63,6 +63,9 @@ COMMANDS = {
     "preplan": "plan_context_precompiler.py",
     "scaffold-plan": "plan_artifact_scaffolder.py",
     "plan-impact": "plan_impact_simulator.py",
+    "scaffold-tests": "plan_test_scaffolder.py",
+    "audit-dip": "plan_dip_auditor.py",
+    "plan-diff": "plan_diff_optimizer.py",
 }
 
 
