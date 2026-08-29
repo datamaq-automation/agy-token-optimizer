@@ -22,6 +22,9 @@ El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com
 - feat(plan-advanced): complete Plan Advanced Suite with test scaffolder, DIP auditor, and differential plan optimizer (40 tools)
 - feat(plan-opt): complete Plan Mode hardware precompiler, scaffolder, and impact simulator (37 tools)
 
+### ⚡ Rendimiento & Refactorización
+- refactor(credentials-loader): cerrar ciclo SDD TC-01..TC-06 verdes
+
 ### 📚 Documentación & Gobernanza
 - docs(free-providers): add exact step-by-step UI guides for Google AI Studio, Groq, and DeepSeek API keys
 - docs(agy-quotas): add Google Antigravity weekly quota details and student discount guide
