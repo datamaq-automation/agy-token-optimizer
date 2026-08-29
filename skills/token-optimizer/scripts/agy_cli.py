@@ -66,6 +66,9 @@ COMMANDS = {
     "scaffold-tests": "plan_test_scaffolder.py",
     "audit-dip": "plan_dip_auditor.py",
     "plan-diff": "plan_diff_optimizer.py",
+    "init-docs": "docs_structure_init.py",
+    "adr": "adr_generator.py",
+    "archive-spec": "spec_archiver.py",
 }
 
 

@@ -4,7 +4,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 echo "=========================================================="
-echo "🚀 EJECUTANDO SUITE COMPLETA AGY TOKEN OPTIMIZER (40 TESTS)"
+echo "🚀 EJECUTANDO SUITE COMPLETA AGY TOKEN OPTIMIZER (43 TESTS)"
 echo "=========================================================="
 
 echo "1. Probando Poda de AST Python (prune_python_ast.py)..."
@@ -271,6 +271,38 @@ else
     exit 1
 fi
 
+echo "41. Probando Inicializador Diátaxis y SDD (docs_structure_init.py)..."
+python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/docs_structure_init.py" /tmp/test_suite_diataxis_dir > /dev/null
+if [ -d "/tmp/test_suite_diataxis_dir/docs/explanation" ] && [ -d "/tmp/test_suite_diataxis_dir/specs/archive" ]; then
+    echo "   [✓] Diataxis & SDD Structure Initializer: OK"
+    rm -rf "/tmp/test_suite_diataxis_dir"
+else
+    echo "   [!] Diataxis Structure Initializer Falló"
+    exit 1
+fi
+
+echo "42. Probando Generador Secuencial de ADRs (adr_generator.py)..."
+python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/adr_generator.py" "Test Decision" /tmp/test_suite_adr_dir > /dev/null
+if [ -f "/tmp/test_suite_adr_dir/docs/adr/0001_test_decision.md" ]; then
+    echo "   [✓] Sequential ADR Generator: OK"
+    rm -rf "/tmp/test_suite_adr_dir"
+else
+    echo "   [!] Sequential ADR Generator Falló"
+    exit 1
+fi
+
+echo "43. Probando Archivador de Especificaciones SDD (spec_archiver.py)..."
+mkdir -p /tmp/test_suite_arch_dir
+echo "# Plan de Implementacion: Feature Demo" > /tmp/test_suite_arch_dir/spec.md
+python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/spec_archiver.py" /tmp/test_suite_arch_dir/spec.md /tmp/test_suite_arch_dir > /dev/null
+if [ -d "/tmp/test_suite_arch_dir/specs/archive" ] && [ -f "/tmp/test_suite_arch_dir/spec.md" ]; then
+    echo "   [✓] SDD Spec Archiver & Context Pruner: OK"
+    rm -rf "/tmp/test_suite_arch_dir"
+else
+    echo "   [!] SDD Spec Archiver Falló"
+    exit 1
+fi
+
 echo "=========================================================="
-echo "✅ ¡TODOS LOS 40 TESTS DE VALIDACIÓN (ECOSISTEMA TOTAL) OK!"
+echo "✅ ¡TODOS LOS 43 TESTS DE VALIDACIÓN (ECOSISTEMA TOTAL) OK!"
 echo "=========================================================="

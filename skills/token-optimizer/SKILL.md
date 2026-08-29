@@ -423,3 +423,27 @@ Replaces individual markdown sections (`## 1` to `## 5`) in `spec.md` without re
 ```bash
 agy-opt plan-diff --section <1-5> --content "<nuevo_texto>" [spec.md]
 ```
+
+---
+
+## 44. Diátaxis & SDD Documentation Initializer
+Scaffolds the full Diátaxis documentation structure (`docs/explanation`, `how-to`, `reference`, `adr`) and `specs/` in 5 ms:
+```bash
+agy-opt init-docs [directorio_raiz]
+```
+
+---
+
+## 45. Sequential ADR Generator (Architecture Decision Records)
+Detects sequential indices and creates formal ADRs (`docs/adr/0001_<slug>.md`):
+```bash
+agy-opt adr <titulo_decision> [directorio_repo]
+```
+
+---
+
+## 46. SDD Spec Archiver & Context Pruner
+Archives completed specifications into `specs/archive/` and resets `spec.md` to keep context < 300 tokens:
+```bash
+agy-opt archive-spec [archivo_spec.md] [directorio_repo]
+```
