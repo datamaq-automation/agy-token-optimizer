@@ -22,9 +22,9 @@ ENV_FILE = Path.home() / ".agy-optimizer" / ".env"
 
 def load_env_keys() -> dict:
     keys = {
-        "GEMINI_API_KEY": os.environ.get("GEMINI_API_KEY", ""),
-        "GROQ_API_KEY": os.environ.get("GROQ_API_KEY", ""),
-        "DEEPSEEK_API_KEY": os.environ.get("DEEPSEEK_API_KEY", ""),
+        "GEMINI_API_KEYS": os.environ.get("GEMINI_API_KEYS", os.environ.get("GEMINI_API_KEY", "")),
+        "GROQ_API_KEYS": os.environ.get("GROQ_API_KEYS", os.environ.get("GROQ_API_KEY", "")),
+        "DEEPSEEK_API_KEYS": os.environ.get("DEEPSEEK_API_KEYS", os.environ.get("DEEPSEEK_API_KEY", "")),
     }
     if ENV_FILE.exists():
         try:
@@ -33,45 +33,62 @@ def load_env_keys() -> dict:
                     line = line.strip()
                     if line and not line.startswith("#") and "=" in line:
                         k, v = line.split("=", 1)
-                        keys[k.strip()] = v.strip().strip('"').strip("'")
+                        k = k.strip()
+                        v = v.strip().strip('"').strip("'")
+                        if k in ("GEMINI_API_KEY", "GEMINI_API_KEYS"):
+                            keys["GEMINI_API_KEYS"] = v
+                        elif k in ("GROQ_API_KEY", "GROQ_API_KEYS"):
+                            keys["GROQ_API_KEYS"] = v
+                        elif k in ("DEEPSEEK_API_KEY", "DEEPSEEK_API_KEYS"):
+                            keys["DEEPSEEK_API_KEYS"] = v
         except Exception:
             pass
     return keys
 
 
+def parse_key_pool(raw_keys: str) -> list[str]:
+    """Extrae lista limpia de claves separadas por coma o saltos de línea"""
+    if not raw_keys:
+        return []
+    return [k.strip() for k in raw_keys.replace("\n", ",").split(",") if k.strip()]
+
+
 def forward_chat_completion(payload: dict, keys: dict) -> tuple[dict, str]:
-    """Ejecuta la cascada inteligente: Gemini -> Groq -> DeepSeek -> Ollama"""
+    """Ejecuta la cascada inteligente con soporte de Multi-Key Pool: Gemini -> Groq -> DeepSeek -> Ollama"""
     providers = []
 
-    # 1. Gemini (OpenAI compatible endpoint)
-    if keys.get("GEMINI_API_KEY"):
+    # 1. Gemini Multi-Key Pool (OpenAI compatible endpoint)
+    gemini_keys = parse_key_pool(keys.get("GEMINI_API_KEYS", ""))
+    for idx, g_key in enumerate(gemini_keys, 1):
         providers.append(
             {
-                "name": "Gemini 2.0 Flash (Free Tier)",
+                "name": f"Gemini 2.0 Flash [Cuenta #{idx}]",
                 "url": "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
-                "headers": {"Content-Type": "application/json", "Authorization": f"Bearer {keys['GEMINI_API_KEY']}"},
+                "headers": {"Content-Type": "application/json", "Authorization": f"Bearer {g_key}"},
                 "model": "gemini-2.0-flash",
             }
         )
 
-    # 2. Groq (Free Tier)
-    if keys.get("GROQ_API_KEY"):
+    # 2. Groq Multi-Key Pool (Free Tier)
+    groq_keys = parse_key_pool(keys.get("GROQ_API_KEYS", ""))
+    for idx, gr_key in enumerate(groq_keys, 1):
         providers.append(
             {
-                "name": "Groq Cloud (Free Tier - Llama 3.3)",
+                "name": f"Groq Cloud [Cuenta #{idx}] (Llama 3.3)",
                 "url": "https://api.groq.com/openai/v1/chat/completions",
-                "headers": {"Content-Type": "application/json", "Authorization": f"Bearer {keys['GROQ_API_KEY']}"},
+                "headers": {"Content-Type": "application/json", "Authorization": f"Bearer {gr_key}"},
                 "model": "llama-3.3-70b-versatile",
             }
         )
 
-    # 3. DeepSeek (Pago Ultra-Barato)
-    if keys.get("DEEPSEEK_API_KEY"):
+    # 3. DeepSeek Multi-Key Pool (Pago con KV-Cache Optimization)
+    deepseek_keys = parse_key_pool(keys.get("DEEPSEEK_API_KEYS", ""))
+    for idx, ds_key in enumerate(deepseek_keys, 1):
         providers.append(
             {
-                "name": "DeepSeek V3 (Paid API)",
+                "name": f"DeepSeek V3 [Cuenta #{idx}]",
                 "url": "https://api.deepseek.com/v1/chat/completions",
-                "headers": {"Content-Type": "application/json", "Authorization": f"Bearer {keys['DEEPSEEK_API_KEY']}"},
+                "headers": {"Content-Type": "application/json", "Authorization": f"Bearer {ds_key}"},
                 "model": "deepseek-chat",
             }
         )

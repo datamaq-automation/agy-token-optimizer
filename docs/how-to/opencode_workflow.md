@@ -12,10 +12,10 @@ Antes de iniciar tu primer flujo de trabajo, configura OpenCode para que apunte 
 # 1. Configurar OpenCode hacia http://127.0.0.1:8080/v1
 agy-opt sync-opencode
 
-# 2. (Opcional) Configurar tus API keys en ~/.agy-optimizer/.env:
-# GEMINI_API_KEY="tu_clave_de_google_ai_studio"
-# GROQ_API_KEY="tu_clave_de_groq"
-# DEEPSEEK_API_KEY="tu_clave_de_deepseek"
+# 2. (Opcional) Configurar tus API keys / Multi-Key Pool en ~/.agy-optimizer/.env:
+# GEMINI_API_KEYS="AIzaSy_Cuenta1...,AIzaSy_Cuenta2..."
+# GROQ_API_KEYS="gsk_Cuenta1...,gsk_Cuenta2..."
+# DEEPSEEK_API_KEYS="sk-tu_clave_deepseek_aqui"
 ```
 
 ---
