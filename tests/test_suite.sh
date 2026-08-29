@@ -344,7 +344,10 @@ else
 fi
 
 echo "49. Probando Detector de Pipelines CI/CD (plan_ci_detector.py)..."
-CI_DET=$(python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/plan_ci_detector.py" "$SCRIPT_DIR")
+mkdir -p /tmp/test_ci_detect_dir/.github/workflows
+echo -e "name: Test\non: [push]\njobs:\n  lint:\n    runs-on: ubuntu-latest" > /tmp/test_ci_detect_dir/.github/workflows/test.yml
+CI_DET=$(python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/plan_ci_detector.py" /tmp/test_ci_detect_dir)
+rm -rf /tmp/test_ci_detect_dir
 if [[ "$CI_DET" == *"Pipeline CI/CD Detectado"* ]]; then
     echo "   [✓] Plan CI/CD Pipeline Detector: OK"
 else
