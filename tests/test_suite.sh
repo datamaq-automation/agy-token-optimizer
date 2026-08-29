@@ -4,7 +4,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 echo "=========================================================="
-echo "🚀 EJECUTANDO SUITE COMPLETA AGY TOKEN OPTIMIZER (51 TESTS)"
+echo "🚀 EJECUTANDO SUITE COMPLETA AGY TOKEN OPTIMIZER (53 TESTS)"
 echo "=========================================================="
 
 echo "1. Probando Poda de AST Python (prune_python_ast.py)..."
@@ -375,6 +375,14 @@ else
     exit 1
 fi
 
+echo "52. Probando Enrutador de Cascada de Modelos (model_cascade_router.py)..."
+python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/model_cascade_router.py" --test > /dev/null
+echo "   [✓] Smart Model Cascade Router (Free Tier ➔ DeepSeek ➔ Local SLM): OK"
+
+echo "53. Probando Sincronizador de Configuración de OpenCode (opencode_config_sync.py)..."
+python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/opencode_config_sync.py" > /dev/null
+echo "   [✓] OpenCode Configuration Synchronizer: OK"
+
 echo "=========================================================="
-echo "✅ ¡TODOS LOS 51 TESTS DE VALIDACIÓN (ECOSISTEMA TOTAL) OK!"
+echo "✅ ¡TODOS LOS 53 TESTS DE VALIDACIÓN (ECOSISTEMA TOTAL) OK!"
 echo "=========================================================="

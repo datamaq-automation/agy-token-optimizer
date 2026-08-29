@@ -511,3 +511,19 @@ Exports AGY plan artifacts to `spec.md` and `specs/active/` for seamless OpenCod
 ```bash
 agy-opt export-plan <archivo_plan.md> [directorio_repo]
 ```
+
+---
+
+## 55. Smart Model Cascade Router (Free Tier ➔ DeepSeek ➔ Local SLM)
+Proxy server prioritizing free tiers (Gemini/Groq) and auto-falling back to DeepSeek on HTTP 429:
+```bash
+agy-opt router [--port 8080] [--test]
+```
+
+---
+
+## 56. OpenCode Configuration Synchronizer (Auto-Cascade Endpoint)
+Configures OpenCode to use the local cascade router at `http://127.0.0.1:8080/v1`:
+```bash
+agy-opt sync-opencode [--port 8080]
+```

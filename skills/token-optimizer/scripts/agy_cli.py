@@ -77,6 +77,8 @@ COMMANDS = {
     "plan-ci": "plan_ci_detector.py",
     "scaffold-ci": "ci_workflow_scaffolder.py",
     "export-plan": "plan_exporter.py",
+    "router": "model_cascade_router.py",
+    "sync-opencode": "opencode_config_sync.py",
 }
 
 
