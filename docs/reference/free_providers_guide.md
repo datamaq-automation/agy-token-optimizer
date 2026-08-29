@@ -1,6 +1,6 @@
 # Guía de Proveedores Gratuitos (Free Tiers), Cuotas de AGY, Multi-Key Pool y Respaldo
 
-Esta guía detalla los mejores proveedores de LLMs con **capas 100% gratuitas (*Free Tiers*)** para programación y desarrollo autónomo, el funcionamiento de las **cuotas de Google Antigravity (AGY)**, cómo configurar el **Pool Multi-Key con rotación automática (múltiples cuentas de Google y Groq)** y cómo configurar `~/.agy-optimizer/.env`.
+Esta guía detalla los mejores proveedores de LLMs con **capas 100% gratuitas (*Free Tiers*)** para programación y desarrollo autónomo, el funcionamiento de las **cuotas de Google Antigravity (AGY)**, cómo configurar el **Pool Multi-Key con rotación automática (múltiples cuentas de Google y Groq)**, los pasos exactos para obtener cada API Key y cómo configurar `~/.agy-optimizer/.env`.
 
 ---
 
@@ -16,9 +16,41 @@ Esta guía detalla los mejores proveedores de LLMs con **capas 100% gratuitas (*
 
 ---
 
-## 2. Pool Multi-Key: Multiplicación de Cuota Gratuita ($0.00)
+## 2. Pasos Exactos para Obtener Cada API Key (Paso a Paso)
 
-Si dispones de múltiples cuentas de Google o Groq, puedes configurar un **Pool de Claves** separadas por comas. El enrutador (`agy-opt router`) gestionará automáticamente el balanceo de carga y la conmutación en caliente en **0 ms** ante errores HTTP 429:
+### 🔹 A. Google AI Studio (Gemini 2.0 Flash - 1.500 req/día gratis)
+1. Ingresa a [aistudio.google.com](https://aistudio.google.com/) con tu cuenta de Google.
+2. En la barra lateral izquierda, haz clic en **"Get API key"** (ícono de llave).
+3. Haz clic en el botón azul **"Create API key"**.
+4. Selecciona **"Create API key in new project"** (o elige un proyecto de Google Cloud existente).
+5. Copia la clave generada (comienza con `AIzaSy...`).
+6. **Para obtener más claves (Multi-Key):** Abre una ventana de incógnito o cambia de cuenta de Google arriba a la derecha y repite los pasos para tu segunda o tercera cuenta.
+
+---
+
+### 🔹 B. Groq Cloud (Llama 3.3 70B a 500 tok/s - 14.400 req/día gratis)
+1. Ingresa a [console.groq.com](https://console.groq.com/).
+2. Inicia sesión con tu cuenta de Google o GitHub.
+3. En el menú lateral izquierdo, haz clic en **"API Keys"**.
+4. Haz clic en el botón **"Create API Key"**.
+5. Asigna un nombre (por ejemplo: `opencode-key-1`) y haz clic en **"Submit"**.
+6. Copia la clave generada (comienza con `gsk_...`). *(Guárdala de inmediato, no se volverá a mostrar completa)*.
+7. **Para Multi-Key:** Puedes crear claves con diferentes cuentas de correo para multiplicar tus cuotas.
+
+---
+
+### 🔹 C. DeepSeek API (Respaldo de Pago con 90% de Descuento KV-Cache)
+1. Ingresa a [platform.deepseek.com](https://platform.deepseek.com/).
+2. Inicia sesión o regístrate con tu correo.
+3. En el menú lateral izquierdo, haz clic en **"API Keys"**.
+4. Haz clic en **"Create new API key"**, asigna un nombre y copia la clave generada (`sk-...`).
+5. En la sección **"Top up"**, puedes cargar un saldo mínimo ($2 a $5 USD) que durará meses gracias al descuento por KV-Cache y el filtro de hardware local.
+
+---
+
+## 3. Pool Multi-Key: Multiplicación de Cuota Gratuita ($0.00)
+
+Si dispones de múltiples cuentas de Google o Groq, configúralas separadas por comas en tu archivo `.env`. El enrutador (`agy-opt router`) gestionará el balanceo y la conmutación automática en **0 ms** ante errores HTTP 429:
 
 * **3 Cuentas de Google:** **4.500 peticiones diarias gratuitas** con Gemini 2.0 Flash.
 * **5 Cuentas de Google:** **7.500 peticiones diarias gratuitas**.
@@ -26,7 +58,7 @@ Si dispones de múltiples cuentas de Google o Groq, puedes configurar un **Pool 
 
 ---
 
-## 3. Google Antigravity (AGY): Cuotas y Descuento para Estudiantes
+## 4. Google Antigravity (AGY): Cuotas y Descuento para Estudiantes
 
 * **Cuota Base Gratuita (Baseline Free Tier):**
   - Cualquier usuario con cuenta de Google tiene acceso gratuito con **renovación semanal**.
@@ -40,7 +72,7 @@ Si dispones de múltiples cuentas de Google o Groq, puedes configurar un **Pool 
 
 ---
 
-## 4. Configuración Canónica del Archivo `~/.agy-optimizer/.env`
+## 5. Configuración Canónica del Archivo `~/.agy-optimizer/.env`
 
 ```ini
 # ====================================================================
@@ -63,7 +95,7 @@ OLLAMA_HOST="http://localhost:11434"
 
 ---
 
-## 5. Diagrama de Conmutación Multi-Key
+## 6. Diagrama de Conmutación Multi-Key
 
 ```
                       [Petición de OpenCode /build]

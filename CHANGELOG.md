@@ -6,6 +6,7 @@ El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com
 ## [No Publicado / Último Release] - 2026-08-28
 
 ### 🚀 Nuevas Características (Features)
+- feat(multikey-pool): implement Multi-Key Pool rotation for Google AI Studio, Groq, and DeepSeek with failover
 - feat(deepseek-opt): implement DeepSeek KV-cache alignment, payload pruning, and dynamic tiering (57 tools total, v2.2.0)
 - feat(build-accel): implement build hardware healer, ramdisk workspace, and igpu optimizer (56 tools total, v2.1.0)
 - feat(router): implement cascade model router (Free Tier -> DeepSeek -> Ollama) and OpenCode config sync (53 tools total)
@@ -20,7 +21,6 @@ El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com
 - feat(plan-advanced): complete Plan Advanced Suite with test scaffolder, DIP auditor, and differential plan optimizer (40 tools)
 - feat(plan-opt): complete Plan Mode hardware precompiler, scaffolder, and impact simulator (37 tools)
 - feat(auditors): add specialized plan_auditor and edit_auditor for mode-differentiated governance (34 tools)
-- feat(vps-suite): complete total VPS remote suite with vps-health, vps-patcher, and vps-symbol-sync (32 tools)
 
 ### 📚 Documentación & Gobernanza
 - docs(agy-quotas): add Google Antigravity weekly quota details and student discount guide
