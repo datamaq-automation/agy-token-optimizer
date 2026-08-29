@@ -471,3 +471,19 @@ Analyzes repo structure (< 10 ms) and provides a canonical destination matrix in
 ```bash
 agy-opt validate-tree [directorio_repo]
 ```
+
+---
+
+## 50. Test Impact Selector (Verification Plan Command Generator)
+Finds existing tests covering target symbols in 5 ms and outputs surgical pytest commands:
+```bash
+agy-opt test-impact <simbolo_o_archivo> [directorio_repo]
+```
+
+---
+
+## 51. TDD Edge-Case Matrix Generator (Ports & Interfaces)
+Synthesizes canonical test matrix (Happy Path, Null, Timeout, Validation Error) from AST in 5 ms:
+```bash
+agy-opt test-matrix <archivo_puerto.py>
+```

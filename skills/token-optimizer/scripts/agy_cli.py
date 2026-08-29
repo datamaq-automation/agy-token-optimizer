@@ -72,6 +72,8 @@ COMMANDS = {
     "audit-docs": "docs_linter.py",
     "changelog": "changelog_generator.py",
     "validate-tree": "repo_structure_validator.py",
+    "test-impact": "plan_test_selector.py",
+    "test-matrix": "plan_test_matrix_generator.py",
 }
 
 

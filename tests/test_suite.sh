@@ -4,7 +4,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 echo "=========================================================="
-echo "🚀 EJECUTANDO SUITE COMPLETA AGY TOKEN OPTIMIZER (46 TESTS)"
+echo "🚀 EJECUTANDO SUITE COMPLETA AGY TOKEN OPTIMIZER (48 TESTS)"
 echo "=========================================================="
 
 echo "1. Probando Poda de AST Python (prune_python_ast.py)..."
@@ -318,13 +318,31 @@ fi
 
 echo "46. Probando Validador de Topología de Repositorio (repo_structure_validator.py)..."
 TOP_RES=$(python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/repo_structure_validator.py" "$SCRIPT_DIR")
-if [[ "$TOP_RES" == *"Topología de Repositorio"* ]]; then
+if [[ "$TOP_RES" == *"Topología"* ]]; then
     echo "   [✓] Repository Topology & Destination Validator: OK"
 else
     echo "   [!] Repo Topology Validator Falló"
     exit 1
 fi
 
+echo "47. Probando Selector de Impacto de Tests (plan_test_selector.py)..."
+TEST_IMP=$(python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/plan_test_selector.py" SymbolExtractor "$SCRIPT_DIR")
+if [[ "$TEST_IMP" == *"Análisis de Impacto de Tests"* ]]; then
+    echo "   [✓] Test Impact Selector & Command Generator: OK"
+else
+    echo "   [!] Test Impact Selector Falló"
+    exit 1
+fi
+
+echo "48. Probando Generador de Matriz de Casos Borde (plan_test_matrix_generator.py)..."
+MATRIX_RES=$(python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/plan_test_matrix_generator.py" "$SCRIPT_DIR/skills/token-optimizer/scripts/symbol_graph.py")
+if [[ "$MATRIX_RES" == *"Matriz de Casos de Prueba"* ]]; then
+    echo "   [✓] TDD Edge-Case Matrix Generator: OK"
+else
+    echo "   [!] Edge-Case Matrix Generator Falló"
+    exit 1
+fi
+
 echo "=========================================================="
-echo "✅ ¡TODOS LOS 46 TESTS DE VALIDACIÓN (ECOSISTEMA TOTAL) OK!"
+echo "✅ ¡TODOS LOS 48 TESTS DE VALIDACIÓN (ECOSISTEMA TOTAL) OK!"
 echo "=========================================================="
