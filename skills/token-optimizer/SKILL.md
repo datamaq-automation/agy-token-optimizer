@@ -359,3 +359,19 @@ Summarizes CPU load, RAM, disk, and Docker containers in a 4-line consolidated b
 ```bash
 agy-opt vps-health
 ```
+
+---
+
+## 36. Plan Mode Auditor (SSOT 5-Section Validation)
+Verifies that architecture plans adhere to the 5 SSOT sections, ports, and leave `src/` untouched:
+```bash
+agy-opt audit-plan [spec.md]
+```
+
+---
+
+## 37. Accept-Edits & Build Mode Auditor (Constraint Gauntlet)
+Audits git diffs against the 5 Uncle Bob constraint batteries, running `ruff --fix` at $0 cost:
+```bash
+agy-opt audit-edits [directorio_repo]
+```

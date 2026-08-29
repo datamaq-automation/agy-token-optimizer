@@ -4,7 +4,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 echo "=========================================================="
-echo "🚀 EJECUTANDO SUITE COMPLETA AGY TOKEN OPTIMIZER (32 TESTS)"
+echo "🚀 EJECUTANDO SUITE COMPLETA AGY TOKEN OPTIMIZER (34 TESTS)"
 echo "=========================================================="
 
 echo "1. Probando Poda de AST Python (prune_python_ast.py)..."
@@ -218,6 +218,16 @@ else
     exit 1
 fi
 
+echo "33. Probando Auditor del Modo Plan (plan_auditor.py)..."
+python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/spec_scaffold.py" backend /tmp/test_spec_valid_suite.md > /dev/null
+python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/plan_auditor.py" /tmp/test_spec_valid_suite.md > /dev/null
+rm -f /tmp/test_spec_valid_suite.md
+echo "   [✓] Plan Mode Auditor (SSOT 5-Section): OK"
+
+echo "34. Probando Auditor del Modo Accept-Edits (edit_auditor.py)..."
+python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/edit_auditor.py" "$SCRIPT_DIR" > /dev/null
+echo "   [✓] Accept-Edits & Build Auditor (Gauntlet): OK"
+
 echo "=========================================================="
-echo "✅ ¡TODOS LOS 32 TESTS DE VALIDACIÓN (ECOSISTEMA TOTAL) OK!"
+echo "✅ ¡TODOS LOS 34 TESTS DE VALIDACIÓN (ECOSISTEMA TOTAL) OK!"
 echo "=========================================================="
