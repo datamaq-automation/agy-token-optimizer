@@ -69,6 +69,8 @@ COMMANDS = {
     "init-docs": "docs_structure_init.py",
     "adr": "adr_generator.py",
     "archive-spec": "spec_archiver.py",
+    "audit-docs": "docs_linter.py",
+    "changelog": "changelog_generator.py",
 }
 
 

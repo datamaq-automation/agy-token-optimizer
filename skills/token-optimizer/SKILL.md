@@ -447,3 +447,19 @@ Archives completed specifications into `specs/archive/` and resets `spec.md` to 
 ```bash
 agy-opt archive-spec [archivo_spec.md] [directorio_repo]
 ```
+
+---
+
+## 47. Documentation Health & Link Linter (Diátaxis Integrity)
+Audits that markdown links are not broken, ADRs are sequentially numbered, and structure is valid:
+```bash
+agy-opt audit-docs [directorio_repo]
+```
+
+---
+
+## 48. Automated Git & ADR Changelog Generator (Keep a Changelog)
+Compiles conventional git commits and ADRs into a standardized `CHANGELOG.md` in 5 ms:
+```bash
+agy-opt changelog [directorio_repo]
+```

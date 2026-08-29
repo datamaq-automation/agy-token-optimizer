@@ -4,7 +4,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 echo "=========================================================="
-echo "🚀 EJECUTANDO SUITE COMPLETA AGY TOKEN OPTIMIZER (43 TESTS)"
+echo "🚀 EJECUTANDO SUITE COMPLETA AGY TOKEN OPTIMIZER (45 TESTS)"
 echo "=========================================================="
 
 echo "1. Probando Poda de AST Python (prune_python_ast.py)..."
@@ -303,6 +303,19 @@ else
     exit 1
 fi
 
+echo "44. Probando Auditor de Integridad de Documentación (docs_linter.py)..."
+python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/docs_linter.py" "$SCRIPT_DIR" > /dev/null
+echo "   [✓] Documentation Health & Link Linter: OK"
+
+echo "45. Probando Generador de CHANGELOG.md (changelog_generator.py)..."
+python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/changelog_generator.py" "$SCRIPT_DIR" > /dev/null
+if [ -f "$SCRIPT_DIR/CHANGELOG.md" ] && grep -q "Registro de Cambios" "$SCRIPT_DIR/CHANGELOG.md"; then
+    echo "   [✓] Automated Git & ADR Changelog Generator: OK"
+else
+    echo "   [!] Changelog Generator Falló"
+    exit 1
+fi
+
 echo "=========================================================="
-echo "✅ ¡TODOS LOS 43 TESTS DE VALIDACIÓN (ECOSISTEMA TOTAL) OK!"
+echo "✅ ¡TODOS LOS 45 TESTS DE VALIDACIÓN (ECOSISTEMA TOTAL) OK!"
 echo "=========================================================="
