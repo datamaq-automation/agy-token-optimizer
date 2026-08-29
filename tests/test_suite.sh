@@ -4,7 +4,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 echo "=========================================================="
-echo "🚀 EJECUTANDO SUITE COMPLETA AGY TOKEN OPTIMIZER (45 TESTS)"
+echo "🚀 EJECUTANDO SUITE COMPLETA AGY TOKEN OPTIMIZER (46 TESTS)"
 echo "=========================================================="
 
 echo "1. Probando Poda de AST Python (prune_python_ast.py)..."
@@ -316,6 +316,15 @@ else
     exit 1
 fi
 
+echo "46. Probando Validador de Topología de Repositorio (repo_structure_validator.py)..."
+TOP_RES=$(python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/repo_structure_validator.py" "$SCRIPT_DIR")
+if [[ "$TOP_RES" == *"Topología de Repositorio"* ]]; then
+    echo "   [✓] Repository Topology & Destination Validator: OK"
+else
+    echo "   [!] Repo Topology Validator Falló"
+    exit 1
+fi
+
 echo "=========================================================="
-echo "✅ ¡TODOS LOS 45 TESTS DE VALIDACIÓN (ECOSISTEMA TOTAL) OK!"
+echo "✅ ¡TODOS LOS 46 TESTS DE VALIDACIÓN (ECOSISTEMA TOTAL) OK!"
 echo "=========================================================="

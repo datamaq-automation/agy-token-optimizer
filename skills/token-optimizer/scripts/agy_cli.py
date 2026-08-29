@@ -71,6 +71,7 @@ COMMANDS = {
     "archive-spec": "spec_archiver.py",
     "audit-docs": "docs_linter.py",
     "changelog": "changelog_generator.py",
+    "validate-tree": "repo_structure_validator.py",
 }
 
 

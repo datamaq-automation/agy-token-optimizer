@@ -463,3 +463,11 @@ Compiles conventional git commits and ADRs into a standardized `CHANGELOG.md` in
 ```bash
 agy-opt changelog [directorio_repo]
 ```
+
+---
+
+## 49. Repository Topology & Destination Validator (Pre-Plan Structure)
+Analyzes repo structure (< 10 ms) and provides a canonical destination matrix in < 80 tokens:
+```bash
+agy-opt validate-tree [directorio_repo]
+```

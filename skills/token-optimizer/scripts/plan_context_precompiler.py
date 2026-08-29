@@ -88,9 +88,22 @@ def main():
     # Intentar síntesis con SLM local; si no, usar fallback determinístico de AST
     slm_summary = summarize_with_slm(ast_summary)
 
+    # Analizar topología del repositorio
+    try:
+        from repo_structure_validator import analyze_repository_topology, format_compact_topology_bundle
+
+        topology = analyze_repository_topology(target_dir)
+        topology_bundle = format_compact_topology_bundle(topology)
+    except Exception:
+        topology_bundle = ""
+
     print("\n" + "=" * 70)
     print(f"📦 BUNDLE ARQUITECTÓNICO PRE-COMPILADO ({elapsed_ms:.1f} ms en CPU)")
     print("=" * 70)
+    if topology_bundle:
+        print(topology_bundle)
+        print("-" * 70)
+
     if slm_summary:
         print("🤖 [Síntesis Neuronal Local (qwen2.5-coder)]:")
         print(slm_summary)

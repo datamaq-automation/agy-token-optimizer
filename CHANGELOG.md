@@ -6,6 +6,7 @@ El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com
 ## [No Publicado / Último Release] - 2026-08-28
 
 ### 🚀 Nuevas Características (Features)
+- feat(repo-diataxis): apply complete Diataxis documentation structure and foundational ADRs (ADR-0001 to ADR-0004)
 - feat(docs-linter): implement documentation link/ADR linter and automated CHANGELOG.md generator (45 tools complete)
 - feat(docs-diataxis): implement Diataxis documentation initializer, sequential ADR generator, and SDD spec archiver (43 tools)
 - feat(plan-advanced): complete Plan Advanced Suite with test scaffolder, DIP auditor, and differential plan optimizer (40 tools)
@@ -20,4 +21,3 @@ El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com
 - feat(phase5): add surgical context injector, zero-trust local CI pipeline, and subagent guidelines
 - feat(phase4): add git hooks installer, SDD spec scaffolder, and token savings tracker
 - feat(phase3): add in-memory symbol graph and multi-threaded test runner
-- feat: add SQLite incremental vector caching and git diff compressor
