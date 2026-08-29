@@ -1,6 +1,6 @@
-# Manual de Referencia Técnica: CLI Maestro `agy-opt` (56 Herramientas)
+# Manual de Referencia Técnica: CLI Maestro `agy-opt` (57 Herramientas)
 
-Este manual documenta los 56 subcomandos determinísticos disponibles en el CLI maestro `agy-opt`, organizados por dominio funcional.
+Este manual documenta los 57 subcomandos determinísticos disponibles en el CLI maestro `agy-opt`, organizados por dominio funcional.
 
 ---
 
@@ -8,6 +8,7 @@ Este manual documenta los 56 subcomandos determinísticos disponibles en el CLI 
 
 | Comando | Argumentos | Descripción | Rendimiento / Ahorro |
 | :--- | :--- | :--- | :--- |
+| `agy-opt deepseek-opt`| `[payload.json]` | Fuerza KV-Cache hit en DeepSeek (90% descuento), poda AST y conmuta V3/R1. | 2 ms / **📉 90% descuento API** |
 | `agy-opt router` | `[--port 8080] [--test]` | Servidor proxy HTTP compatible con OpenAI que prioriza Free Tiers (Gemini/Groq) y conmuta a DeepSeek ante HTTP 429. | 10 ms conmutación / **$0 Free Tier** |
 | `agy-opt sync-opencode` | `[--port 8080]` | Configura `~/.config/opencode/config.json` para conectarse al router local. | 2 ms |
 | `agy-opt build-heal` | `<archivo.py>` | Auto-sana imports, tipado y sintaxis en CPU en bucle cerrado antes de consultar la API. | 20 ms / **📉 100% debug tokens** |

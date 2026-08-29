@@ -91,6 +91,16 @@ def forward_chat_completion(payload: dict, keys: dict) -> tuple[dict, str]:
         try:
             req_data = dict(payload)
             req_data["model"] = prov["model"]
+
+            # Si el proveedor es DeepSeek, aplicar optimización de KV-Cache y payload
+            if "deepseek" in prov["name"].lower():
+                try:
+                    from deepseek_optimizer import optimize_deepseek_payload
+
+                    req_data = optimize_deepseek_payload(req_data)
+                except Exception:
+                    pass
+
             req_bytes = json.dumps(req_data).encode("utf-8")
 
             req = urllib.request.Request(prov["url"], data=req_bytes, headers=prov["headers"])

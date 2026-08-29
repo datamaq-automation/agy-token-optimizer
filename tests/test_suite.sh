@@ -4,7 +4,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 echo "=========================================================="
-echo "🚀 EJECUTANDO SUITE COMPLETA AGY TOKEN OPTIMIZER (56 TESTS)"
+echo "🚀 EJECUTANDO SUITE COMPLETA AGY TOKEN OPTIMIZER (57 TESTS)"
 echo "=========================================================="
 
 echo "1. Probando Poda de AST Python (prune_python_ast.py)..."
@@ -403,6 +403,15 @@ else
     exit 1
 fi
 
+echo "57. Probando Optimizador de DeepSeek API & KV-Cache (deepseek_optimizer.py)..."
+DS_OUT=$(python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/deepseek_optimizer.py")
+if [[ "$DS_OUT" == *"DeepSeek Payload Optimizer"* ]]; then
+    echo "   [✓] DeepSeek API & KV-Cache Optimizer (90% Cache Discount): OK"
+else
+    echo "   [!] DeepSeek Optimizer Falló"
+    exit 1
+fi
+
 echo "=========================================================="
-echo "✅ ¡TODOS LOS 56 TESTS DE VALIDACIÓN (ECOSISTEMA TOTAL) OK!"
+echo "✅ ¡TODOS LOS 57 TESTS DE VALIDACIÓN (ECOSISTEMA TOTAL) OK!"
 echo "=========================================================="

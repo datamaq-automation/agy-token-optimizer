@@ -551,3 +551,11 @@ Audits CPU threads, AVX2 SIMD, and Vulkan iGPU compute for high-speed local infe
 ```bash
 agy-opt igpu-tune
 ```
+
+---
+
+## 60. DeepSeek API & KV-Cache Optimizer (90% Cache Discount & Dynamic Tiering)
+Forces DeepSeek Context Caching hit, prunes payload messages, and switches between V3 and R1:
+```bash
+agy-opt deepseek-opt [payload.json]
+```

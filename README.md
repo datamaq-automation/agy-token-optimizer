@@ -1,6 +1,6 @@
 # ⚡ AGY Token Optimizer (Antigravity Global)
 
-Paquete integral de aceleración en hardware local, pre/post-procesamiento determinístico en CPU/RAM, gobernanza estática, control remoto total de VPS, enrutador inteligente en cascada (Free Tier ➔ DeepSeek ➔ Local SLM), auto-sanación en CPU, optimización de iGPU/AVX2, compilación diferencial de planes, validación topológica, sincronización con OpenCode, suites inteligentes de testing TDD, CI/CD Zero-Trust y arquitectura documental Diátaxis/ADR para **Google Antigravity (AGY)**. Reduce entre un **85% y 96% el consumo de tokens** de entrada y salida mediante el aprovechamiento exhaustivo de tu máquina local (CPU Ryzen de 8 hilos con AVX2/SIMD, 18 GiB de RAM libre, inferencia local con Ollama `qwen2.5-coder:1.5b` y `nomic-embed-text`, VFS en `/dev/shm` a 15 GB/s y túneles SSH persistentes a < 8 ms), auto-sanación en RAM, intercepción de tráfico en vuelo, parches remotos quirúrgicos y el **Guantelete de Restricciones (*Constraint Gauntlet*)** de Uncle Bob.
+Paquete integral de aceleración en hardware local, pre/post-procesamiento determinístico en CPU/RAM, gobernanza estática, control remoto total de VPS, enrutador inteligente en cascada (Free Tier ➔ DeepSeek ➔ Local SLM), optimizador de DeepSeek KV-Cache (90% descuento), auto-sanación en CPU, optimización de iGPU/AVX2, compilación diferencial de planes, validación topológica, sincronización con OpenCode, suites inteligentes de testing TDD, CI/CD Zero-Trust y arquitectura documental Diátaxis/ADR para **Google Antigravity (AGY)**. Reduce entre un **85% y 96% el consumo de tokens** de entrada y salida mediante el aprovechamiento exhaustivo de tu máquina local (CPU Ryzen de 8 hilos con AVX2/SIMD, 18 GiB de RAM libre, inferencia local con Ollama `qwen2.5-coder:1.5b` y `nomic-embed-text`, VFS en `/dev/shm` a 15 GB/s y túneles SSH persistentes a < 8 ms), auto-sanación en RAM, intercepción de tráfico en vuelo, parches remotos quirúrgicos y el **Guantelete de Restricciones (*Constraint Gauntlet*)** de Uncle Bob.
 
 ---
 
@@ -9,10 +9,10 @@ Paquete integral de aceleración en hardware local, pre/post-procesamiento deter
 El proyecto cuenta con documentación técnica formal organizada según el estándar Diátaxis:
 
 * 📖 **[Explicación Arquitectónica](docs/explanation/architecture.md):** Fundamentos teóricos, flujo de datos y filosofía de Uncle Bob.
-* 🛠️ **[Guía de Desarrollo Local](docs/how-to/development.md):** Cómo contribuir, correr linters y ejecutar los 56 tests automatizados.
+* 🛠️ **[Guía de Desarrollo Local](docs/how-to/development.md):** Cómo contribuir, correr linters y ejecutar los 57 tests automatizados.
 * 🌐 **[Operaciones Remotas en VPS](docs/how-to/vps_operations.md):** Gestión de servidores remotos sobre sockets SSH multiplexados a < 8 ms.
 * 🚀 **[Flujo de Trabajo AGY + OpenCode](docs/how-to/opencode_workflow.md):** Operación en 1 sola terminal con cascada de tokens gratuitos y DeepSeek.
-* 📋 **[Manual de Comandos CLI (56 Herramientas)](docs/reference/cli_commands.md):** Catálogo exhaustivo de todos los subcomandos de `agy-opt`.
+* 📋 **[Manual de Comandos CLI (57 Herramientas)](docs/reference/cli_commands.md):** Catálogo exhaustivo de todos los subcomandos de `agy-opt`.
 * 🛡️ **[Convenciones del Guantelete](docs/reference/conventions.md):** Las 5 baterías inmutables de Clean Architecture.
 * 🏛️ **[Registro de Decisiones Arquitectónicas (ADRs)](docs/adr/):** Histórico formal de decisiones desde ADR-0001 hasta ADR-0005.
 
@@ -72,8 +72,8 @@ opencode
                                      │
                                      ▼ SÍ (Conmutación en 10 ms)
         ┌─────────────────────────────────────────────────────────┐
-        │  Nivel 2: DEEPSEEK V3 / R1 (API de Pago Ultra-Económica) │
-        │  • DeepSeek-V3 ($0.14 por 1 Millón de tokens con caché) │
+        │  Nivel 2: DEEPSEEK OPTIMIZADO (90% Descuento KV-Cache)  │
+        │  • DeepSeek-V3 ($0.028 / 1M tokens con Cache Hit)       │
         │  • DeepSeek-R1 (Razonamiento profundo para bugs duros)  │
         └────────────────────────────┬────────────────────────────┘
                                      │
@@ -100,13 +100,14 @@ opencode
 
 ## 🛠️ Resumen de Herramientas Principales de `agy-opt`
 
-*(Consulta el [Manual Completo de las 56 Herramientas](docs/reference/cli_commands.md) para más detalles).*
+*(Consulta el [Manual Completo de las 57 Herramientas](docs/reference/cli_commands.md) para más detalles).*
 
 ```bash
 # Iniciar watcher en RAM y sincronizar índices
 agy-opt preflight
 
 # 🚀 Aceleración de Hardware en /build
+agy-opt deepseek-opt [payload.json]                           # Fuerza 90% descuento por KV-Cache en DeepSeek
 agy-opt build-heal <archivo.py>                               # Auto-sanación en CPU en 20 ms
 agy-opt build-ramdisk [dir]                                   # Workspace en /dev/shm a 15 GB/s
 agy-opt igpu-tune                                             # Ajusta AVX2 y Vulkan para SLM >65 tok/s
