@@ -33,6 +33,7 @@ COMMANDS = {
     "heal": "self_healing_runner.py",
     "ci": "ci_local.sh",
     "stats": "token_tracker.py",
+    "remote": "remote_control_manager.py",
     "commit": "pr_bundle_compressor.py",
     "diagram": "arch_diagram.py",
     "audit": "security_audit.sh",
