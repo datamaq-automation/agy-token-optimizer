@@ -67,5 +67,4 @@ Se estandariza la configuración del servicio systemd de Ollama mediante un arch
 * [x] Contratos abstractos en `src/domain/ports.py` (`ISemanticCache`, `IASTPruner`, `IHardwareOptimizer`, `IPostEditHealer`).
 * [x] Adaptadores implementados: `SQLiteRAMSemanticCache`, `PythonASTPruner`, `RAMDiskOptimizer`, `DeterministicHardwareHealer`.
 * [x] Suite TDD pasando al 100% (17 tests en `tests/`).
-* [x] Hook `gate_ast_pruner_interceptor.py` configurado en `PreToolUse` de Antigravity.
-* [ ] Override persistente en `/etc/systemd/system/ollama.service.d/igpu.conf` (requiere ejecución de comando `sudo`).
+* [x] Override persistente en `/etc/systemd/system/ollama.service.d/igpu.conf` (activado y verificado al 100% GPU en Vulkan).
