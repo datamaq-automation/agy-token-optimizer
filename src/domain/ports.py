@@ -222,3 +222,63 @@ class ISLMHealer(ABC):
     def repair_syntax(self, file_path: str, code: str, syntax_error: str) -> SLMHealResult:
         """Repara errores sintácticos complejos usando inferencia local en GPU."""
         raise NotImplementedError
+
+
+@dataclass(frozen=True)
+class TerminalPruneResult:
+    """Resultado del filtrado y compresión determinística de salidas de terminal."""
+
+    original_lines: int
+    pruned_lines: int
+    exit_code: int
+    clean_output: str
+    reduction_ratio: float
+
+
+class ITerminalPruner(ABC):
+    """Puerto abstracto para la compresión de salidas ruidosas de comandos de consola."""
+
+    @abstractmethod
+    def prune_output(self, command: str, output: str, exit_code: int = 0) -> TerminalPruneResult:
+        """Filtra trazas irrelevantes y ruido preservando el stack trace y estado final."""
+        raise NotImplementedError
+
+
+@dataclass(frozen=True)
+class DataSchemaResult:
+    """Resultado de la esquematización estructural de archivos de datos."""
+
+    file_type: str
+    total_records: int
+    schema_summary: str
+    reduction_ratio: float
+
+
+class IDataSchemaPruner(ABC):
+    """Puerto abstracto para reducción de archivos masivos de datos a su esquema canónico."""
+
+    @abstractmethod
+    def prune_data_file(self, file_path: str, content: Optional[str] = None) -> DataSchemaResult:
+        """Extrae el esquema de tipos y un par de muestras de un archivo JSON, YAML o CSV."""
+        raise NotImplementedError
+
+
+@dataclass(frozen=True)
+class PolyglotHealResult:
+    """Resultado de la auto-sanación multinivel en lenguajes políglotas (PHP, JS, TS)."""
+
+    language: str
+    success: bool
+    file_path: str
+    actions_applied: List[str]
+    execution_time_ms: float
+    error_message: Optional[str] = None
+
+
+class IPolyglotHealer(ABC):
+    """Puerto abstracto para validación y auto-sanación de PHP, JavaScript y TypeScript."""
+
+    @abstractmethod
+    def heal_file(self, target_file: str) -> PolyglotHealResult:
+        """Valida y sana archivos de código en PHP, JS o TS en CPU/iGPU local."""
+        raise NotImplementedError
