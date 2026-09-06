@@ -141,3 +141,84 @@ class IASTPruner(ABC):
     def prune(self, file_path: str, content: Optional[str] = None) -> PruneResult:
         """Poda el cuerpo de las funciones preservando contratos, clases y firmas."""
         raise NotImplementedError
+
+
+@dataclass(frozen=True)
+class TokenSavingsEvent:
+    """Evento estructurado de ahorro de tokens en pre o post-procesamiento."""
+
+    event_type: str
+    tool_name: str
+    tokens_before: int
+    tokens_after: int
+    tokens_saved: int
+    latency_ms: float
+    timestamp: str
+
+
+@dataclass(frozen=True)
+class SavingsSummary:
+    """Resumen cuantitativo acumulado de métricas de ahorro."""
+
+    total_tokens_saved: int
+    total_cost_saved_usd: float
+    events_count: Dict[str, int]
+
+
+class ITokenTelemetry(ABC):
+    """Puerto abstracto para el registro de auditoría y cálculo de métricas de tokens."""
+
+    @abstractmethod
+    def record_event(self, event: TokenSavingsEvent) -> None:
+        """Registra un evento individual en log estructurado y base de datos."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_summary(self) -> SavingsSummary:
+        """Calcula el resumen agregado de ahorro y costos evitados."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_recent_events(self, limit: int = 50) -> List[TokenSavingsEvent]:
+        """Obtiene la lista de los últimos eventos registrados."""
+        raise NotImplementedError
+
+
+@dataclass(frozen=True)
+class DiffCompressionResult:
+    """Resultado del filtrado y compresión de un git diff."""
+
+    original_bytes: int
+    compressed_bytes: int
+    reduction_ratio: float
+    clean_diff: str
+
+
+class IDiffCompressor(ABC):
+    """Puerto abstracto para la compresión y poda determinística de git diffs."""
+
+    @abstractmethod
+    def compress_diff(self, diff_content: str, max_noise_lines: int = 500) -> DiffCompressionResult:
+        """Filtra lockfiles, minificados y ruido manteniendo intacto el código fuente."""
+        raise NotImplementedError
+
+
+@dataclass(frozen=True)
+class SLMHealResult:
+    """Resultado de auto-sanación sintáctica asistida por SLM local en iGPU."""
+
+    success: bool
+    file_path: str
+    repaired_code: str
+    tokens_used: int
+    execution_time_ms: float
+    error_message: Optional[str] = None
+
+
+class ISLMHealer(ABC):
+    """Puerto abstracto para reparación sintáctica local asistida por SLM."""
+
+    @abstractmethod
+    def repair_syntax(self, file_path: str, code: str, syntax_error: str) -> SLMHealResult:
+        """Repara errores sintácticos complejos usando inferencia local en GPU."""
+        raise NotImplementedError

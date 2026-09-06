@@ -65,22 +65,45 @@ def show_stats():
     total_ops = total_row[2] or 0
     total_tokens = total_in + total_out
 
-    usd_saved = (total_in / 1_000_000 * INPUT_PRICE_PER_M) + (total_out / 1_000_000 * OUTPUT_PRICE_PER_M)
+    # Consultar también telemetry.db si existe
+    telemetry_db = Path.home() / ".agents" / "telemetry.db"
+    telemetry_rows = []
+    if telemetry_db.exists():
+        try:
+            with sqlite3.connect(str(telemetry_db)) as t_conn:
+                t_cur = t_conn.cursor()
+                t_cur.execute(
+                    "SELECT event_type, sum(tokens_saved), avg(latency_ms), count(*) FROM token_savings GROUP BY event_type"
+                )
+                telemetry_rows = t_cur.fetchall()
+        except Exception:
+            telemetry_rows = []
 
-    print("\n" + "=" * 70)
-    print(" 📈 DASHBOARD DE AHORRO DE TOKENS & ROI (Hardware Local)")
-    print("=" * 70)
-    print(f"{'Herramienta':<25} | {'Ops':<6} | {'Input Ahorrado':<15} | {'Output Ahorrado':<15}")
-    print("-" * 70)
+    for ev_type, ev_saved, avg_lat, ev_ops in telemetry_rows:
+        total_tokens += ev_saved or 0
+        total_ops += ev_ops or 0
+
+    usd_saved = total_tokens * 0.000003  # Tarifa de referencia promedio $3.00/1M tokens
+
+    print("\n" + "=" * 76)
+    print(" 📈 DASHBOARD DE AHORRO DE TOKENS & TELEMETRÍA (Hardware Local)")
+    print("=" * 76)
+    print(f"{'Optimización / Herramienta':<28} | {'Ops':<6} | {'Tokens Ahorrados':<18} | {'Latencia Media'}")
+    print("-" * 76)
 
     for tool, inp, out, ops in rows:
-        print(f"{tool:<25} | {ops:<6} | {inp or 0:<15,d} | {out or 0:<15,d}")
+        t_saved = (inp or 0) + (out or 0)
+        print(f"{tool:<28} | {ops:<6} | {t_saved:<18,d} | N/A")
 
-    print("=" * 70)
-    print(f" 🚀 Total de Operaciones Locales: {total_ops}")
-    print(f" 📉 Total de Tokens Ahorrados:    {total_tokens:,} tokens ({total_in:,} in / {total_out:,} out)")
-    print(f" 💰 Ahorro Económico Estimado:   ${usd_saved:.4f} USD")
-    print("=" * 70 + "\n")
+    for ev_type, ev_saved, avg_lat, ev_ops in telemetry_rows:
+        lat_str = f"{avg_lat:.2f} ms" if avg_lat is not None else "N/A"
+        print(f"{ev_type:<28} | {ev_ops:<6} | {ev_saved or 0:<18,d} | {lat_str}")
+
+    print("=" * 76)
+    print(f" 🚀 Total de Optimizaciones Locales: {total_ops}")
+    print(f" 📉 Total de Tokens Ahorrados:       {total_tokens:,} tokens")
+    print(f" 💰 Ahorro Económico Estimado:      ${usd_saved:.4f} USD ($0 Costo en API)")
+    print("=" * 76 + "\n")
 
 
 def reset_db():

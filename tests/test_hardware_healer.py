@@ -8,7 +8,7 @@ from pathlib import Path
 
 from src.adapters.hardware_healer import DeterministicHardwareHealer
 from src.adapters.ramdisk_optimizer import RAMDiskOptimizer
-from src.domain.ports import HealResult, RAMDiskStatus
+from src.domain.ports import HealResult, ISLMHealer, RAMDiskStatus, SLMHealResult
 
 
 class TestDeterministicHardwareHealer(unittest.TestCase):
@@ -40,6 +40,33 @@ class TestDeterministicHardwareHealer(unittest.TestCase):
         self.assertNotIn("import sys", cleaned_content)
         # Ruff format debe haber normalizado la función
         self.assertIn("def add(a: int, b: int) -> int:", cleaned_content)
+
+    def test_heal_syntax_error_with_slm_healer(self) -> None:
+        test_file = Path(self.temp_dir) / "broken_syntax.py"
+        test_file.write_text("def broken(\n    return 42\n", encoding="utf-8")
+
+        # Healer sin SLM debe fallar en ast_syntax_error
+        res_no_slm = self.healer.heal_file(str(test_file))
+        self.assertFalse(res_no_slm.success)
+        self.assertIn("ast_syntax_error", res_no_slm.actions_applied)
+
+        class MockSLMHealer(ISLMHealer):
+            def repair_syntax(self, file_path: str, code: str, syntax_error: str) -> SLMHealResult:
+                return SLMHealResult(
+                    success=True,
+                    file_path=file_path,
+                    repaired_code="def broken() -> int:\n    return 42\n",
+                    tokens_used=15,
+                    execution_time_ms=12.5,
+                )
+
+        healer_with_slm = DeterministicHardwareHealer(slm_healer=MockSLMHealer())
+        res_slm = healer_with_slm.heal_file(str(test_file))
+        self.assertTrue(res_slm.success)
+        self.assertIn("slm_igpu_healed", res_slm.actions_applied)
+
+        repaired_content = test_file.read_text(encoding="utf-8")
+        self.assertIn("def broken() -> int:", repaired_content)
 
 
 class TestRAMDiskOptimizer(unittest.TestCase):
