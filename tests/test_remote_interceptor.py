@@ -1,15 +1,19 @@
 """Pruebas del hook de enrutado: decisiones y overwrite sobre payloads reales."""
 
+import importlib.util
 import os
-import sys
 import unittest
 
-REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-HOOKS_DIR = os.path.join(REPO_ROOT, "hooks")
-if HOOKS_DIR not in sys.path:
-    sys.path.insert(0, HOOKS_DIR)
-
-from gate_remote_router import decidir  # noqa: E402
+RUTA_HOOK = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "hooks",
+    "gate_remote_router.py",
+)
+_spec = importlib.util.spec_from_file_location("gate_remote_router", RUTA_HOOK)
+assert _spec is not None and _spec.loader is not None
+_modulo = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_modulo)
+decidir = _modulo.decidir
 
 
 class TestEnrutado(unittest.TestCase):
