@@ -11,6 +11,7 @@ El proyecto cuenta con documentación técnica formal organizada según el está
 * 📖 **[Explicación Arquitectónica](docs/explanation/architecture.md):** Fundamentos teóricos, flujo de datos y filosofía de Uncle Bob.
 * 🛠️ **[Guía de Desarrollo Local](docs/how-to/development.md):** Cómo contribuir, correr linters y ejecutar los tests automatizados.
 * ⚡ **[Guía de Aceleración en Hardware](docs/how-to/hardware_acceleration.md):** Activación de iGPU Vulkan, CPU AVX2 y RAMDisk en `/dev/shm`.
+* 🧠 **[Caché Semántico y Poda AST](docs/how-to/semantic_cache_and_ast_pruning.md):** Memoria local en RAM y optimización determinística de lecturas.
 * 🌐 **[Operaciones Remotas en VPS](docs/how-to/vps_operations.md):** Gestión de servidores remotos sobre sockets SSH multiplexados a < 8 ms.
 * 🚀 **[Flujo de Trabajo AGY + OpenCode](docs/how-to/opencode_workflow.md):** Operación en 1 sola terminal con cascada de tokens gratuitos y DeepSeek.
 * 🎁 **[Guía de Proveedores Gratuitos (Free Tiers)](docs/reference/free_providers_guide.md):** Comparativa de Gemini, Groq, OpenRouter, Mistral, Cerebras y configuración de `.env`.

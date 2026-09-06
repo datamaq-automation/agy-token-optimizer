@@ -63,7 +63,9 @@ Se estandariza la configuración del servicio systemd de Ollama mediante un arch
 ## 4. Estado de Implementación
 
 * [x] Detección empírica y prueba exitosa de Vulkan compute (`Vulkan0: AMD Radeon Vega 11 Graphics`).
-* [x] Especificación técnica de referencia documentada en `spec.md` y archivada en `specs/archive/`.
-* [x] Contratos abstractos en `src/domain/ports.py` (`IHardwareOptimizer`, `RAMDiskStatus`).
-* [x] Adaptador `RAMDiskOptimizer` implementado y probado en `tests/test_hardware_healer.py`.
-* [ ] Override persistente en `/etc/systemd/system/ollama.service.d/igpu.conf`.
+* [x] Especificación técnica de referencia documentada en `spec.md` y `plan_triple_optimizacion_tokens.md`.
+* [x] Contratos abstractos en `src/domain/ports.py` (`ISemanticCache`, `IASTPruner`, `IHardwareOptimizer`, `IPostEditHealer`).
+* [x] Adaptadores implementados: `SQLiteRAMSemanticCache`, `PythonASTPruner`, `RAMDiskOptimizer`, `DeterministicHardwareHealer`.
+* [x] Suite TDD pasando al 100% (17 tests en `tests/`).
+* [x] Hook `gate_ast_pruner_interceptor.py` configurado en `PreToolUse` de Antigravity.
+* [ ] Override persistente en `/etc/systemd/system/ollama.service.d/igpu.conf` (requiere ejecución de comando `sudo`).

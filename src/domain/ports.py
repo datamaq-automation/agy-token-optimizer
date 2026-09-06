@@ -88,3 +88,56 @@ class IPostEditHealer(ABC):
     def heal_file(self, target_file: str) -> HealResult:
         """Ejecuta auto-sanación determinística (Ruff format/check y verificación AST)."""
         raise NotImplementedError
+
+
+@dataclass(frozen=True)
+class CacheEntry:
+    """Entrada inmutable en el caché semántico local."""
+
+    query: str
+    response: str
+    embedding: List[float]
+    created_at: str
+
+
+@dataclass(frozen=True)
+class CacheQueryResult:
+    """Resultado de una consulta al caché semántico."""
+
+    hit: bool
+    response: str
+    similarity: float
+    tokens_saved: int
+
+
+class ISemanticCache(ABC):
+    """Puerto abstracto para caché semántico en RAMDisk (/dev/shm) con embeddings."""
+
+    @abstractmethod
+    def get(self, query: str, threshold: float = 0.92) -> CacheQueryResult:
+        """Consulta el caché buscando coincidencias semánticas >= threshold."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def set(self, query: str, response: str) -> None:
+        """Almacena un par pregunta/respuesta calculando su embedding."""
+        raise NotImplementedError
+
+
+@dataclass(frozen=True)
+class PruneResult:
+    """Resultado de la poda determinística de un archivo de código."""
+
+    original_lines: int
+    pruned_lines: int
+    reduction_ratio: float
+    skeleton_code: str
+
+
+class IASTPruner(ABC):
+    """Puerto abstracto para poda de AST y esqueletización de código."""
+
+    @abstractmethod
+    def prune(self, file_path: str, content: Optional[str] = None) -> PruneResult:
+        """Poda el cuerpo de las funciones preservando contratos, clases y firmas."""
+        raise NotImplementedError
