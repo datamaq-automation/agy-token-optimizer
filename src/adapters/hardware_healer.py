@@ -54,6 +54,7 @@ class DeterministicHardwareHealer(IPostEditHealer):
             actions.append("ruff_formatted")
 
         # 3. Validar sintaxis AST
+        content: str = ""
         try:
             with open(target_path, "r", encoding="utf-8") as f:
                 content = f.read()

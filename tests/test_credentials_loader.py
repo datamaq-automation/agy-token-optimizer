@@ -68,7 +68,7 @@ class TestStructuredCredentialsLoader(unittest.TestCase):
         if load_structured_credentials is None:
             self.fail("TDD RED: load_structured_credentials no está implementado aún en src/ / scripts/")
 
-        creds = load_structured_credentials(config_path=json_path)
+        creds = load_structured_credentials(config_path=str(json_path))
         self.assertEqual(len(creds), 2, "Debe omitir credenciales con enabled=False")
         self.assertEqual(creds[0]["provider"], "gemini", "La prioridad 1 debe ir primero")
         self.assertEqual(creds[0]["email"], "primary@test.com")
@@ -92,7 +92,7 @@ providers:
         if load_structured_credentials is None:
             self.fail("TDD RED: load_structured_credentials no está implementado aún")
 
-        creds = load_structured_credentials(config_path=yaml_path)
+        creds = load_structured_credentials(config_path=str(yaml_path))
         self.assertEqual(len(creds), 1)
         self.assertEqual(creds[0]["api_key"], "gsk_yaml_test_1")
         self.assertEqual(creds[0]["email"], "yaml@test.com")
@@ -110,7 +110,7 @@ GROQ_API_KEYS="gsk_legacy_1"
         if load_structured_credentials is None:
             self.fail("TDD RED: load_structured_credentials no está implementado aún")
 
-        creds = load_structured_credentials(config_path=env_path)
+        creds = load_structured_credentials(config_path=str(env_path))
         self.assertGreaterEqual(len(creds), 3)
         gemini_creds = [c for c in creds if c["provider"] == "gemini"]
         self.assertEqual(len(gemini_creds), 2)
@@ -124,7 +124,7 @@ GROQ_API_KEYS="gsk_legacy_1"
         if load_structured_credentials is None:
             self.fail("TDD RED: load_structured_credentials no está implementado aún")
 
-        creds = load_structured_credentials(config_path=json_path)
+        creds = load_structured_credentials(config_path=str(json_path))
         self.assertIsInstance(creds, list)
 
 
