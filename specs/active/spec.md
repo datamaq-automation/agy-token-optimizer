@@ -76,6 +76,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Optional, List, Dict, Any
 
+
 @dataclass(frozen=True)
 class ProviderCredential:
     name: str
@@ -90,17 +91,20 @@ class ProviderCredential:
     base_url: Optional[str] = None
     headers: Optional[Dict[str, str]] = None
 
+
 @dataclass(frozen=True)
 class RouterConfiguration:
     port: int
     ollama_host: str
     credentials: List[ProviderCredential]
 
+
 class ICredentialLoader(ABC):
     @abstractmethod
     def load(self, custom_path: Optional[str] = None) -> List[ProviderCredential]:
         """Carga y normaliza credenciales desde JSON, YAML o .env según jerarquía."""
         pass
+
 
 class IModelCascade(ABC):
     @abstractmethod
