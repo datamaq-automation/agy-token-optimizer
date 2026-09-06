@@ -3,7 +3,20 @@
 Todos los cambios notables en este proyecto son documentados automáticamente.
 El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com/).
 
-## [No Publicado / Último Release] - 2026-08-29
+## [2.3.0] - 2026-09-06
+
+### 🚀 Nuevas Características (Features)
+- feat(hardware-acceleration): diagnóstico empírico y activación de Vulkan compute en iGPU AMD Radeon Vega 11 (2 GiB VRAM) vía `OLLAMA_IGPU_ENABLE=1` (ADR-0006).
+- feat(ramdisk-optimizer): implementación del adaptador `RAMDiskOptimizer` y completitud de ADR-0001 para ejecución en `/dev/shm` a 15 GB/s.
+- feat(post-edit-healer): hook determinístico silencioso `gate_post_edit_healer.py` en `PostToolUse` con `ruff check --fix` y `ruff format` en CPU (<30 ms).
+- feat(mcp-global): integración de servidores MCP `tokenix-filter` y `codebase-memory-mcp` en configuración global de Antigravity.
+
+### 📚 Documentación & Gobernanza
+- docs(adr): redacción de ADR-0006 (Aceleración de Hardware iGPU Vulkan) y formalización de ADR-0001 (RAMDisk tmpfs y SQLite).
+- docs(how-to): nueva guía paso a paso `docs/how-to/hardware_acceleration.md`.
+- docs(readme): actualización del índice Diátaxis referenciando ADR-0006 y guía de hardware.
+
+## [2.2.0] - 2026-08-29
 
 ### 🚀 Nuevas Características (Features)
 - feat(credentials-loader): implementar carga polimórfica JSON/YAML/.env con metadatos (TC-01..TC-04 verdes)
