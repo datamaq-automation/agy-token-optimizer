@@ -9,6 +9,8 @@ DEST_AGENTS="$HOME/.agents"
 DEST_PLUGINS="$DEST_AGENTS/plugins"
 DEST_SKILLS="$DEST_AGENTS/skills"
 DEST_AGENTS_MD="$HOME/AGENTS.md"
+DEST_HOOKS="$DEST_AGENTS/hooks"
+DEST_HOOKS_JSON="$HOME/.gemini/config/hooks.json"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -26,19 +28,35 @@ cp -r "$SCRIPT_DIR/skills/token-optimizer/"* "$DEST_SKILLS/token-optimizer/"
 echo "==> 4. Asignando permisos de ejecución a scripts..."
 chmod +x "$DEST_SKILLS/token-optimizer/scripts/"* || true
 
-echo "==> 5. Desplegando directivas globales en $DEST_AGENTS_MD..."
+echo "==> 5. Desplegando hooks del gate en $DEST_HOOKS..."
+mkdir -p "$DEST_HOOKS"
+cp "$SCRIPT_DIR/hooks/"*.py "$DEST_HOOKS/"
+chmod +x "$DEST_HOOKS/"*.py || true
+echo "  [✓] $(ls -1 "$SCRIPT_DIR/hooks/"*.py | wc -l) hooks desplegados"
+
+echo "==> 6. Registrando hooks en $DEST_HOOKS_JSON..."
+mkdir -p "$(dirname "$DEST_HOOKS_JSON")"
+if [ -f "$DEST_HOOKS_JSON" ]; then
+    echo "    (Respaldando hooks.json previo en $DEST_HOOKS_JSON.bak)"
+    cp "$DEST_HOOKS_JSON" "$DEST_HOOKS_JSON.bak"
+fi
+python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$SCRIPT_DIR/config/hooks.json"
+cp "$SCRIPT_DIR/config/hooks.json" "$DEST_HOOKS_JSON"
+echo "  [✓] Gate registrado. El backup previo queda en $DEST_HOOKS_JSON.bak"
+
+echo "==> 7. Desplegando directivas globales en $DEST_AGENTS_MD..."
 if [ -f "$DEST_AGENTS_MD" ]; then
     echo "    (Respaldando AGENTS.md previo en $DEST_AGENTS_MD.bak)"
     cp "$DEST_AGENTS_MD" "$DEST_AGENTS_MD.bak"
 fi
 cp "$SCRIPT_DIR/AGENTS.md" "$DEST_AGENTS_MD"
 
-echo "==> 6. Creando enlace simbólico del CLI maestro 'agy-opt'..."
+echo "==> 8. Creando enlace simbólico del CLI maestro 'agy-opt'..."
 mkdir -p "$HOME/.local/bin"
 ln -sf "$DEST_SKILLS/token-optimizer/scripts/agy_cli.py" "$HOME/.local/bin/agy-opt"
 echo "  [✓] 'agy-opt' disponible en $HOME/.local/bin/agy-opt"
 
-echo "==> 7. Verificando dependencias del sistema..."
+echo "==> 9. Verificando dependencias del sistema..."
 command -v python3 >/dev/null 2>&1 && echo "  [✓] Python3 detectado" || echo "  [!] Python3 no encontrado"
 command -v node >/dev/null 2>&1 && echo "  [✓] Node.js detectado" || echo "  [!] Node.js no encontrado (opcional para TS)"
 command -v ruff >/dev/null 2>&1 && echo "  [✓] Ruff linter detectado" || echo "  [!] Ruff no encontrado (recomendado)"

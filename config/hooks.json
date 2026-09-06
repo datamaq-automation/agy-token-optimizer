@@ -1,0 +1,71 @@
+{
+  "security-hard-gate": {
+    "enabled": true,
+    "PreToolUse": [
+      {
+        "matcher": "write_to_file|replace_file_content|run_command|invoke_subagent|view_file",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 /home/agustin/.agents/hooks/gate_build_blocker.py",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "view_file",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 /home/agustin/.agents/hooks/gate_ast_pruner_interceptor.py",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "run_command",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 /home/agustin/.agents/hooks/gate_diff_compressor_interceptor.py",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "run_command",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 /home/agustin/.agents/hooks/gate_remote_router.py",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "write_to_file|replace_file_content",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 /home/agustin/.agents/hooks/gate_post_edit_healer.py",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "python3 /home/agustin/.agents/hooks/gate_spec_auditor.py",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PreInvocation": [
+      {
+        "type": "command",
+        "command": "python3 /home/agustin/.agents/hooks/gate_pre_invocation.py",
+        "timeout": 5
+      }
+    ]
+  }
+}

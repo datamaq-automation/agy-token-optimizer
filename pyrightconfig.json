@@ -1,0 +1,7 @@
+{
+  "include": ["src", "tests", "hooks"],
+  "exclude": ["**/__pycache__", "**/.ruff_cache", "**/node_modules", "venv", ".venv"],
+  "extraPaths": ["hooks"],
+  "pythonVersion": "3.10",
+  "reportMissingImports": "error"
+}
