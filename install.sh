@@ -11,6 +11,7 @@ DEST_SKILLS="$DEST_AGENTS/skills"
 DEST_AGENTS_MD="$HOME/AGENTS.md"
 DEST_HOOKS="$DEST_AGENTS/hooks"
 DEST_HOOKS_JSON="$HOME/.gemini/config/hooks.json"
+DEST_RULES="$HOME/.gemini/config/rules"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -44,12 +45,21 @@ python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$SCRIPT_DIR/config/h
 cp "$SCRIPT_DIR/config/hooks.json" "$DEST_HOOKS_JSON"
 echo "  [✓] Gate registrado. El backup previo queda en $DEST_HOOKS_JSON.bak"
 
-echo "==> 7. Desplegando directivas globales en $DEST_AGENTS_MD..."
-if [ -f "$DEST_AGENTS_MD" ]; then
-    echo "    (Respaldando AGENTS.md previo en $DEST_AGENTS_MD.bak)"
-    cp "$DEST_AGENTS_MD" "$DEST_AGENTS_MD.bak"
+echo "==> 7. Desplegando directivas globales..."
+# Las reglas granulares de $DEST_RULES son el mecanismo documentado de Antigravity
+# y superan al AGENTS.md monolitico. Si ya existen, desplegarlo duplicaria el
+# estandar en dos lugares, con el riesgo de que diverjan.
+if [ -d "$DEST_RULES" ] && [ -n "$(ls -A "$DEST_RULES" 2>/dev/null)" ]; then
+    echo "  [skip] $DEST_RULES ya define el estandar ($(ls -1 "$DEST_RULES" | wc -l) reglas activas)."
+    echo "         Se omite AGENTS.md para no duplicarlo. Borra ese directorio si prefieres el monolitico."
+else
+    if [ -f "$DEST_AGENTS_MD" ]; then
+        echo "    (Respaldando AGENTS.md previo en $DEST_AGENTS_MD.bak)"
+        cp "$DEST_AGENTS_MD" "$DEST_AGENTS_MD.bak"
+    fi
+    cp "$SCRIPT_DIR/AGENTS.md" "$DEST_AGENTS_MD"
+    echo "  [✓] Directivas globales en $DEST_AGENTS_MD"
 fi
-cp "$SCRIPT_DIR/AGENTS.md" "$DEST_AGENTS_MD"
 
 echo "==> 8. Creando enlace simbólico del CLI maestro 'agy-opt'..."
 mkdir -p "$HOME/.local/bin"

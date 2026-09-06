@@ -1,119 +1,85 @@
 #!/usr/bin/env python3
-"""
-vps_exec.py: Ejecutor remoto en VPS con compresión y poda determinística de salida para AGY.
-Ejecuta comandos sobre el socket SSH persistente y poda automáticamente salidas masivas de logs
-y tablas ruidosas, extrayendo únicamente información crítica y reduciendo el consumo de tokens en un 80%.
-Uso: python3 vps_exec.py "<comando>" [--host vps]
+"""vps_exec.py: ejecutor remoto en VPS con poda determinista de salida.
+
+Delega en el caso de uso EjecutarComandoRemoto, que compone el ejecutor SSH (con
+fallback IPv6->IPv4), el podador y la telemetria por inyeccion de dependencias.
+La poda ya no vive aca: duplicarla era una violacion del reuso y del DIP.
+
+Uso: python3 vps_exec.py "<comando>" [--host vps] [--timeout 60]
 """
 
-import re
-import subprocess
 import sys
 from pathlib import Path
 
+REPO_ROOT = "/home/agustin/proyectos_software/agy-token-optimizer"
+if REPO_ROOT not in sys.path:
+    sys.path.insert(0, REPO_ROOT)
+
 SCRIPTS_DIR = Path(__file__).resolve().parent
 
-
-def clean_ansi(text: str) -> str:
-    ansi_escape = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
-    return ansi_escape.sub("", text)
+# Aliases de la misma maquina en distinta familia de direcciones.
+FALLBACK_POR_ALIAS = {"vps": "vps4", "vps4": None, "vps-tunnel": "vps4"}
 
 
-def compress_vps_output(raw_output: str, max_lines: int = 40) -> str:
-    cleaned = clean_ansi(raw_output).strip()
-    lines = [line.strip() for line in cleaned.splitlines() if line.strip()]
+def _parse_args(argv: list) -> tuple:
+    if len(argv) < 2:
+        print('Uso: python3 vps_exec.py "<comando>" [--host vps] [--timeout 60]')
+        raise SystemExit(1)
 
-    if len(lines) <= max_lines:
-        return "\n".join(lines)
-
-    # Filtrar líneas relevantes (errores, advertencias, fallos, estados)
-    critical_keywords = [
-        "error",
-        "failed",
-        "failure",
-        "warning",
-        "fatal",
-        "exception",
-        "traceback",
-        "critical",
-        "down",
-        "inactive",
-        "restart",
-        "killed",
-        "panic",
-        "denied",
-    ]
-
-    critical_lines = []
-    for line in lines:
-        l_lower = line.lower()
-        if any(kw in l_lower for kw in critical_keywords):
-            critical_lines.append(line)
-
-    summary = []
-    summary.append(f"[Salida de VPS truncada: {len(lines)} líneas originales reducidas a formato compacto]")
-    summary.append("=" * 70)
-
-    if critical_lines:
-        summary.append(f"⚠️  {len(critical_lines)} LÍNEAS RELEVANTES O ERRORES DETECTADOS:")
-        summary.extend(critical_lines[:25])
-        summary.append("=" * 70)
-
-    summary.append("📍 ÚLTIMAS LÍNEAS DE EJECUCIÓN:")
-    summary.extend(lines[-10:])
-    summary.append("=" * 70)
-
-    # Registrar ahorro en token_tracker si existe
-    tracker = SCRIPTS_DIR / "token_tracker.py"
-    if tracker.exists():
-        tokens_saved = int((len(raw_output) - len("\n".join(summary))) / 4)
-        if tokens_saved > 50:
-            subprocess.run(
-                [
-                    "python3",
-                    str(tracker),
-                    "log",
-                    "--tool",
-                    "VPS Output Pruner",
-                    "--input-saved",
-                    str(tokens_saved),
-                    "--output-saved",
-                    "0",
-                ],
-                capture_output=True,
-            )
-
-    return "\n".join(summary)
-
-
-def run_vps_command(cmd: str, host: str = "vps") -> tuple[int, str]:
-    ssh_cmd = ["ssh", host, cmd]
-    try:
-        res = subprocess.run(ssh_cmd, capture_output=True, text=True, timeout=60)
-        combined = res.stdout
-        if res.stderr:
-            combined += "\n[STDERR]:\n" + res.stderr
-        compressed = compress_vps_output(combined)
-        return res.returncode, compressed
-    except subprocess.TimeoutExpired:
-        return 124, f"[!] Tiempo de espera agotado (Timeout de 60s) ejecutando en VPS: '{cmd}'"
-    except Exception as e:
-        return 1, f"[!] Error de conexión SSH a VPS ({host}): {e}"
-
-
-def main():
-    if len(sys.argv) < 2:
-        print('Uso: python3 vps_exec.py "<comando>" [--host vps]')
-        sys.exit(1)
-
-    cmd = sys.argv[1]
+    comando = argv[1]
     host = "vps"
-    if len(sys.argv) > 3 and sys.argv[2] in ("--host", "-h"):
-        host = sys.argv[3]
+    timeout = 60
+    i = 2
+    while i < len(argv):
+        if argv[i] == "--host" and i + 1 < len(argv):
+            host = argv[i + 1]
+            i += 2
+        elif argv[i] == "--timeout" and i + 1 < len(argv):
+            timeout = int(argv[i + 1])
+            i += 2
+        else:
+            i += 1
+    return comando, host, timeout
 
-    code, output = run_vps_command(cmd, host)
-    print(output)
-    sys.exit(code)
+
+def main() -> None:
+    comando, host, timeout = _parse_args(sys.argv)
+
+    try:
+        from src.adapters.remote_executor import SSHRemoteExecutor
+        from src.adapters.remote_output_pruner import RemoteOutputPruner
+        from src.adapters.token_telemetry import SQLiteTokenTelemetry
+        from src.application.ejecutar_comando_remoto import EjecutarComandoRemoto
+        from src.domain.ports import RemoteHost
+    except ImportError as error:
+        print(f"[!] No se pudo cargar la capa de ejecucion remota: {error}")
+        raise SystemExit(1) from error
+
+    try:
+        telemetria = SQLiteTokenTelemetry()
+    except Exception:
+        telemetria = None  # La telemetria es opcional: nunca debe impedir la ejecucion.
+
+    caso = EjecutarComandoRemoto(
+        executor=SSHRemoteExecutor(),
+        pruner=RemoteOutputPruner(),
+        telemetry=telemetria,
+    )
+
+    destino = RemoteHost(
+        alias=host,
+        fallback_alias=FALLBACK_POR_ALIAS.get(host),
+        port=5932,
+        user="root",
+    )
+
+    resultado = caso.ejecutar(comando, destino, timeout_s=timeout)
+
+    if resultado.host_used != host:
+        print(f"[i] El alias '{host}' no respondio; se uso el fallback '{resultado.host_used}'.")
+
+    print(resultado.clean_output)
+    raise SystemExit(resultado.exit_code)
 
 
 if __name__ == "__main__":
