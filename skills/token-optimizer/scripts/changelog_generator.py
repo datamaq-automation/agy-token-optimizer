@@ -54,25 +54,25 @@ def generate_changelog(root_dir: Path) -> str:
 
     if feats:
         lines.append("### 🚀 Nuevas Características (Features)")
-        for f in feats[:15]:
+        for f in feats:
             lines.append(f"- {f}")
         lines.append("")
 
     if perfs:
         lines.append("### ⚡ Rendimiento & Refactorización")
-        for p in perfs[:15]:
+        for p in perfs:
             lines.append(f"- {p}")
         lines.append("")
 
     if fixes:
         lines.append("### 🐛 Correcciones (Fixes)")
-        for fx in fixes[:15]:
+        for fx in fixes:
             lines.append(f"- {fx}")
         lines.append("")
 
     if docs:
         lines.append("### 📚 Documentación & Gobernanza")
-        for d in docs[:10]:
+        for d in docs:
             lines.append(f"- {d}")
         lines.append("")
 
