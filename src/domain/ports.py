@@ -50,3 +50,41 @@ class IModelCascade(ABC):
     def get_active_providers(self, credentials: List[ProviderCredential]) -> List[Dict[str, Any]]:
         """Construye la lista ordenada de endpoints HTTP para el forwarder."""
         raise NotImplementedError
+
+
+@dataclass(frozen=True)
+class HealResult:
+    """Resultado inmutable de la auto-sanación determinística."""
+
+    success: bool
+    file_path: str
+    execution_time_ms: float
+    actions_applied: List[str] = field(default_factory=list)
+
+
+@dataclass(frozen=True)
+class RAMDiskStatus:
+    """Estado inmutable del workspace en memoria RAMDisk (/dev/shm)."""
+
+    mounted: bool
+    path: str
+    available_mb: float
+    synced_files: int
+
+
+class IHardwareOptimizer(ABC):
+    """Puerto abstracto para optimización y asignación de aceleradores locales."""
+
+    @abstractmethod
+    def sync_ramdisk_workspace(self, repo_dir: str) -> RAMDiskStatus:
+        """Sincroniza un directorio hacia /dev/shm para ejecución en RAM."""
+        raise NotImplementedError
+
+
+class IPostEditHealer(ABC):
+    """Puerto abstracto para auto-sanación determinística en CPU."""
+
+    @abstractmethod
+    def heal_file(self, target_file: str) -> HealResult:
+        """Ejecuta auto-sanación determinística (Ruff format/check y verificación AST)."""
+        raise NotImplementedError

@@ -1,0 +1,68 @@
+"""Adaptador para gestión y aceleración de workspaces en RAMDisk (/dev/shm).
+
+Permite clonar y sincronizar repositorios a memoria RAM compartida a 15 GB/s
+para ejecutar linters y suites de tests con cero latencia de disco.
+"""
+
+import os
+import shutil
+from pathlib import Path
+
+from src.domain.ports import IHardwareOptimizer, RAMDiskStatus
+
+
+class RAMDiskOptimizer(IHardwareOptimizer):
+    """Implementación de aceleración de workspace sobre tmpfs /dev/shm."""
+
+    def __init__(self, base_ramdisk: str = "/dev/shm/agy-workspace") -> None:
+        self.base_ramdisk = Path(base_ramdisk)
+        self.exclude_dirs = {
+            ".git",
+            "node_modules",
+            ".venv",
+            "venv",
+            "__pycache__",
+            ".ruff_cache",
+            ".agents",
+        }
+
+    def sync_ramdisk_workspace(self, repo_dir: str) -> RAMDiskStatus:
+        src_path = Path(repo_dir).resolve()
+        target_workspace = self.base_ramdisk / src_path.name
+        target_workspace.mkdir(parents=True, exist_ok=True)
+
+        synced_files = 0
+
+        for root, dirs, files in os.walk(src_path):
+            dirs[:] = [d for d in dirs if d not in self.exclude_dirs]
+            rel_path = Path(root).relative_to(src_path)
+            dest_dir = target_workspace / rel_path
+            dest_dir.mkdir(parents=True, exist_ok=True)
+
+            for filename in files:
+                src_file = Path(root) / filename
+                dest_file = dest_dir / filename
+
+                # Copiar si el archivo destino no existe o si el archivo origen es más nuevo
+                try:
+                    if not dest_file.exists() or src_file.stat().st_mtime > dest_file.stat().st_mtime:
+                        shutil.copy2(src_file, dest_file)
+                        synced_files += 1
+                except (OSError, PermissionError):
+                    continue
+
+        # Medir espacio disponible en el punto de montaje
+        try:
+            stat = os.statvfs(str(self.base_ramdisk))
+            available_mb = (stat.f_bavail * stat.f_frsize) / (1024 * 1024)
+            mounted = True
+        except (OSError, FileNotFoundError):
+            available_mb = 0.0
+            mounted = False
+
+        return RAMDiskStatus(
+            mounted=mounted,
+            path=str(target_workspace),
+            available_mb=round(available_mb, 2),
+            synced_files=synced_files,
+        )

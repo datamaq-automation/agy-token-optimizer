@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 -c 'import sys, json; data = json.load(sys.stdin); print(json.dumps({}))'"
+            "command": "python3 /home/agustin/.agents/hooks/gate_post_edit_healer.py"
           }
         ]
       }

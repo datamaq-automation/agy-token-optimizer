@@ -1,7 +1,7 @@
 # Especificación de Software (SSOT)
 
 > **Estado:** `En Espera / Listo para Nuevo Sprint`
-> **Última Especificación Archivada:** `2026-08-29_srs_specs_agy_token_optimizer_single_source_of_truth_ssot_del_sistema.md`
+> **Última Especificación Archivada:** `2026-09-06_de_software_ssot_optimización_integral_de_hardware_y_software_local.md`
 
 ---
 
