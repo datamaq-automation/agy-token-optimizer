@@ -59,6 +59,7 @@ COMMANDS = {
     "vps-patch": "vps_patcher.py",
     "vps-index": "vps_symbol_sync.py",
     "vps-health": "vps_health.py",
+    "vps-gauntlet": "vps_gauntlet.py",
     "audit-plan": "plan_auditor.py",
     "audit-edits": "edit_auditor.py",
     "preplan": "plan_context_precompiler.py",

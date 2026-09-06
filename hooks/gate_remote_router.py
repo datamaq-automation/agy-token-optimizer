@@ -42,6 +42,7 @@ def decidir(command_line: str) -> dict:
     # en lugar de frenar la sesion del agente.
     try:
         from src.adapters.code_file_inspector import LocalCodeFileInspector
+        from src.adapters.git_command_slimmer import slim
         from src.application.clasificar_comando import (
             LexicalCommandClassifier,
             tiene_redireccion_de_salida,
@@ -49,6 +50,12 @@ def decidir(command_line: str) -> dict:
         from src.domain.ports import CommandKind, CommandScope
     except ImportError:
         return _allow()
+
+    # Poda en el origen: pedirle a git/gh que emita menos sale mas barato que
+    # comprimir despues lo que ya se genero.
+    denso = slim(command_line)
+    if denso is not None:
+        return {"decision": "allow", "overwrite": {"CommandLine": denso}}
 
     clasificador = LexicalCommandClassifier(LocalCodeFileInspector())
     res = clasificador.classify(command_line)

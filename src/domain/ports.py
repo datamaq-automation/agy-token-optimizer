@@ -61,6 +61,13 @@ class HealResult:
     file_path: str
     execution_time_ms: float
     actions_applied: List[str] = field(default_factory=list)
+    diagnostics_before: str = ""
+    """Diagnósticos que el linter habría devuelto al modelo si nadie los hubiera reparado.
+
+    Es la medida honesta del ahorro: el texto que no entró a la ventana de contexto.
+    """
+    fixed_count: int = 0
+    """Cantidad de hallazgos efectivamente reparados. Cero significa que no se ahorró nada."""
 
 
 @dataclass(frozen=True)

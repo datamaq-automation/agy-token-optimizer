@@ -58,14 +58,18 @@ def heal_target_file(filepath: str) -> None:
                             timestamp=datetime.now().isoformat(),
                         )
                     )
-                elif "ruff_check_fixed" in res.actions_applied:
+                elif res.fixed_count > 0:
+                    # Ahorro medido: los diagnosticos que el modelo habria leido y
+                    # tenido que corregir en un turno propio. Si ruff no reparo nada,
+                    # no se registra evento: no hubo ahorro que declarar.
+                    tokens_evitados = max(1, len(res.diagnostics_before) // 4)
                     _telemetry.record_event(
                         TokenSavingsEvent(
                             event_type="LINTER_FIX",
                             tool_name="ruff_check",
-                            tokens_before=500,
+                            tokens_before=tokens_evitados,
                             tokens_after=0,
-                            tokens_saved=500,
+                            tokens_saved=tokens_evitados,
                             latency_ms=res.execution_time_ms,
                             timestamp=datetime.now().isoformat(),
                         )
@@ -90,7 +94,7 @@ def heal_target_file(filepath: str) -> None:
                             timestamp=datetime.now().isoformat(),
                         )
                     )
-                elif any("syntax_valid" in a for a in p_res.actions_applied):
+                elif any("syntax_repaired" in a for a in p_res.actions_applied):
                     _telemetry.record_event(
                         TokenSavingsEvent(
                             event_type="POLYGLOT_L1_VALID",

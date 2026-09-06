@@ -5,6 +5,7 @@ verificando la integridad del árbol de sintaxis abstracta (AST) sin consumo de 
 """
 
 import ast
+import re
 import subprocess
 import time
 from pathlib import Path
@@ -33,17 +34,32 @@ class DeterministicHardwareHealer(IPostEditHealer):
                 actions_applied=["file_not_found"],
             )
 
-        # 1. Ejecutar Ruff check --fix
+        # 1. Capturar primero los diagnósticos que el modelo habría tenido que leer.
+        #    Sin esta pasada no hay forma de medir el ahorro: 'ruff check --fix'
+        #    devuelve 0 tanto si reparó algo como si no había nada que reparar.
+        res_diag = subprocess.run(
+            ["ruff", "check", "--output-format=concise", "--no-fix", str(target_path)],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        diagnostics_before = res_diag.stdout or ""
+
+        # 2. Ejecutar Ruff check --fix
         res_fix = subprocess.run(
             ["ruff", "check", "--fix", str(target_path)],
             capture_output=True,
             text=True,
             check=False,
         )
-        if res_fix.returncode == 0:
+        fixed_count = 0
+        match_fixed = re.search(r"(\d+)\s+fixed", res_fix.stdout or "")
+        if match_fixed:
+            fixed_count = int(match_fixed.group(1))
+        if fixed_count > 0:
             actions.append("ruff_check_fixed")
 
-        # 2. Ejecutar Ruff format
+        # 3. Ejecutar Ruff format
         res_format = subprocess.run(
             ["ruff", "format", str(target_path)],
             capture_output=True,
@@ -53,7 +69,7 @@ class DeterministicHardwareHealer(IPostEditHealer):
         if res_format.returncode == 0:
             actions.append("ruff_formatted")
 
-        # 3. Validar sintaxis AST
+        # 4. Validar sintaxis AST
         content: str = ""
         try:
             with open(target_path, "r", encoding="utf-8") as f:
@@ -65,7 +81,7 @@ class DeterministicHardwareHealer(IPostEditHealer):
             actions.append("ast_syntax_error")
             success = False
 
-            # 4. Auto-sanación de 2º nivel con SLM en iGPU si está configurado
+            # 5. Auto-sanación de 2º nivel con SLM en iGPU si está configurado
             if self.slm_healer is not None:
                 heal_res = self.slm_healer.repair_syntax(
                     file_path=str(target_path),
@@ -91,4 +107,6 @@ class DeterministicHardwareHealer(IPostEditHealer):
             file_path=target_file,
             execution_time_ms=elapsed_ms,
             actions_applied=actions,
+            diagnostics_before=diagnostics_before,
+            fixed_count=fixed_count,
         )
