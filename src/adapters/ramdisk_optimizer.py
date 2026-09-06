@@ -31,7 +31,7 @@ class RAMDiskOptimizer(IHardwareOptimizer):
         target_workspace = self.base_ramdisk / src_path.name
         target_workspace.mkdir(parents=True, exist_ok=True)
 
-        synced_files = 0
+        file_tasks: list[tuple[Path, Path]] = []
 
         for root, dirs, files in os.walk(src_path):
             dirs[:] = [d for d in dirs if d not in self.exclude_dirs]
@@ -42,14 +42,24 @@ class RAMDiskOptimizer(IHardwareOptimizer):
             for filename in files:
                 src_file = Path(root) / filename
                 dest_file = dest_dir / filename
+                file_tasks.append((src_file, dest_file))
 
-                # Copiar si el archivo destino no existe o si el archivo origen es más nuevo
-                try:
-                    if not dest_file.exists() or src_file.stat().st_mtime > dest_file.stat().st_mtime:
-                        shutil.copy2(src_file, dest_file)
-                        synced_files += 1
-                except (OSError, PermissionError):
-                    continue
+        def _copy_if_needed(task: tuple[Path, Path]) -> bool:
+            s_file, d_file = task
+            try:
+                if not d_file.exists() or s_file.stat().st_mtime > d_file.stat().st_mtime:
+                    shutil.copy2(s_file, d_file)
+                    return True
+            except (OSError, PermissionError):
+                pass
+            return False
+
+        # Ejecución paralela en los 8 hilos de CPU
+        from concurrent.futures import ThreadPoolExecutor
+
+        with ThreadPoolExecutor(max_workers=os.cpu_count() or 8) as executor:
+            results = list(executor.map(_copy_if_needed, file_tasks))
+            synced_files = sum(1 for r in results if r)
 
         # Medir espacio disponible en el punto de montaje
         try:

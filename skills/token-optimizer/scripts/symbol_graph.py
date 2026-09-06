@@ -120,14 +120,24 @@ class SymbolExtractor(ast.NodeVisitor):
         self.generic_visit(node)
 
 
+def _parse_file_symbols(path: str) -> tuple[str, list, list]:
+    """Parsea un archivo Python de forma aislada para ejecución concurrente."""
+    try:
+        with open(path, "r", encoding="utf-8", errors="ignore") as fh:
+            tree = ast.parse(fh.read(), filename=path)
+        extractor = SymbolExtractor(path)
+        extractor.visit(tree)
+        return path, extractor.symbols, extractor.calls
+    except Exception:
+        return path, [], []
+
+
 def index_directory(root_dir: str = "."):
     conn = init_db()
     cur = conn.cursor()
     cur.execute("DELETE FROM symbols")
     cur.execute("DELETE FROM calls")
 
-    count_files = 0
-    count_symbols = 0
     ignore_dirs = {
         ".git",
         "node_modules",
@@ -139,40 +149,43 @@ def index_directory(root_dir: str = "."):
         "build",
     }
 
+    py_files: list[str] = []
     for root, dirs, files in os.walk(root_dir):
         dirs[:] = [d for d in dirs if d not in ignore_dirs]
         for f in files:
             if f.endswith(".py"):
-                path = os.path.abspath(os.path.join(root, f))
-                try:
-                    with open(path, "r", encoding="utf-8", errors="ignore") as fh:
-                        tree = ast.parse(fh.read(), filename=path)
-                    extractor = SymbolExtractor(path)
-                    extractor.visit(tree)
+                py_files.append(os.path.abspath(os.path.join(root, f)))
 
-                    cur.executemany(
-                        """
-                        INSERT OR IGNORE INTO symbols (filepath, name, kind, parent, base_classes, start_line, end_line, signature)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                    """,
-                        extractor.symbols,
-                    )
+    count_files = 0
+    count_symbols = 0
 
-                    cur.executemany(
-                        """
-                        INSERT INTO calls (filepath, caller, callee, line)
-                        VALUES (?, ?, ?, ?)
-                    """,
-                        extractor.calls,
-                    )
+    from concurrent.futures import ProcessPoolExecutor
 
-                    count_files += 1
-                    count_symbols += len(extractor.symbols)
-                except Exception:
-                    continue
+    # Procesamiento paralelo en todos los núcleos de CPU (8 hilos)
+    max_workers = os.cpu_count() or 8
+    with ProcessPoolExecutor(max_workers=max_workers) as executor:
+        results = executor.map(_parse_file_symbols, py_files)
+        for path, symbols, calls in results:
+            if symbols or calls:
+                cur.executemany(
+                    """
+                    INSERT OR IGNORE INTO symbols (filepath, name, kind, parent, base_classes, start_line, end_line, signature)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                    symbols,
+                )
+                cur.executemany(
+                    """
+                    INSERT INTO calls (filepath, caller, callee, line)
+                    VALUES (?, ?, ?, ?)
+                """,
+                    calls,
+                )
+                count_files += 1
+                count_symbols += len(symbols)
 
     conn.commit()
-    print(f"✅ Grafo indexado con éxito: {count_symbols} símbolos en {count_files} archivos Python.")
+    print(f"✅ Grafo indexado con éxito (8 hilos de CPU): {count_symbols} símbolos en {count_files} archivos Python.")
 
 
 def find_symbol(name: str):
