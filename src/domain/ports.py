@@ -5,6 +5,7 @@ Sin dependencias externas. Solo dataclasses nativas e interfaces abc.ABC (Clean 
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
+from enum import Enum
 from typing import Any, Dict, List, Optional
 
 
@@ -281,4 +282,84 @@ class IPolyglotHealer(ABC):
     @abstractmethod
     def heal_file(self, target_file: str) -> PolyglotHealResult:
         """Valida y sana archivos de código en PHP, JS o TS en CPU/iGPU local."""
+        raise NotImplementedError
+
+
+class CommandScope(Enum):
+    """Dónde se ejecuta el comando de una `run_command`."""
+
+    LOCAL = "local"
+    REMOTO = "remoto"
+
+
+class CommandKind(Enum):
+    """Clasificación de un comando visto por el hook PreToolUse."""
+
+    LECTURA_CODIGO = "lectura_codigo"
+    CONSULTA = "consulta"
+    ESCRITURA = "escritura"
+    MUTACION = "mutacion"
+    INTERACTIVO = "interactivo"
+    EXENTO = "exento"
+
+
+@dataclass(frozen=True)
+class RemoteHost:
+    """Alias SSH con su fallback de familia de direcciones."""
+
+    alias: str
+    fallback_alias: Optional[str] = None
+    port: int = 22
+    user: str = "root"
+
+
+@dataclass(frozen=True)
+class CommandClassification:
+    """Resultado del análisis de una CommandLine de run_command."""
+
+    scope: CommandScope
+    kind: CommandKind
+    inner_command: str
+    reason: str
+    target_path: Optional[str] = None
+    host_alias: Optional[str] = None
+
+
+@dataclass(frozen=True)
+class RemoteExecutionResult:
+    """Resultado de ejecutar un comando remoto con poda de salida."""
+
+    exit_code: int
+    clean_output: str
+    host_used: str
+    timed_out: bool = False
+    original_lines: int = 0
+    pruned_lines: int = 0
+    reduction_ratio: float = 0.0
+
+
+class ICommandClassifier(ABC):
+    """Puerto para clasificar la CommandLine de un run_command, local o remota."""
+
+    @abstractmethod
+    def classify(self, command_line: str) -> Optional[CommandClassification]:
+        """Devuelve la clasificación, o None si no hay nada que hacer con la línea."""
+        raise NotImplementedError
+
+
+class ICodeFileInspector(ABC):
+    """Puerto para decidir si un archivo local justifica poda, sin salir del presupuesto del hook."""
+
+    @abstractmethod
+    def excede_umbral(self, path: str, umbral_lineas: int = 100) -> bool:
+        """True si el archivo existe, tiene extensión de código y supera el umbral de líneas."""
+        raise NotImplementedError
+
+
+class IRemoteExecutor(ABC):
+    """Puerto para ejecución remota con fallback de host y poda de salida."""
+
+    @abstractmethod
+    def execute(self, command: str, host: RemoteHost, timeout_s: int = 60) -> RemoteExecutionResult:
+        """Ejecuta en remoto; ante fallo de resolución del alias primario, reintenta con el fallback."""
         raise NotImplementedError
