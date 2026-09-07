@@ -53,6 +53,7 @@ El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com
 - refactor(credentials-loader): cerrar ciclo SDD TC-01..TC-06 verdes
 
 ### 🐛 Correcciones (Fixes)
+- fix(changelog): dejar de descartar historial al regenerar el documento
 - fix(types): resolver variables potencialmente no ligadas y tipado estricto de Path a str
 
 ### 📚 Documentación & Gobernanza
