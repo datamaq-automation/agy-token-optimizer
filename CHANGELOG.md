@@ -3,9 +3,10 @@
 Todos los cambios notables en este proyecto son documentados automáticamente.
 El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com/).
 
-## [No Publicado / Último Release] - 2026-09-06
+## [No Publicado / Último Release] - 2026-09-07
 
 ### 🚀 Nuevas Características (Features)
+- feat: selección automática de modelo por modo (plan=high, build=low)
 - feat(optimizer): poda en el origen para git/gh, telemetría medida y Gauntlet remoto
 - feat(remote): cablear vps_exec al caso de uso y podar salidas de log
 - feat(hooks): versionar el gate y enrutar run_command hacia la capa podada
@@ -57,6 +58,7 @@ El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com
 - fix(types): resolver variables potencialmente no ligadas y tipado estricto de Path a str
 
 ### 📚 Documentación & Gobernanza
+- docs(changelog): registrar la corrección del truncado
 - docs(changelog): registrar la capa de enrutado de comandos y la poda remota
 - docs(spec): promover spec de enrutado de comandos por run_command
 - docs: registrar hallazgos de iGPU Vulkan (ADR-0006) y guía how-to de aceleración
