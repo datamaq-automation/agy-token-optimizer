@@ -7,7 +7,6 @@ import tempfile
 import unittest
 
 from src.adapters.token_telemetry import SQLiteTokenTelemetry
-
 from src.domain.ports import SavingsSummary, TokenSavingsEvent
 
 

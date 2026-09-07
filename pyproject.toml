@@ -12,6 +12,12 @@ authors = [
 [tool.ruff]
 line-length = 120
 target-version = "py310"
+exclude = [
+    "skills/",
+    "venv/",
+    ".venv/",
+    "*.egg-info",
+]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I"]

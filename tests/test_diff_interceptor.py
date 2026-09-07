@@ -3,7 +3,6 @@
 import unittest
 
 from src.adapters.diff_compressor import RegexDiffCompressor
-
 from src.domain.ports import DiffCompressionResult
 
 

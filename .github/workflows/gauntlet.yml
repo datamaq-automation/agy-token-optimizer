@@ -25,7 +25,7 @@ jobs:
           cache: pip
 
       - name: "📦 Install Dependencies"
-        run: pip install ruff pyright pytest pytest-xdist
+        run: pip install ruff==0.16.2 pyright pytest pytest-xdist
 
       - name: "🔒 1. Validate 0-Byte __init__.py (Uncle Bob Battery 1)"
         run: |

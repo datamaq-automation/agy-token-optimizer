@@ -58,6 +58,7 @@ El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com
 - fix(types): resolver variables potencialmente no ligadas y tipado estricto de Path a str
 
 ### 📚 Documentación & Gobernanza
+- docs(changelog): registrar feat selección automática de modelo por modo
 - docs(changelog): registrar la corrección del truncado
 - docs(changelog): registrar la capa de enrutado de comandos y la poda remota
 - docs(spec): promover spec de enrutado de comandos por run_command
