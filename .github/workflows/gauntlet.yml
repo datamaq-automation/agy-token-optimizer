@@ -1,0 +1,50 @@
+name: "🛡️ Zero-Trust Gauntlet (Uncle Bob)"
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  gauntlet:
+    name: "🛡️ Constraint Gauntlet & Automated Tests"
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - name: "📥 Checkout Repository"
+        uses: actions/checkout@v4
+
+      - name: "🐍 Set up Python ${{ matrix.python-version }}"
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: "📦 Install Dependencies"
+        run: pip install ruff pyright pytest pytest-xdist
+
+      - name: "🔒 1. Validate 0-Byte __init__.py (Uncle Bob Battery 1)"
+        run: |
+          NON_EMPTY=$(find src/ tests/ -name "__init__.py" -size +0c 2>/dev/null)
+          if [ -n "$NON_EMPTY" ]; then
+            echo "❌ Error: Se encontraron archivos __init__.py con más de 0 bytes:"
+            echo "$NON_EMPTY"
+            exit 1
+          fi
+          echo "✅ Todos los __init__.py tienen exactamente 0 bytes."
+
+      - name: "⚡ 2. Linting & Formatting (Ruff)"
+        run: |
+          ruff check .
+          ruff format --check .
+
+      - name: "🎯 3. Strict Type Checking (Pyright)"
+        run: pyright src/
+        continue-on-error: true
+
+      - name: "🧪 4. Fast Concurrent Test Execution"
+        run: pytest -q -n auto
