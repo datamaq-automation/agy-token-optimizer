@@ -28,9 +28,10 @@ class TestSemanticCache(unittest.TestCase):
                 return [0.0, 1.0, 0.0, 0.0]  # Ortogonal / Disímil
             return [0.1, 0.1, 0.1, 0.1]
 
+        self.dummy_embedder = dummy_embedder
         self.cache = SQLiteRAMSemanticCache(
             db_path=self.db_path,
-            embedding_fn=dummy_embedder,
+            embedding_fn=self.dummy_embedder,
         )
 
     def tearDown(self) -> None:
@@ -81,7 +82,10 @@ class TestSemanticCache(unittest.TestCase):
         self.assertTrue(os.path.exists(self.db_path))
 
         # Reabrir la base y verificar consistencia
-        cache_reopened = SQLiteRAMSemanticCache(db_path=self.db_path)
+        cache_reopened = SQLiteRAMSemanticCache(
+            db_path=self.db_path,
+            embedding_fn=self.dummy_embedder,
+        )
         result = cache_reopened.get("query_test")
         self.assertTrue(result.hit)
         self.assertEqual(result.response, "response_test")
