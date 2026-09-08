@@ -18,15 +18,15 @@ Cuando el prompt del usuario comience o declare explícitamente un modo, el agen
 - **Salida:** Respuestas ultra-concisas con citas exactas a rutas de archivo y números de línea (`[archivo.py#L10-L25]`).
 - **Restricción Inmutable:** **MODO SOLO LECTURA.** PROHIBIDO crear o editar archivos. Si el usuario solicita cambios, RECHAZAR de inmediato e indicar cambiar a `/plan` o `/build`.
 
-### B. Modo `/plan` (Arquitecto SDD & SSOT)
-- **Perfil Recomendado:** Modelo Avanzado (`pro` / alta capacidad), Razonamiento: **High / Alto**.
+### B. Modo `/plan` (Arquitecto SDD & SSOT - Navegador First)
+- **Política Navegador First:** En la interfaz Web, la sesión madre permanece en modelo económico (`flash`). Ante diseño arquitectónico denso o redacción de `spec.md`, el agente **orquesta e invoca un subagente especializado con `Model="pro"`** (pensamiento extendido). Al concluir el plan, el subagente termina, retornando el control a la sesión madre con $0 desperdicio de cuota en el hilo principal.
 - **Propósito:** Analizar requerimientos y redactar formalmente la especificación técnica (`spec.md` / `specs/<modulo>.md`) en 5 secciones modulares (SSOT) y los esqueletos de tests en `tests/`.
 - **Pre-Condición Obligatoria:** Ejecutar `agy-opt preplan [dir]` para compilar el mapa de arquitectura en CPU/RAM (< 300 tokens) antes de realizar lecturas masivas de archivos.
 - **Validación:** Validar la especificación generada con `agy-opt audit-plan [spec.md]`.
 - **Restricción Inmutable:** EXCLUSIVAMENTE puede crear/modificar `spec.md`, `specs/**` y `tests/**`. **PROHIBIDO modificar código en `src/`**.
 
 ### C. Modo `/build` (Implementador Autónomo TDD & Gauntlet Runner)
-- **Perfil Recomendado:** Modelo Intermedio (`flash` / balanceado), Razonamiento: **Medium / Low**.
+- **Política Navegador First:** Ejecutado directamente por la sesión madre en modelo económico (`flash`) y razonamiento **Low**. Absorbe el 100% de la carga de codificación rápida y validación en CPU local.
 - **Requisito Bloqueante:** Verificar la existencia de `spec.md` antes de tocar `src/`. Si no existe, RECHAZAR e indicar ejecutar `/plan`.
 - **Flujo TDD:** **RED** (escribir test que falla según `spec.md`) ──► **GREEN** (código mínimo en `src/`) ──► **REFACTOR** (tipado estricto y superación del Gauntlet local).
 - **Permisos:** Edición habilitada en `src/` y `tests/` con ediciones quirúrgicas.

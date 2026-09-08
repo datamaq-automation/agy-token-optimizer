@@ -3,7 +3,7 @@
 Todos los cambios notables en este proyecto son documentados automáticamente.
 El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com/).
 
-## [No Publicado / Último Release] - 2026-09-07
+## [No Publicado / Último Release] - 2026-09-08
 
 ### 🚀 Nuevas Características (Features)
 - feat: selección automática de modelo por modo (plan=high, build=low)
@@ -54,6 +54,9 @@ El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com
 - refactor(credentials-loader): cerrar ciclo SDD TC-01..TC-06 verdes
 
 ### 🐛 Correcciones (Fixes)
+- fix(tests): inyectar mock de embedding en test_ramdisk_storage_and_sync para CI
+- fix(ci): instalar numpy y aislar tests locales con skipif en entorno CI
+- fix(ci): pinear ruff==0.16.2, excluir skills/ y reparar I001 en tests
 - fix(changelog): dejar de descartar historial al regenerar el documento
 - fix(types): resolver variables potencialmente no ligadas y tipado estricto de Path a str
 
