@@ -8,6 +8,7 @@ import os
 import shutil
 from pathlib import Path
 
+from src.adapters.hardware_tier_detector import HardwareTierDetector
 from src.domain.ports import IHardwareOptimizer, RAMDiskStatus
 
 
@@ -25,9 +26,21 @@ class RAMDiskOptimizer(IHardwareOptimizer):
             ".ruff_cache",
             ".agents",
         }
+        self.auditor = HardwareTierDetector()
 
     def sync_ramdisk_workspace(self, repo_dir: str) -> RAMDiskStatus:
         src_path = Path(repo_dir).resolve()
+        specs = self.auditor.audit()
+
+        # Si el hardware no permite RAMDisk (Laptop/memoria reducida), operar in-place sobre el disco local
+        if not specs.allow_ramdisk_workspace:
+            return RAMDiskStatus(
+                mounted=False,
+                path=str(src_path),
+                available_mb=specs.available_ram_mb,
+                synced_files=0,
+            )
+
         target_workspace = self.base_ramdisk / src_path.name
         target_workspace.mkdir(parents=True, exist_ok=True)
 
@@ -54,10 +67,10 @@ class RAMDiskOptimizer(IHardwareOptimizer):
                 pass
             return False
 
-        # Ejecución paralela en los 8 hilos de CPU
+        # Concurrencia adaptativa basada en el tier de hardware
         from concurrent.futures import ThreadPoolExecutor
 
-        with ThreadPoolExecutor(max_workers=os.cpu_count() or 8) as executor:
+        with ThreadPoolExecutor(max_workers=specs.max_workers) as executor:
             results = list(executor.map(_copy_if_needed, file_tasks))
             synced_files = sum(1 for r in results if r)
 

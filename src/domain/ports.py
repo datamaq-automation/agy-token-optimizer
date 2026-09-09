@@ -370,3 +370,38 @@ class IRemoteExecutor(ABC):
     def execute(self, command: str, host: RemoteHost, timeout_s: int = 60) -> RemoteExecutionResult:
         """Ejecuta en remoto; ante fallo de resolución del alias primario, reintenta con el fallback."""
         raise NotImplementedError
+
+
+class HardwareTier(Enum):
+    """Clasificación de perfil de hardware adaptativo."""
+
+    FULL_LOCAL = "full_local"
+    CONSTRAINED = "constrained"
+
+
+@dataclass(frozen=True)
+class HardwareSpecs:
+    """Metadatos inmutables de auditoría de hardware local."""
+
+    cpu_cores: int
+    cpu_threads: int
+    has_avx2: bool
+    total_ram_gb: float
+    available_ram_mb: float
+    has_vulkan: bool
+    shm_available: bool
+    tier: HardwareTier
+    max_workers: int
+    allow_local_slm: bool
+    allow_ramdisk_workspace: bool
+    allow_simd_vectors: bool
+
+
+class IHardwareAuditor(ABC):
+    """Puerto para auditar dinámicamente la capacidad del hardware local."""
+
+    @abstractmethod
+    def audit(self) -> HardwareSpecs:
+        """Audita el hardware y devuelve sus especificaciones y tier asignado."""
+        raise NotImplementedError
+

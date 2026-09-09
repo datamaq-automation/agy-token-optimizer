@@ -3,7 +3,7 @@
 Todos los cambios notables en este proyecto son documentados automáticamente.
 El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com/).
 
-## [No Publicado / Último Release] - 2026-09-08
+## [No Publicado / Último Release] - 2026-09-09
 
 ### 🚀 Nuevas Características (Features)
 - feat: selección automática de modelo por modo (plan=high, build=low)
@@ -61,6 +61,7 @@ El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com
 - fix(types): resolver variables potencialmente no ligadas y tipado estricto de Path a str
 
 ### 📚 Documentación & Gobernanza
+- docs: formalizar política Navegador First con delegación a subagente pro para plan
 - docs(changelog): registrar feat selección automática de modelo por modo
 - docs(changelog): registrar la corrección del truncado
 - docs(changelog): registrar la capa de enrutado de comandos y la poda remota

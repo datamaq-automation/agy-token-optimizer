@@ -99,8 +99,11 @@ def audit_edits(repo_dir: str = ".") -> tuple[bool, list[str]]:
     # 3. Auto-formateo con Ruff en CPU a $0 tokens
     py_files = [str(f) for f in modified_files if f.is_file() and f.suffix == ".py"]
     if py_files:
-        subprocess.run(["ruff", "check", "--fix"] + py_files, capture_output=True)
-        subprocess.run(["ruff", "format"] + py_files, capture_output=True)
+        try:
+            subprocess.run(["ruff", "check", "--fix"] + py_files, capture_output=True)
+            subprocess.run(["ruff", "format"] + py_files, capture_output=True)
+        except (FileNotFoundError, OSError):
+            pass
 
     return len(errors) == 0, errors
 

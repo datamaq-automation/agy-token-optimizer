@@ -18,11 +18,12 @@ def heal_file_locally(target_file: Path) -> bool:
 
     print(f"🔧 [Hardware Healer] Analizando y auto-sanando '{target_file.name}' en CPU...")
 
-    # 1. Ruff check --fix (elimina imports no usados, arregla formato de sintaxis)
-    subprocess.run(["ruff", "check", "--fix", str(target_file)], capture_output=True, text=True)
-
-    # 2. Ruff format (formato estándar)
-    subprocess.run(["ruff", "format", str(target_file)], capture_output=True, text=True)
+    # 1. Ruff check y format si ruff está instalado
+    try:
+        subprocess.run(["ruff", "check", "--fix", str(target_file)], capture_output=True, text=True)
+        subprocess.run(["ruff", "format", str(target_file)], capture_output=True, text=True)
+    except (FileNotFoundError, OSError):
+        pass
 
     # 3. Verificación de sintaxis Python AST
     try:

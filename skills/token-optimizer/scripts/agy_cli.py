@@ -84,6 +84,7 @@ COMMANDS = {
     "build-heal": "build_hardware_healer.py",
     "build-ramdisk": "build_ramdisk_workspace.py",
     "igpu-tune": "igpu_vulkan_optimizer.py",
+    "hw": "igpu_vulkan_optimizer.py",
     "deepseek-opt": "deepseek_optimizer.py",
 }
 

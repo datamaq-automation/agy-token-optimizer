@@ -34,40 +34,39 @@ class DeterministicHardwareHealer(IPostEditHealer):
                 actions_applied=["file_not_found"],
             )
 
-        # 1. Capturar primero los diagnósticos que el modelo habría tenido que leer.
-        #    Sin esta pasada no hay forma de medir el ahorro: 'ruff check --fix'
-        #    devuelve 0 tanto si reparó algo como si no había nada que reparar.
-        res_diag = subprocess.run(
-            ["ruff", "check", "--output-format=concise", "--no-fix", str(target_path)],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        diagnostics_before = res_diag.stdout or ""
-
-        # 2. Ejecutar Ruff check --fix
-        res_fix = subprocess.run(
-            ["ruff", "check", "--fix", str(target_path)],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
+        diagnostics_before = ""
         fixed_count = 0
-        match_fixed = re.search(r"(\d+)\s+fixed", res_fix.stdout or "")
-        if match_fixed:
-            fixed_count = int(match_fixed.group(1))
-        if fixed_count > 0:
-            actions.append("ruff_check_fixed")
+        try:
+            res_diag = subprocess.run(
+                ["ruff", "check", "--output-format=concise", "--no-fix", str(target_path)],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            diagnostics_before = res_diag.stdout or ""
 
-        # 3. Ejecutar Ruff format
-        res_format = subprocess.run(
-            ["ruff", "format", str(target_path)],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        if res_format.returncode == 0:
-            actions.append("ruff_formatted")
+            res_fix = subprocess.run(
+                ["ruff", "check", "--fix", str(target_path)],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            match_fixed = re.search(r"(\d+)\s+fixed", res_fix.stdout or "")
+            if match_fixed:
+                fixed_count = int(match_fixed.group(1))
+            if fixed_count > 0:
+                actions.append("ruff_check_fixed")
+
+            res_format = subprocess.run(
+                ["ruff", "format", str(target_path)],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            if "1 file reformatted" in (res_format.stdout or ""):
+                actions.append("ruff_formatted")
+        except (FileNotFoundError, OSError):
+            pass
 
         # 4. Validar sintaxis AST
         content: str = ""
@@ -92,12 +91,15 @@ class DeterministicHardwareHealer(IPostEditHealer):
                     with open(target_path, "w", encoding="utf-8") as f:
                         f.write(heal_res.repaired_code)
                     # Re-formatear con ruff
-                    subprocess.run(
-                        ["ruff", "format", str(target_path)],
-                        capture_output=True,
-                        text=True,
-                        check=False,
-                    )
+                    try:
+                        subprocess.run(
+                            ["ruff", "format", str(target_path)],
+                            capture_output=True,
+                            text=True,
+                            check=False,
+                        )
+                    except (FileNotFoundError, OSError):
+                        pass
                     actions.append("slm_igpu_healed")
                     success = True
 
