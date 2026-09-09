@@ -34,7 +34,6 @@ class TestModeConfig(unittest.TestCase):
         self.assertEqual(us.get("model"), "gemini-3.8-flash-low")
         self.assertEqual(us.get("effort"), "low")
 
-
     @unittest.skipUnless(is_local_agustin, "Solo ejecutable en entorno local del host")
     def test_wrapper_plan_usa_modelo_high(self) -> None:
         """El script agy-plan debe contener --model gemini-3.8-flash-high y --effort high."""
