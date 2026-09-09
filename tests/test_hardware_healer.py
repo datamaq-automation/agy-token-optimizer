@@ -86,11 +86,20 @@ class TestRAMDiskOptimizer(unittest.TestCase):
 
         with patch.object(self.optimizer.auditor, "audit") as mock_audit:
             from src.domain.ports import HardwareSpecs, HardwareTier
+
             mock_audit.return_value = HardwareSpecs(
-                cpu_cores=4, cpu_threads=4, has_avx2=True, total_ram_gb=16.0,
-                available_ram_mb=8000.0, has_vulkan=True, shm_available=True,
-                tier=HardwareTier.FULL_LOCAL, max_workers=4, allow_local_slm=True,
-                allow_ramdisk_workspace=True, allow_simd_vectors=True
+                cpu_cores=4,
+                cpu_threads=4,
+                has_avx2=True,
+                total_ram_gb=16.0,
+                available_ram_mb=8000.0,
+                has_vulkan=True,
+                shm_available=True,
+                tier=HardwareTier.FULL_LOCAL,
+                max_workers=4,
+                allow_local_slm=True,
+                allow_ramdisk_workspace=True,
+                allow_simd_vectors=True,
             )
             status: RAMDiskStatus = self.optimizer.sync_ramdisk_workspace(self.temp_dir)
 

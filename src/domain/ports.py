@@ -404,4 +404,3 @@ class IHardwareAuditor(ABC):
     def audit(self) -> HardwareSpecs:
         """Audita el hardware y devuelve sus especificaciones y tier asignado."""
         raise NotImplementedError
-
