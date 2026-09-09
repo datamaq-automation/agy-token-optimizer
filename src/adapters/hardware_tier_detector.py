@@ -6,7 +6,6 @@ Audita procesador, instrucciones SIMD, memoria RAM y Vulkan para asignar el tier
 
 import json
 import multiprocessing
-import os
 import subprocess
 from pathlib import Path
 from typing import Optional
