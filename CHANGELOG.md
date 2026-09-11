@@ -6,6 +6,7 @@ El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com
 ## [No Publicado / Último Release] - 2026-09-09
 
 ### 🚀 Nuevas Características (Features)
+- feat(core): formalizar política Navegador First con delegación a subagente pro para plan
 - feat: selección automática de modelo por modo (plan=high, build=low)
 - feat(optimizer): poda en el origen para git/gh, telemetría medida y Gauntlet remoto
 - feat(remote): cablear vps_exec al caso de uso y podar salidas de log
