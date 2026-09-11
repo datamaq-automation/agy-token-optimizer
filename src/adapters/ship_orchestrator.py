@@ -16,6 +16,7 @@ from src.domain.ports import (
     IDiffCompressor,
     IPostEditHealer,
     IShipOrchestrator,
+    ITestFailureHealer,
     ShipPipelineResult,
     ShipStepResult,
 )
@@ -28,11 +29,13 @@ class AutopilotShipOrchestrator(IShipOrchestrator):
         self,
         diff_compressor: Optional[IDiffCompressor] = None,
         healer: Optional[IPostEditHealer] = None,
+        test_healer: Optional[ITestFailureHealer] = None,
         ollama_url: str = "http://localhost:11434/api/generate",
         model_name: str = "qwen2.5-coder:1.5b",
     ) -> None:
         self._diff_compressor = diff_compressor
         self._healer = healer
+        self._test_healer = test_healer
         self._ollama_url = ollama_url
         self._model_name = model_name
 
@@ -72,7 +75,55 @@ class AutopilotShipOrchestrator(IShipOrchestrator):
                 )
             )
 
-        # 3. Extraer diff y generar mensaje con Ollama local
+        # 3. Verificación preventiva de tests locales (Shift-Left)
+        start_test = time.perf_counter()
+        test_ok, test_out = self._run_local_tests(cwd=repo_dir)
+        if not test_ok:
+            healed_test = False
+            if self._test_healer:
+                failure_detail = self._test_healer.isolate_failure(test_out, repo_dir=repo_dir)
+                if failure_detail:
+                    heal_res = self._test_healer.heal_test_failure(failure_detail, repo_dir=repo_dir)
+                    if heal_res.success:
+                        healed_test = True
+                        comp_name = os.path.basename(heal_res.target_file)
+                        healed_errors.append(f"test_auto_healed:{comp_name}")
+                        steps.append(
+                            ShipStepResult(
+                                step_name="preventive_test_heal",
+                                success=True,
+                                output=f"Auto-sanado componente: {comp_name}",
+                                execution_time_ms=(time.perf_counter() - start_test) * 1000.0,
+                            )
+                        )
+            if not healed_test:
+                self._run_cmd(["git", "restore", "."], cwd=repo_dir)
+                steps.append(
+                    ShipStepResult(
+                        step_name="preventive_test_check",
+                        success=False,
+                        output=test_out.strip()[:200],
+                        execution_time_ms=(time.perf_counter() - start_test) * 1000.0,
+                    )
+                )
+                return ShipPipelineResult(
+                    success=False,
+                    commit_message="Fallo no resuelto en suite de tests local.",
+                    ci_status="local_test_failed",
+                    steps=steps,
+                    healed_errors=healed_errors,
+                )
+        else:
+            steps.append(
+                ShipStepResult(
+                    step_name="preventive_test_check",
+                    success=True,
+                    output="Tests locales pasaron correctamente.",
+                    execution_time_ms=(time.perf_counter() - start_test) * 1000.0,
+                )
+            )
+
+        # 4. Extraer diff y generar mensaje con Ollama local
         start_diff = time.perf_counter()
         raw_diff = self._run_cmd(["git", "diff", "HEAD"], cwd=repo_dir)
         if not raw_diff:
@@ -195,7 +246,23 @@ class AutopilotShipOrchestrator(IShipOrchestrator):
             if not failed_log:
                 return False
 
-            # Ejecutar ruff check --fix y ruff format sobre todo el repo
+            # 1. Si hay fallos de tests y test_healer está configurado, intentar auto-sanar con Ollama local
+            if self._test_healer:
+                detail = self._test_healer.isolate_failure(failed_log, repo_dir=repo_dir)
+                if detail:
+                    heal_res = self._test_healer.heal_test_failure(detail, repo_dir=repo_dir)
+                    if heal_res.success:
+                        comp_name = os.path.basename(heal_res.target_file)
+                        commit_msg = f"fix(test-heal): auto-reparar fallo en {comp_name} mediante LLM local"
+                        self._run_cmd(["git", "add", "-A"], cwd=repo_dir)
+                        self._run_cmd(["git", "commit", "-m", commit_msg], cwd=repo_dir)
+                        self._run_cmd(["git", "push", "origin", branch], cwd=repo_dir)
+                        return True
+                    else:
+                        self._run_cmd(["git", "restore", "."], cwd=repo_dir)
+                        return False
+
+            # 2. Si no es fallo de test o no hay test_healer, intentar formato y linter (Ruff)
             subprocess.run(["ruff", "check", "--fix", "."], cwd=repo_dir, capture_output=True, text=True)
             subprocess.run(["ruff", "format", "."], cwd=repo_dir, capture_output=True, text=True)
 
@@ -210,6 +277,12 @@ class AutopilotShipOrchestrator(IShipOrchestrator):
         except Exception:
             pass
         return False
+
+    def _run_local_tests(self, cwd: str) -> tuple[bool, str]:
+        """Ejecuta la suite local de pytest y retorna éxito junto a su salida."""
+        res = subprocess.run(["pytest", "-q"], cwd=cwd, capture_output=True, text=True)
+        out = (res.stdout or "") + ("\n" + res.stderr if res.stderr else "")
+        return (res.returncode == 0, out)
 
     def _parse_ci_status(self, raw_output: str) -> str:
         """Determina el estado a partir de la salida de gh run list."""

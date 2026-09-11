@@ -49,19 +49,29 @@ Este manual documenta los 57 subcomandos determinísticos disponibles en el CLI 
 
 ---
 
-## 4. Control Remoto Total de VPS (SSH Persistente < 8 ms)
+## 4. Control Remoto de VPS (SSH Persistente < 8 ms — Estricto Diagnóstico de Solo Lectura)
+
+> ⚠️ **Directiva Inmutable §6:** El acceso a servidores remotos es **exclusivamente de consulta, observabilidad y diagnóstico**. Queda terminantemente prohibido el hot-patching de código en el servidor. Todo cambio debe originarse en local y desplegarse mediante pipeline CI/CD.
 
 | Comando | Argumentos | Descripción | Rendimiento / Ahorro |
 | :--- | :--- | :--- | :--- |
 | `agy-opt vps-health` | *(ninguno)* | Diagnóstico ultradenso de 4 líneas (CPU, RAM, Disco, Docker). | < 200 ms / **< 50 tokens** |
-| `agy-opt vps-run` | `"<comando>"` | Ejecuta en VPS sobre socket SSH persistente y poda logs masivos. | < 8 ms / **📉 80% tokens** |
+| `agy-opt vps-run` | `"<comando>"` | Ejecuta en VPS sobre socket SSH persistente y poda logs masivos (solo consulta). | < 8 ms / **📉 80% tokens** |
 | `agy-opt vps-read` | `<ruta> [start] [end]` | Lectura quirúrgica remota o extracción de firmas AST. | 15 ms / **📉 90% tokens** |
-| `agy-opt vps-patch` | `<ruta> --target X --replacement Y` | Parche quirúrgico in-place sin reescribir archivos remotos. | 10 ms / **📉 95% salida** |
 | `agy-opt vps-index` | `[remote_dir]` | Sincroniza el mapa AST de la VPS hacia tu RAM local. | ~200 ms / **0 ms nav ($0 API)**|
+| `agy-opt vps-patch` | `<ruta> ...` | **[RESTRINGIDO / DEPRECADO]** Bloqueado por directiva de solo lectura para evitar mutación directa fuera de CI/CD. | N/A |
 
 ---
 
-## 5. Pre-Procesamiento, Memoria en RAM y Aceleración Local
+## 5. Entrega Continua y Auto-Sanación Desatendida (`agy-ship`)
+
+| Comando | Argumentos | Descripción | Rendimiento / Ahorro |
+| :--- | :--- | :--- | :--- |
+| `agy-ship` | `[directorio_repo]` | Orquestador determinístico completo: diff comprimido, commit convencional con Ollama local (`qwen2.5-coder:1.5b`), verificación preventiva Shift-Left en tests, git push, monitoreo reactivo de CI y bucle de auto-sanación de tests y formato a $0 tokens. | ~1-3 s / **$0 Tokens** |
+
+---
+
+## 6. Pre-Procesamiento, Memoria en RAM y Aceleración Local
 
 | Comando | Argumentos | Descripción | Rendimiento / Ahorro |
 | :--- | :--- | :--- | :--- |

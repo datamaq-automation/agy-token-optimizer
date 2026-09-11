@@ -18,9 +18,11 @@ REPO_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from src.adapters.ast_pruner import PythonASTPruner
 from src.adapters.diff_compressor import RegexDiffCompressor
 from src.adapters.hardware_healer import DeterministicHardwareHealer
 from src.adapters.ship_orchestrator import AutopilotShipOrchestrator
+from src.adapters.test_healer import OllamaTestFailureHealer
 
 
 def main() -> None:
@@ -29,11 +31,14 @@ def main() -> None:
     print(" 🚀 AGY AUTOPILOT SHIP: ENTREGA Y AUTO-SANACIÓN DESATENDIDA ($0 TOKENS)")
     print("======================================================================")
 
+    ast_pruner = PythonASTPruner()
+    test_healer = OllamaTestFailureHealer(ast_pruner=ast_pruner)
     diff_comp = RegexDiffCompressor()
     healer = DeterministicHardwareHealer()
     orchestrator = AutopilotShipOrchestrator(
         diff_compressor=diff_comp,
         healer=healer,
+        test_healer=test_healer,
     )
 
     result = orchestrator.run_ship_pipeline(repo_dir=repo_dir, wait_seconds=20)

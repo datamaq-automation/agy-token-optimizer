@@ -3,7 +3,15 @@
 Todos los cambios notables en este proyecto son documentados automáticamente.
 El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com/).
 
-## [No Publicado / Último Release] - 2026-09-09
+## [No Publicado / Último Release] - 2026-09-11
+
+### 🚀 Nuevas Características (Features)
+- feat(test-heal): auto-sanación de tests unitarios asistida por LLM local (Ollama `qwen2.5-coder:1.5b` en iGPU/CPU) con poda AST selectiva
+- feat(test-heal): doble circuito de auto-reparación en `AutopilotShipOrchestrator` (Shift-Left preventivo y reactivo tras `gh run view --log-failed`)
+- feat(adr): registrar formalmente `ADR-0007` para la auto-sanación de tests asistida por LLM local en `agy-ship`
+- docs(governance): alinear README y manual de comandos CLI al estándar Navegador First y directiva de solo-lectura en VPS remotos
+
+## [Release] - 2026-09-10
 
 ### 🚀 Nuevas Características (Features)
 - feat(core): formalizar política Navegador First con delegación a subagente pro para plan

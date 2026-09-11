@@ -434,3 +434,48 @@ class IShipOrchestrator(ABC):
     def run_ship_pipeline(self, repo_dir: str = ".") -> ShipPipelineResult:
         """Ejecuta el ciclo determinístico de entrega, monitoreo de CI y auto-reparación."""
         raise NotImplementedError
+
+
+@dataclass(frozen=True)
+class TestFailureDetail:
+    """Detalle aislado y podado de un fallo en la suite de tests."""
+
+    __test__ = False
+    test_file: str
+    test_name: str
+    target_file: str
+    error_line: Optional[int]
+    error_message: str
+    traceback_snippet: str
+
+
+@dataclass(frozen=True)
+class TestHealResult:
+    """Resultado del proceso de auto-sanación de tests asistido por LLM local."""
+
+    __test__ = False
+    success: bool
+    target_file: str
+    test_file: str
+    repaired_code: str
+    attempts: int
+    execution_time_ms: float
+    error_message: Optional[str] = None
+
+
+class ITestFailureHealer(ABC):
+    """Puerto para el aislamiento y auto-sanación de fallos de tests con LLM local."""
+
+    @abstractmethod
+    def isolate_failure(self, failure_output: str, repo_dir: str = ".") -> Optional[TestFailureDetail]:
+        """Aísla y poda el traceback de una salida de pytest o logs de CI a los datos esenciales."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def heal_test_failure(
+        self,
+        failure_detail: TestFailureDetail,
+        repo_dir: str = ".",
+    ) -> TestHealResult:
+        """Formula prompt ultracompacto para Ollama, repara el componente y valida la solución."""
+        raise NotImplementedError

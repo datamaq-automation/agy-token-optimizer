@@ -17,7 +17,7 @@ El proyecto cuenta con documentación técnica formal organizada según el está
 * 🎁 **[Guía de Proveedores Gratuitos (Free Tiers)](docs/reference/free_providers_guide.md):** Comparativa de Gemini, Groq, OpenRouter, Mistral, Cerebras y configuración de `.env`.
 * 📋 **[Manual de Comandos CLI (57 Herramientas)](docs/reference/cli_commands.md):** Catálogo exhaustivo de todos los subcomandos de `agy-opt`.
 * 🛡️ **[Convenciones del Guantelete](docs/reference/conventions.md):** Las 5 baterías inmutables de Clean Architecture.
-* 🏛️ **[Registro de Decisiones Arquitectónicas (ADRs)](docs/adr/):** Histórico formal de decisiones desde ADR-0001 hasta ADR-0006.
+* 🏛️ **[Registro de Decisiones Arquitectónicas (ADRs)](docs/adr/):** Histórico formal de decisiones desde ADR-0001 hasta ADR-0007.
 
 ---
 
@@ -36,26 +36,22 @@ curl -fsSL https://raw.githubusercontent.com/datamaq-automation/agy-token-optimi
 
 ---
 
-## ⚡ El Flujo Diario en 1 Sola Terminal
+## ⚡ El Flujo Diario Autónomo (Navegador First & $0 Tokens)
 
-No necesitas abrir múltiples terminales. Todo el flujo se opera desde una sola consola:
+Todo el ciclo de vida de desarrollo se opera de forma autónoma con el agente:
 
 ```bash
-# 1. Enciende el router de modelos en segundo plano (0 tokens de API con Free Tier)
-agy-opt router &
-
-# 2. Configura OpenCode (solo se ejecuta 1 vez)
-agy-opt sync-opencode
-
-# 3. Diseña la arquitectura en AGY en modo /plan
-agy
+# 1. Diseña la arquitectura en modo /plan (orquesta subagente Pro con pensamiento extendido a $0 en sesión madre)
 # > /plan <tu_requerimiento>
-# > agy-opt export-plan spec.md .
 
-# 4. Implementa el código en OpenCode en modo /build
-opencode
-# > /build Ejecuta spec.md en TDD
+# 2. Implementa de forma autónoma en modo /build (sesión madre económica Flash Low + CPU local en ciclo TDD)
+# > /build Implementa spec.md en ciclo TDD
+
+# 3. Entrega continua desatendida y auto-sanación con LLM local
+agy-ship .
 ```
+
+> 💡 *Nota de integración opcional:* Si utilizas clientes externos o terminales secundarias como OpenCode, puedes encender el proxy en cascada con `agy-opt router &` y sincronizarlo con `agy-opt sync-opencode`.
 
 ---
 
@@ -91,23 +87,27 @@ opencode
 
 ---
 
-## 🎯 Los 3 Modos de Operación en AGY
+## 🎯 Los Modos de Operación y Disparadores en AGY
 
-| Modo | Propósito | Nivel de Modelo | Razonamiento | Reglas & Permisos |
+| Modo / Disparador | Propósito | Nivel de Modelo | Razonamiento | Reglas & Permisos |
 | :--- | :--- | :--- | :--- | :--- |
 | **`/ask`** | Consultas técnicas, explicación de arquitectura y auditoría de código. | **Económico** (`flash_lite` / `flash`) | **Low / Mínimo** | **Solo lectura.** Citas obligatorias a archivo y rango de líneas (`[archivo.py#L10-L25]`). Prohibido modificar o crear archivos. |
-| **`/plan`** | Especificación técnica formal (`spec.md` SSOT de 5 secciones) y contratos de tests en `tests/`. | **Avanzado** (`pro` / alta capacidad) | **High / Alto** | **Pre-Condición:** Ejecuta `agy-opt preplan` (< 300 tok). Modificación permitida **solo** en `spec.md`, `specs/**` y `tests/**`. **PROHIBIDO modificar `src/`**. Auditado por `agy-opt audit-plan` y `agy-opt audit-dip`. |
+| **`/plan`** | Especificación técnica formal (`spec.md` SSOT de 5 secciones) y contratos de tests en `tests/`. | **Avanzado** (`pro` / alta capacidad) | **High / Alto** | **Pre-Condición:** Ejecuta `agy-opt preplan` (< 300 tok). Orquesta subagente Pro con pensamiento extendido a $0 desperdicio en sesión madre. Modificación permitida **solo** en `spec.md`, `specs/**` y `tests/**`. **PROHIBIDO modificar `src/`**. Auditado por `agy-opt audit-plan` y `agy-opt audit-dip`. |
 | **`/build`** | Implementador Autónomo TDD (Green-to-Red) y superación del Guantelete. | **Intermedio** (`flash` / balanceado) | **Medium / Low** | **Requisito Bloqueante:** Exige `spec.md` previo antes de tocar `src/`. Aplica ciclo TDD y supera `agy-opt audit-edits` y `agy-opt ci`. |
+| **`/ship` / `agy-ship`** | Entrega continua desatendida, commit con Ollama y auto-sanación L1/L2/Tests. | **SLM Local** (`qwen2.5-coder:1.5b`) | **Hardware Local** | **$0 Tokens:** Commit convencional, push, prevención local Shift-Left y bucle cerrado de auto-reparación ante fallos de tests y CI. |
 
 ---
 
 ## 🛠️ Resumen de Herramientas Principales de `agy-opt`
 
-*(Consulta el [Manual Completo de las 57 Herramientas](docs/reference/cli_commands.md) para más detalles).*
+*(Consulta el [Manual Completo de las Herramientas](docs/reference/cli_commands.md) para más detalles).*
 
 ```bash
 # Iniciar watcher en RAM y sincronizar índices
 agy-opt preflight
+
+# 🚀 Entrega Continua Desatendida & Auto-Sanación
+agy-ship [dir]                                                # Pipeline completo: diff -> commit Ollama -> push -> CI heal
 
 # 🚀 Aceleración de Hardware en /build
 agy-opt deepseek-opt [payload.json]                           # Fuerza 90% descuento por KV-Cache en DeepSeek
@@ -117,8 +117,8 @@ agy-opt igpu-tune                                             # Ajusta AVX2 y Vu
 
 # 🌊 Enrutador en Cascada y Sincronización
 agy-opt router [--port 8080]                                  # Inicia proxy local
-agy-opt sync-opencode                                         # Configura OpenCode al router local
-agy-opt export-plan <plan.md> [dir]                           # Exporta a spec.md para OpenCode
+agy-opt sync-opencode                                         # Configura clientes externos al router local
+agy-opt export-plan <plan.md> [dir]                           # Exporta a spec.md para agentes implementadores
 
 # 🧠 Suite Avanzada de Planificación (/plan)
 agy-opt preplan [dir]                                         # Pre-compila mapa AST en < 300 tokens
@@ -134,12 +134,12 @@ agy-opt archive-spec [spec.md]                                # Archiva especifi
 agy-opt audit-docs [dir]                                      # Audita links y secuencia de ADRs
 agy-opt changelog [dir]                                       # Genera CHANGELOG.md automático
 
-# 🌐 Operaciones Remotas VPS (SSH < 8 ms)
+# 🌐 Operaciones Remotas VPS (SSH < 8 ms - Estricto Diagnóstico de Solo Lectura)
 agy-opt vps-health                                            # Diagnóstico de 4 líneas (< 50 tokens)
-agy-opt vps-run "<comando>"                                   # Ejecuta y poda logs masivos (📉 80%)
+agy-opt vps-run "<comando>"                                   # Ejecuta comandos de solo consulta y poda logs
 agy-opt vps-read <ruta> 1 30                                  # Lectura quirúrgica remota
-agy-opt vps-patch <ruta> --target X --replacement Y           # Parche in-place sin reescribir
 agy-opt vps-index [dir]                                       # Sincroniza símbolos VPS en tu RAM
+# agy-opt vps-patch                                           # [RESTRINGIDO: Prohibido hot-patching en VPS]
 ```
 
 ---
