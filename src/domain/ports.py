@@ -404,3 +404,33 @@ class IHardwareAuditor(ABC):
     def audit(self) -> HardwareSpecs:
         """Audita el hardware y devuelve sus especificaciones y tier asignado."""
         raise NotImplementedError
+
+
+@dataclass(frozen=True)
+class ShipStepResult:
+    """Resultado individual de una etapa del pipeline de entrega continua."""
+
+    step_name: str
+    success: bool
+    output: str
+    execution_time_ms: float
+
+
+@dataclass(frozen=True)
+class ShipPipelineResult:
+    """Resultado consolidado del pipeline desatendido de entrega y monitoreo de CI."""
+
+    success: bool
+    commit_message: str
+    ci_status: str  # "success", "failure", "pending", "no_changes"
+    steps: list[ShipStepResult]
+    healed_errors: list[str]
+
+
+class IShipOrchestrator(ABC):
+    """Puerto abstracto para la orquestación desatendida del ciclo diff -> commit -> push -> CI -> heal."""
+
+    @abstractmethod
+    def run_ship_pipeline(self, repo_dir: str = ".") -> ShipPipelineResult:
+        """Ejecuta el ciclo determinístico de entrega, monitoreo de CI y auto-reparación."""
+        raise NotImplementedError

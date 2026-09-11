@@ -32,6 +32,7 @@ COMMANDS = {
     "inject": "context_injector.py",
     "heal": "self_healing_runner.py",
     "ci": "ci_local.sh",
+    "ship": "autopilot_ship.py",
     "stats": "token_tracker.py",
     "remote": "remote_control_manager.py",
     "commit": "pr_bundle_compressor.py",
