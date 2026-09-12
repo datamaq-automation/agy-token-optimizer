@@ -85,6 +85,7 @@ COMMANDS = {
     "sync-opencode": "opencode_config_sync.py",
     "build-heal": "build_hardware_healer.py",
     "build-ramdisk": "build_ramdisk_workspace.py",
+    "build-local": "local_code_builder_cli.py",
     "igpu-tune": "igpu_vulkan_optimizer.py",
     "hw": "igpu_vulkan_optimizer.py",
     "deepseek-opt": "deepseek_optimizer.py",
@@ -110,6 +111,7 @@ Comandos Principales:
   stubs [src_dir]       Genera stubs de tipos (.pyi) de 50 tokens
   rules [dir]           Genera y alinea AGENTS.md adaptativo para el proyecto
   draft "<prompt>"      Genera código base en RAM con qwen2.5-coder:1.5b
+  build-local <t> <s>   Construye código con iGPU local (Vulkan) y auto-sanación
   cache query "<q>"     Consulta la memoria semántica persistente en RAM
   ramdisk [mount|sync]  Gestiona workspace ultra-rápido en /dev/shm (15 GB/s)
 ======================================================================

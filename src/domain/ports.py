@@ -162,6 +162,8 @@ class TokenSavingsEvent:
     tokens_saved: int
     latency_ms: float
     timestamp: str
+    trace_id: Optional[str] = None
+    hardware_target: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -479,3 +481,48 @@ class ITestFailureHealer(ABC):
     ) -> TestHealResult:
         """Formula prompt ultracompacto para Ollama, repara el componente y valida la solución."""
         raise NotImplementedError
+
+
+@dataclass(frozen=True)
+class CodeBuildResult:
+    """Resultado de la generación de código fuente en hardware local."""
+
+    code: str
+    model_used: str
+    raw_tokens: int
+    success: bool
+    execution_time_ms: float
+    error_message: Optional[str] = None
+    trace_id: Optional[str] = None
+    tokens_per_second: float = 0.0
+
+
+class ILocalCodeBuilder(ABC):
+    """Puerto para la síntesis y construcción de código fuente asistido por iGPU local."""
+
+    @abstractmethod
+    def build_implementation(
+        self,
+        spec_summary: str,
+        contract_signatures: str,
+        test_content: str,
+        target_file_path: str,
+        model_name: Optional[str] = None,
+        trace_id: Optional[str] = None,
+    ) -> CodeBuildResult:
+        """Genera el código fuente de implementación usando la iGPU local."""
+        raise NotImplementedError
+
+
+@dataclass(frozen=True)
+class LocalBuildPipelineResult:
+    """Resultado del ciclo completo de construcción, linter y validación en bucle cerrado."""
+
+    success: bool
+    target_file: str
+    tokens_saved: int
+    iterations: int
+    execution_time_ms: float
+    trace_id: str = ""
+    tokens_per_second: float = 0.0
+    error_message: Optional[str] = None
