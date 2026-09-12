@@ -37,7 +37,7 @@ class _SelectiveBodyPruner(ast.NodeTransformer):
         end_line = getattr(node, "end_lineno", start_line)
         return start_line <= self.target_line <= end_line
 
-    def visit_FunctionDef(self, node: ast.FunctionDef) -> ast.FunctionDef:
+    def visit_FunctionDef(self, node: ast.FunctionDef) -> ast.AST:
         if self._should_preserve(node):
             return self.generic_visit(node)
         docstring = ast.get_docstring(node)
@@ -48,7 +48,7 @@ class _SelectiveBodyPruner(ast.NodeTransformer):
         node.body = new_body
         return node
 
-    def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> ast.AsyncFunctionDef:
+    def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> ast.AST:
         if self._should_preserve(node):
             return self.generic_visit(node)
         docstring = ast.get_docstring(node)
