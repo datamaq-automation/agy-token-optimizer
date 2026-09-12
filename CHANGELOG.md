@@ -8,6 +8,7 @@ El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com
 ### 🚀 Nuevas Características (Features)
 - feat(build-igpu): desacoplar construcción y generación de código en hardware local (iGPU Radeon Vega 11 Vulkan) vía Ollama (qwen2.5-coder:7b / 1.5b) con validación determinística en CPU
 - feat(core): formalizar política Navegador First con delegación a subagente pro para plan
+- feat(hardware): implementar detección adaptativa de hardware y perfil navegador-first
 - feat: selección automática de modelo por modo (plan=high, build=low)
 - feat(optimizer): poda en el origen para git/gh, telemetría medida y Gauntlet remoto
 - feat(remote): cablear vps_exec al caso de uso y podar salidas de log
@@ -57,6 +58,7 @@ El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com
 
 ### 🐛 Correcciones (Fixes)
 - fix(types): ajustar tipo de retorno de visit_FunctionDef a ast.AST en test_healer
+- fix(linter): eliminar import os no utilizado en hardware_tier_detector.py
 - fix(tests): inyectar mock de embedding en test_ramdisk_storage_and_sync para CI
 - fix(ci): instalar numpy y aislar tests locales con skipif en entorno CI
 - fix(ci): pinear ruff==0.16.2, excluir skills/ y reparar I001 en tests
@@ -64,6 +66,7 @@ El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com
 - fix(types): resolver variables potencialmente no ligadas y tipado estricto de Path a str
 
 ### 📚 Documentación & Gobernanza
+- docs(changelog): sincronizar notas de versión para build local en iGPU
 - docs: formalizar política Navegador First con delegación a subagente pro para plan
 - docs(changelog): registrar feat selección automática de modelo por modo
 - docs(changelog): registrar la corrección del truncado
