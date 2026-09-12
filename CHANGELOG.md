@@ -6,17 +6,7 @@ El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com
 ## [No Publicado / Último Release] - 2026-09-12
 
 ### 🚀 Nuevas Características (Features)
-- feat(build-igpu): desacoplar construcción y generación de código en hardware local (iGPU Radeon Vega 11 Vulkan) vía Ollama (`qwen2.5-coder:7b` / `1.5b`) con validación determinística en CPU y bucle cerrado TDD (`agy-opt build-local`)
-- feat(domain): nuevos contratos `ILocalCodeBuilder`, `CodeBuildResult` y `LocalBuildPipelineResult` en `src/domain/ports.py`
-- feat(application): orquestador `LocalBuildPipeline` con staging en RAMDisk (`/dev/shm`), saneamiento Ruff y fallback multi-nivel
-- feat(test-heal): auto-sanación de tests unitarios asistida por LLM local (Ollama `qwen2.5-coder:1.5b` en iGPU/CPU) con poda AST selectiva
-- feat(test-heal): doble circuito de auto-reparación en `AutopilotShipOrchestrator` (Shift-Left preventivo y reactivo tras `gh run view --log-failed`)
-- feat(adr): registrar formalmente `ADR-0007` para la auto-sanación de tests asistida por LLM local en `agy-ship`
-- docs(governance): alinear README y manual de comandos CLI al estándar Navegador First y directiva de solo-lectura en VPS remotos
-
-## [Release] - 2026-09-10
-
-### 🚀 Nuevas Características (Features)
+- feat(build-igpu): desacoplar construcción y generación de código en hardware local (iGPU Radeon Vega 11 Vulkan) vía Ollama (qwen2.5-coder:7b / 1.5b) con validación determinística en CPU
 - feat(core): formalizar política Navegador First con delegación a subagente pro para plan
 - feat: selección automática de modelo por modo (plan=high, build=low)
 - feat(optimizer): poda en el origen para git/gh, telemetría medida y Gauntlet remoto
@@ -66,6 +56,7 @@ El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com
 - refactor(credentials-loader): cerrar ciclo SDD TC-01..TC-06 verdes
 
 ### 🐛 Correcciones (Fixes)
+- fix(types): ajustar tipo de retorno de visit_FunctionDef a ast.AST en test_healer
 - fix(tests): inyectar mock de embedding en test_ramdisk_storage_and_sync para CI
 - fix(ci): instalar numpy y aislar tests locales con skipif en entorno CI
 - fix(ci): pinear ruff==0.16.2, excluir skills/ y reparar I001 en tests
