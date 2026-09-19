@@ -3,9 +3,10 @@
 Todos los cambios notables en este proyecto son documentados automáticamente.
 El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com/).
 
-## [No Publicado / Último Release] - 2026-09-12
+## [No Publicado / Último Release] - 2026-09-19
 
 ### 🚀 Nuevas Características (Features)
+- feat(client): desacoplamiento cliente-servidor con agy-preview (KaTeX + Mermaid en Falkon) y automontaje FUSE para artefactos remotos
 - feat(build-igpu): desacoplar construcción y generación de código en hardware local (iGPU Radeon Vega 11 Vulkan) vía Ollama (qwen2.5-coder:7b / 1.5b) con validación determinística en CPU
 - feat(core): formalizar política Navegador First con delegación a subagente pro para plan
 - feat(hardware): implementar detección adaptativa de hardware y perfil navegador-first
@@ -57,7 +58,10 @@ El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com
 - refactor(credentials-loader): cerrar ciclo SDD TC-01..TC-06 verdes
 
 ### 🐛 Correcciones (Fixes)
+<<<<<<< HEAD
 - fix(types): ajustar tipo de retorno de visit_FunctionDef a ast.AST en test_healer
+=======
+>>>>>>> cc9a384 (feat(client): desacoplamiento cliente-servidor con visor agy-preview (KaTeX + Mermaid) y automontaje FUSE)
 - fix(linter): eliminar import os no utilizado en hardware_tier_detector.py
 - fix(tests): inyectar mock de embedding en test_ramdisk_storage_and_sync para CI
 - fix(ci): instalar numpy y aislar tests locales con skipif en entorno CI

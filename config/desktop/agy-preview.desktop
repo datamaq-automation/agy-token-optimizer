@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Visor Web Markdown (Falkon)
+Comment=Renderizador Markdown enriquecido estilo GitHub Dark
+Exec=/home/agustin/.local/bin/agy-preview %f
+Icon=falkon
+Terminal=false
+Categories=Utility;Viewer;
+MimeType=text/markdown;text/x-markdown;
+StartupNotify=false

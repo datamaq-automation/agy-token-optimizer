@@ -1,0 +1,19 @@
+#!/bin/bash
+set -euo pipefail
+MOUNT_POINT="/home/agustin/.gemini/antigravity-cli/brain"
+
+if mountpoint -q "$MOUNT_POINT"; then
+    echo "Directorio ya montado en $MOUNT_POINT"
+    exit 0
+fi
+
+echo "Montando $MOUNT_POINT desde host desktop..."
+systemctl --user start agy-mount-brain.service
+sleep 1
+
+if mountpoint -q "$MOUNT_POINT"; then
+    echo "Montaje exitoso en $MOUNT_POINT"
+else
+    echo "Error al montar $MOUNT_POINT" >&2
+    exit 1
+fi

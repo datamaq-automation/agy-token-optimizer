@@ -1,0 +1,358 @@
+#!/usr/bin/env python3
+"""
+agy-preview: Compilador y visor Markdown de alta fidelidad estilo GitHub Dark.
+Renderiza con Pygments + markdown-it + KaTeX (fórmulas LaTeX) + Mermaid.js (diagramas)
+y visualiza en Falkon (QtWebEngine).
+"""
+
+import os
+import sys
+import glob
+import hashlib
+import subprocess
+from pathlib import Path
+
+try:
+    import markdown_it
+    from pygments import highlight
+    from pygments.lexers import get_lexer_by_name, TextLexer
+    from pygments.formatters import HtmlFormatter
+except ImportError as e:
+    print(f"Error de dependencias: {e}", file=sys.stderr)
+    sys.exit(1)
+
+VENDOR_DIR = Path.home() / ".local" / "share" / "agy-preview" / "vendor"
+
+
+def highlight_code(code: str, lang: str, _attrs: str) -> str:
+    try:
+        lexer = get_lexer_by_name(lang.strip()) if lang else TextLexer()
+    except Exception:
+        lexer = TextLexer()
+    formatter = HtmlFormatter(nowrap=True, style="github-dark")
+    return highlight(code, lexer, formatter)
+
+
+def get_target_file(args: list[str]) -> Path:
+    if len(args) > 1:
+        raw_path = args[1]
+        if raw_path.startswith("file://"):
+            raw_path = raw_path[7:]
+        path = Path(raw_path).expanduser().resolve()
+        if not path.is_file():
+            print(f"Error: El archivo '{path}' no existe.", file=sys.stderr)
+            sys.exit(1)
+        return path
+
+    brain_dir = Path("/home/agustin/.gemini/antigravity-cli/brain")
+    if brain_dir.is_dir():
+        md_files = list(brain_dir.glob("*/*.md"))
+        if md_files:
+            md_files.sort(key=lambda p: p.stat().st_mtime, reverse=True)
+            return md_files[0]
+
+    print("Uso: agy-preview [archivo.md | file://...]", file=sys.stderr)
+    sys.exit(1)
+
+
+def generate_html(md_path: Path) -> Path:
+    content = md_path.read_text(encoding="utf-8", errors="replace")
+
+    md = markdown_it.MarkdownIt("gfm-like", {"highlight": highlight_code, "html": True})
+
+    # Interceptar bloques ```mermaid para renderizado nativo
+    default_fence = md.renderer.rules.get("fence")
+
+    def custom_fence(tokens, idx, options, env):
+        token = tokens[idx]
+        info = token.info.strip().lower()
+        if info == "mermaid":
+            return f'<div class="mermaid">\n{token.content}\n</div>\n'
+        if default_fence:
+            return default_fence(tokens, idx, options, env)
+        return f"<pre><code>{token.content}</code></pre>"
+
+    md.renderer.rules["fence"] = custom_fence
+    rendered_body = md.render(content)
+    pygments_css = HtmlFormatter(style="github-dark").get_style_defs(".highlight")
+
+    # Local vendor URIs
+    local_katex_css = f"file://{VENDOR_DIR / 'katex.min.css'}"
+    local_katex_js = f"file://{VENDOR_DIR / 'katex.min.js'}"
+    local_autorender_js = f"file://{VENDOR_DIR / 'auto-render.min.js'}"
+    local_mermaid_js = f"file://{VENDOR_DIR / 'mermaid.min.js'}"
+
+    html = f"""<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{md_path.name} - Vista Previa AGY</title>
+
+<!-- KaTeX Stylesheet (Local con fallback a CDN) -->
+<link rel="stylesheet" href="{local_katex_css}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+
+<!-- KaTeX Scripts -->
+<script defer src="{local_katex_js}"></script>
+<script defer src="{local_autorender_js}"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+<!-- Mermaid Script -->
+<script src="{local_mermaid_js}"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+
+<style>
+  :root {{
+    --bg-canvas: #0d1117;
+    --bg-subtle: #161b22;
+    --border-default: #30363d;
+    --border-muted: #21262d;
+    --text-primary: #e6edf3;
+    --text-secondary: #8b949e;
+    --accent-fg: #58a6ff;
+    --code-bg: #161b22;
+    --code-fg: #ff7b72;
+  }}
+  * {{ box-sizing: border-box; }}
+  body {{
+    background-color: var(--bg-canvas);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+  }}
+  header.top-bar {{
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--bg-subtle);
+    border-bottom: 1px solid var(--border-default);
+    padding: 10px 24px;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }}
+  .filename {{
+    font-weight: 600;
+    color: var(--text-primary);
+    font-family: monospace;
+  }}
+  .badge {{
+    background-color: #238636;
+    color: #ffffff;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+  }}
+  main.markdown-body {{
+    max-width: 980px;
+    margin: 32px auto;
+    padding: 32px 40px;
+    background-color: var(--bg-canvas);
+  }}
+  h1, h2, h3, h4, h5, h6 {{
+    color: var(--text-primary);
+    font-weight: 600;
+    margin-top: 28px;
+    margin-bottom: 16px;
+    line-height: 1.25;
+  }}
+  h1 {{
+    font-size: 2em;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-muted);
+  }}
+  h2 {{
+    font-size: 1.5em;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border-muted);
+  }}
+  h3 {{ font-size: 1.25em; }}
+  p, blockquote, ul, ol, dl, table, pre {{
+    margin-top: 0;
+    margin-bottom: 16px;
+  }}
+  a {{
+    color: var(--accent-fg);
+    text-decoration: none;
+  }}
+  a:hover {{ text-decoration: underline; }}
+  code {{
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 85%;
+    background-color: var(--code-bg);
+    border: 1px solid var(--border-default);
+    border-radius: 6px;
+    padding: 2px 6px;
+    color: var(--code-fg);
+  }}
+  pre {{
+    background-color: var(--code-bg);
+    border: 1px solid var(--border-default);
+    border-radius: 6px;
+    padding: 16px;
+    overflow: auto;
+    font-size: 85%;
+    line-height: 1.45;
+  }}
+  pre code {{
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    color: inherit;
+    font-size: 100%;
+  }}
+  blockquote {{
+    padding: 8px 16px;
+    color: var(--text-secondary);
+    border-left: 4px solid #1f6feb;
+    background-color: var(--bg-subtle);
+    border-radius: 0 6px 6px 0;
+    margin: 0 0 16px 0;
+  }}
+  table {{
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 16px;
+  }}
+  table th, table td {{
+    padding: 8px 14px;
+    border: 1px solid var(--border-default);
+  }}
+  table th {{
+    background-color: var(--bg-subtle);
+    color: var(--text-primary);
+    font-weight: 600;
+  }}
+  table tr:nth-child(2n) {{
+    background-color: #161b2280;
+  }}
+  hr {{
+    height: 1px;
+    background-color: var(--border-muted);
+    border: 0;
+    margin: 24px 0;
+  }}
+  ul, ol {{ padding-left: 2em; }}
+  li {{ margin-bottom: 4px; }}
+  
+  /* Contenedores Mermaid */
+  .mermaid {{
+    display: flex;
+    justify-content: center;
+    background-color: var(--bg-subtle);
+    border: 1px solid var(--border-default);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 24px 0;
+    overflow-x: auto;
+  }}
+  
+  /* Ajustes KaTeX para modo oscuro */
+  .katex-display {{
+    margin: 20px 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 8px 0;
+  }}
+  .katex {{
+    color: #e6edf3 !important;
+    font-size: 1.1em;
+  }}
+
+  /* Pygments syntax styles */
+  {pygments_css}
+</style>
+</head>
+<body>
+<header class="top-bar">
+  <div>
+    <span class="badge">MARKDOWN PREVIEW</span>
+    &nbsp;<span class="filename">{md_path.name}</span>
+  </div>
+  <div>{md_path.parent}</div>
+</header>
+<main class="markdown-body">
+  {rendered_body}
+</main>
+
+<script>
+  window.addEventListener("DOMContentLoaded", function() {{
+    // 1. Renderizar fórmulas KaTeX ($...$ y $$...$$)
+    function initKaTeX() {{
+      if (typeof renderMathInElement === "function") {{
+        renderMathInElement(document.body, {{
+          delimiters: [
+            {{left: "$$", right: "$$", display: true}},
+            {{left: "$", right: "$", display: false}},
+            {{left: "\\\\(", right: "\\\\)", display: false}},
+            {{left: "\\\\[", right: "\\\\]", display: true}}
+          ],
+          throwOnError: false
+        }});
+      }} else {{
+        setTimeout(initKaTeX, 100);
+      }}
+    }}
+    initKaTeX();
+
+    // 2. Renderizar diagramas Mermaid
+    function initMermaid() {{
+      if (typeof mermaid !== "undefined") {{
+        mermaid.initialize({{
+          startOnLoad: true,
+          theme: "dark",
+          themeVariables: {{
+            darkMode: true,
+            background: "#161b22",
+            primaryColor: "#1f6feb",
+            primaryTextColor: "#e6edf3",
+            primaryBorderColor: "#30363d",
+            lineColor: "#58a6ff",
+            secondaryColor: "#238636",
+            tertiaryColor: "#21262d"
+          }}
+        }});
+        mermaid.run();
+      }} else {{
+        setTimeout(initMermaid, 150);
+      }}
+    }}
+    initMermaid();
+  }});
+</script>
+</body>
+</html>"""
+
+    out_hash = hashlib.md5(str(md_path).encode("utf-8")).hexdigest()[:8]
+    out_file = Path(f"/tmp/agy-preview-{out_hash}.html")
+    out_file.write_text(html, encoding="utf-8")
+    return out_file
+
+
+def main():
+    target = get_target_file(sys.argv)
+    html_path = generate_html(target)
+    browser = "falkon"
+    cmd = [browser, f"file://{html_path}"]
+    try:
+        subprocess.Popen(
+            cmd,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            start_new_session=True,
+        )
+    except Exception as e:
+        print(f"Error al abrir {browser}: {e}", file=sys.stderr)
+        subprocess.Popen(["xdg-open", f"file://{html_path}"])
+
+
+if __name__ == "__main__":
+    main()

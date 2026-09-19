@@ -1,0 +1,14 @@
+[Unit]
+Description=Montaje FUSE SSHFS del directorio brain de AGY desde el nodo desktop
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=forking
+ExecStart=/bin/sh -c 'mountpoint -q /home/agustin/.gemini/antigravity-cli/brain || exec /usr/bin/sshfs desktop:/home/agustin/.gemini/antigravity-cli/brain /home/agustin/.gemini/antigravity-cli/brain -o reconnect,ServerAliveInterval=15,ServerAliveCountMax=3,follow_symlinks,idmap=user'
+ExecStop=/bin/sh -c 'mountpoint -q /home/agustin/.gemini/antigravity-cli/brain && exec /usr/bin/fusermount -u -z /home/agustin/.gemini/antigravity-cli/brain || true'
+Restart=on-failure
+RestartSec=15
+
+[Install]
+WantedBy=default.target

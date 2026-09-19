@@ -1,0 +1,12 @@
+#!/bin/bash
+set -euo pipefail
+MOUNT_POINT="/home/agustin/.gemini/antigravity-cli/brain"
+
+if ! mountpoint -q "$MOUNT_POINT"; then
+    echo "Directorio no está montado en $MOUNT_POINT"
+    exit 0
+fi
+
+echo "Desmontando $MOUNT_POINT..."
+systemctl --user stop agy-mount-brain.service || fusermount -u -z "$MOUNT_POINT"
+echo "Desmontado exitosamente."

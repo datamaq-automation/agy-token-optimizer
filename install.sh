@@ -66,7 +66,18 @@ mkdir -p "$HOME/.local/bin"
 ln -sf "$DEST_SKILLS/token-optimizer/scripts/agy_cli.py" "$HOME/.local/bin/agy-opt"
 echo "  [✓] 'agy-opt' disponible en $HOME/.local/bin/agy-opt"
 
-echo "==> 9. Verificando dependencias del sistema..."
+echo "==> 9. Desplegando herramientas cliente (visualización y montaje FUSE)..."
+if [ -d "$SCRIPT_DIR/tools/client" ]; then
+    mkdir -p "$HOME/.local/bin" "$HOME/.config/systemd/user" "$HOME/.local/share/applications"
+    cp "$SCRIPT_DIR/tools/client/"* "$HOME/.local/bin/"
+    chmod +x "$HOME/.local/bin/"agy-*
+    cp "$SCRIPT_DIR/config/systemd/agy-mount-brain.service" "$HOME/.config/systemd/user/"
+    cp "$SCRIPT_DIR/config/desktop/agy-preview.desktop" "$HOME/.local/share/applications/"
+    command -v update-desktop-database >/dev/null 2>&1 && update-desktop-database "$HOME/.local/share/applications" 2>/dev/null || true
+    echo "  [✓] agy-preview, agy-mount y servicio FUSE desplegados"
+fi
+
+echo "==> 10. Verificando dependencias del sistema..."
 command -v python3 >/dev/null 2>&1 && echo "  [✓] Python3 detectado" || echo "  [!] Python3 no encontrado"
 command -v node >/dev/null 2>&1 && echo "  [✓] Node.js detectado" || echo "  [!] Node.js no encontrado (opcional para TS)"
 command -v ruff >/dev/null 2>&1 && echo "  [✓] Ruff linter detectado" || echo "  [!] Ruff no encontrado (recomendado)"
