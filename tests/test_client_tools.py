@@ -100,6 +100,34 @@ class TestClientTools(unittest.TestCase):
         self.assertIn('<div class="mermaid">', content)
         self.assertIn("$E_{\\text{esperada}}", content)
 
+    def test_github_alerts_callouts(self) -> None:
+        """Verifica la transformación de alertas estilo GitHub ([!CAUTION], [!NOTE])."""
+        preview_script = self.client_tools_dir / "agy-preview"
+        sample_md = Path("/tmp/test_unit_alerts.md")
+        sample_md.write_text(
+            "> [!CAUTION]\n"
+            "> Advertencia crítica sobre el sistema.\n\n"
+            "> [!NOTE]\n"
+            "> Información contextual adicional.\n",
+            encoding="utf-8",
+        )
+
+        res = subprocess.run(
+            [str(preview_script), str(sample_md)],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(res.returncode, 0, f"Error ejecutando agy-preview: {res.stderr}")
+
+        html_files = list(Path("/tmp").glob("agy-preview-*.html"))
+        latest_html = max(html_files, key=lambda p: p.stat().st_mtime)
+        content = latest_html.read_text(encoding="utf-8")
+
+        self.assertIn("markdown-alert-caution", content)
+        self.assertIn("markdown-alert-note", content)
+        self.assertIn("Advertencia crítica", content)
+
 
 if __name__ == "__main__":
     unittest.main()
