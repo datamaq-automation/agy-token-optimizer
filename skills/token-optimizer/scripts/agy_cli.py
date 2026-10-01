@@ -89,6 +89,9 @@ COMMANDS = {
     "igpu-tune": "igpu_vulkan_optimizer.py",
     "hw": "igpu_vulkan_optimizer.py",
     "deepseek-opt": "deepseek_optimizer.py",
+    "backend-choice": "model_backend_selector.py",
+    "router-choice": "model_backend_selector.py",
+    "backend": "model_backend_selector.py",
 }
 
 
@@ -114,6 +117,8 @@ Comandos Principales:
   build-local <t> <s>   Construye código con iGPU local (Vulkan) y auto-sanación
   cache query "<q>"     Consulta la memoria semántica persistente en RAM
   ramdisk [mount|sync]  Gestiona workspace ultra-rápido en /dev/shm (15 GB/s)
+  backend-choice --quota 80 --task massive_audit
+                       Decide el backend óptimo con la política Google/DeepSeek
 ======================================================================
 """)
 
