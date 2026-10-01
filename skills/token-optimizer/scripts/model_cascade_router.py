@@ -14,10 +14,12 @@ import os
 import sys
 import urllib.error
 import urllib.request
+from datetime import datetime
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 
 from src.application.load_credentials import load_structured_credentials
+from src.application.model_arbitrage_policy import resolve_model_arbitrage
 
 ENV_FILE = Path.home() / ".agy-optimizer" / ".env"
 
@@ -124,9 +126,52 @@ def build_providers_from_credentials(credentials: list[dict]) -> list[dict]:
     return providers
 
 
+def _resolve_google_quota_pct() -> float:
+    """Lee la cuota restante estimada de Google desde variables de entorno."""
+    raw = os.environ.get("GOOGLE_QUOTA_REMAINING_PCT", "100")
+    try:
+        value = float(raw)
+    except (TypeError, ValueError):
+        return 100.0
+    return max(0.0, min(100.0, value))
+
+
+def _detect_task_complexity(payload: dict) -> str:
+    """Clasifica la complejidad nominal de la tarea para decidir el arbitraje."""
+    messages = payload.get("messages", []) if isinstance(payload, dict) else []
+    text = " ".join(
+        msg.get("content", "") for msg in messages if isinstance(msg, dict) and isinstance(msg.get("content", ""), str)
+    )
+    if len(text) > 4000 or any(token in text.lower() for token in ("audit", "plan", "arquitectura", "refactor")):
+        return "massive_audit"
+    return "standard"
+
+
+def _prioritize_providers_by_policy(providers: list[dict], task_complexity: str) -> list[dict]:
+    """Reordena la cascada según la política de arbitraje económica del proyecto."""
+    decision = resolve_model_arbitrage(
+        google_quota_remaining_pct=_resolve_google_quota_pct(),
+        task_complexity=task_complexity,
+        now=datetime.now(),
+    )
+    if decision.provider == "deepseek":
+        deepseek = [p for p in providers if p.get("provider") == "deepseek"]
+        rest = [p for p in providers if p.get("provider") != "deepseek"]
+        return deepseek + rest
+    if decision.provider == "google":
+        google_like = [p for p in providers if p.get("provider") == "gemini"]
+        rest = [p for p in providers if p.get("provider") != "gemini"]
+        return google_like + rest
+    return providers
+
+
 def forward_chat_completion_structured(payload: dict, credentials: list[dict]) -> tuple[dict, str]:
     """Ejecuta la cascada inteligente sobre credenciales estructuradas (JSON/YAML/.env)."""
-    providers = build_providers_from_credentials(credentials)
+    task_complexity = _detect_task_complexity(payload)
+    providers = _prioritize_providers_by_policy(
+        build_providers_from_credentials(credentials),
+        task_complexity,
+    )
     last_err = ""
     for prov in providers:
         try:
