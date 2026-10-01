@@ -6,8 +6,9 @@ El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com
 ## [No Publicado / Último Release] - 2026-10-01
 
 ### 🚀 Nuevas Características (Features)
-- feat(layer-stage): asistente de staging y commits atómicos por capas arquitectónicas (agy-stage-layer)
-- feat(git-hooks): desacoplamiento de hooks git con pre-commit ultrarrápido (<2s) sobre cambios staged y pre-push con suite exhaustiva
+- feat(preview): agregar boton copiar markdown al portapapeles y fijar firefox como navegador predeterminado en agy-preview
+- feat(aplicacion): agregar suite de pruebas unitarias para agy-stage-layer y client tools
+- feat(ui): implementar orquestador de staging por capas arquitectonicas
 - feat(optimizer): hook sensible al contexto, poda vue 3 sfc y colapso de progreso ansi
 - feat(preview): soporte nativo de alertas estilo GitHub ([!CAUTION], etc.) y sanitización tolerante de Mermaid
 - feat(client): desacoplamiento cliente-servidor con visor agy-preview (KaTeX + Mermaid) y automontaje FUSE

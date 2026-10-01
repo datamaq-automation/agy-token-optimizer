@@ -99,6 +99,9 @@ class TestClientTools(unittest.TestCase):
         self.assertIn("mermaid.min.js", content)
         self.assertIn('<div class="mermaid">', content)
         self.assertIn("$E_{\\text{esperada}}", content)
+        self.assertIn("copiarMarkdown", content)
+        self.assertIn("raw-markdown-content", content)
+        self.assertIn("btn-copy-md", content)
 
     def test_github_alerts_callouts(self) -> None:
         """Verifica la transformación de alertas estilo GitHub ([!CAUTION], [!NOTE])."""
