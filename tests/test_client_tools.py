@@ -105,10 +105,7 @@ class TestClientTools(unittest.TestCase):
         preview_script = self.client_tools_dir / "agy-preview"
         sample_md = Path("/tmp/test_unit_alerts.md")
         sample_md.write_text(
-            "> [!CAUTION]\n"
-            "> Advertencia crítica sobre el sistema.\n\n"
-            "> [!NOTE]\n"
-            "> Información contextual adicional.\n",
+            "> [!CAUTION]\n> Advertencia crítica sobre el sistema.\n\n> [!NOTE]\n> Información contextual adicional.\n",
             encoding="utf-8",
         )
 
