@@ -39,6 +39,20 @@ class TestModelArbitragePolicy(unittest.TestCase):
         self.assertTrue(is_deepseek_offpeak(datetime.fromisoformat("2026-10-01T18:00:00-03:00")))
         self.assertFalse(is_deepseek_offpeak(datetime.fromisoformat("2026-10-01T09:00:00-03:00")))
 
+    def test_429_from_google_moves_deepseek_to_front(self) -> None:
+        from skills.token_optimizer.scripts.model_cascade_router import reorder_providers_after_quota_error
+
+        providers = [
+            {"provider": "gemini", "name": "Gemini 2.0 Flash"},
+            {"provider": "deepseek", "name": "DeepSeek V3"},
+            {"provider": "ollama", "name": "Ollama Local"},
+        ]
+
+        reordered = reorder_providers_after_quota_error(providers, "gemini", 429)
+
+        self.assertEqual(reordered[0]["provider"], "deepseek")
+        self.assertEqual(reordered[1]["provider"], "gemini")
+
 
 if __name__ == "__main__":
     unittest.main()

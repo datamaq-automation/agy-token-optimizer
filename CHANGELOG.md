@@ -6,6 +6,7 @@ El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com
 ## [No Publicado / Último Release] - 2026-10-01
 
 ### 🚀 Nuevas Características (Features)
+- feat: implement model backend selector CLI for Google vs DeepSeek arbitration
 - feat: add deepseek fallback arbitration policy
 - feat: add model arbitrage policy for google and deepseek
 - feat(preview): agregar boton copiar markdown al portapapeles y fijar firefox

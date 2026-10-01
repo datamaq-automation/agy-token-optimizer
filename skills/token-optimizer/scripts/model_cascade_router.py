@@ -165,6 +165,23 @@ def _prioritize_providers_by_policy(providers: list[dict], task_complexity: str)
     return providers
 
 
+def reorder_providers_after_quota_error(providers: list[dict], failed_provider: str, status_code: int) -> list[dict]:
+    """Mueve DeepSeek al frente si Google respondió con 429 por cuota agotada."""
+    if status_code != 429:
+        return providers
+
+    failed = (failed_provider or "").lower()
+    if "gemini" not in failed and "google" not in failed:
+        return providers
+
+    deepseek = [p for p in providers if str(p.get("provider", "")).lower() == "deepseek"]
+    if not deepseek:
+        return providers
+
+    rest = [p for p in providers if str(p.get("provider", "")).lower() != "deepseek"]
+    return deepseek + rest
+
+
 def forward_chat_completion_structured(payload: dict, credentials: list[dict]) -> tuple[dict, str]:
     """Ejecuta la cascada inteligente sobre credenciales estructuradas (JSON/YAML/.env)."""
     task_complexity = _detect_task_complexity(payload)
@@ -191,6 +208,9 @@ def forward_chat_completion_structured(payload: dict, credentials: list[dict]) -
                 return data, prov["name"]
         except urllib.error.HTTPError as e:
             last_err = f"{prov['name']}: HTTP {e.code}"
+            if e.code == 429 and str(prov.get("provider", "")).lower() in {"gemini", "google"}:
+                providers = reorder_providers_after_quota_error(providers, prov.get("provider", ""), e.code)
+                last_err = f"{prov['name']}: HTTP {e.code} (quota agotada; activando DeepSeek)"
             continue
         except Exception as e:
             last_err = f"{prov['name']}: {e}"
@@ -288,6 +308,9 @@ def forward_chat_completion(payload: dict, keys: dict) -> tuple[dict, str]:
         except urllib.error.HTTPError as e:
             # Si es 429 (cuota agotada) o 503, conmutar al siguiente proveedor
             last_err = f"{prov['name']}: HTTP {e.code}"
+            if e.code == 429 and str(prov.get("provider", "")).lower() in {"gemini", "google"}:
+                providers = reorder_providers_after_quota_error(providers, prov.get("provider", ""), e.code)
+                last_err = f"{prov['name']}: HTTP {e.code} (quota agotada; activando DeepSeek)"
             continue
         except Exception as e:
             last_err = f"{prov['name']}: {e}"
