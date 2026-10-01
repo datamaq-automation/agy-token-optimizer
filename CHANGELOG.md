@@ -6,7 +6,8 @@ El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com
 ## [No Publicado / Último Release] - 2026-10-01
 
 ### 🚀 Nuevas Características (Features)
-- feat(preview): agregar boton copiar markdown al portapapeles y fijar firefox como navegador predeterminado en agy-preview
+- docs(adr): formalizar politica de arbitraje economico y temporal google flat-rate vs deepseek off-peak (ADR-0008)
+- feat(preview): agregar boton copiar markdown al portapapeles y fijar firefox
 - feat(aplicacion): agregar suite de pruebas unitarias para agy-stage-layer y client tools
 - feat(ui): implementar orquestador de staging por capas arquitectonicas
 - feat(optimizer): hook sensible al contexto, poda vue 3 sfc y colapso de progreso ansi
