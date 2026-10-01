@@ -5,6 +5,7 @@ Sin dependencias externas. Solo dataclasses nativas e interfaces abc.ABC (Clean 
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
+from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
@@ -372,6 +373,45 @@ class IRemoteExecutor(ABC):
     def execute(self, command: str, host: RemoteHost, timeout_s: int = 60) -> RemoteExecutionResult:
         """Ejecuta en remoto; ante fallo de resolución del alias primario, reintenta con el fallback."""
         raise NotImplementedError
+
+
+class ModelArbitrageTier(Enum):
+    """Nivel de preferencia económica en la cascada de proveedores."""
+
+    GOOGLE_FIRST = "google_first"
+    DEEPSEEK_OFFPEAK = "deepseek_offpeak"
+    DEEPSEEK_BRIDGE = "deepseek_bridge"
+
+
+@dataclass(frozen=True)
+class ModelArbitrageDecision:
+    """Resultado inmutable del arbitraje entre cuota plana de Google y DeepSeek."""
+
+    provider: str
+    tier: ModelArbitrageTier
+    reason: str
+    quota_remaining_pct: float
+    offpeak_window_active: bool
+    task_complexity: str = "standard"
+
+
+class IModelArbitrator(ABC):
+    """Puerto abstracto para decidir el proveedor económico óptimo."""
+
+    @abstractmethod
+    def decide(
+        self,
+        google_quota_remaining_pct: float,
+        task_complexity: str = "standard",
+        now: Optional[datetime] = None,
+    ) -> ModelArbitrageDecision:
+        """Determina si conviene priorizar Google o DeepSeek según cuota y horario."""
+        raise NotImplementedError
+
+
+ModelEconomicsTier = ModelArbitrageTier
+ArbitrageDecision = ModelArbitrageDecision
+IModelPolicy = IModelArbitrator
 
 
 class HardwareTier(Enum):
