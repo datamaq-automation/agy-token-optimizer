@@ -131,8 +131,18 @@ def get_target_file(args: list[str]) -> Path:
 
 def generate_html(md_path: Path) -> Path:
     content = md_path.read_text(encoding="utf-8", errors="replace")
+    has_linkify = False
+    try:
+        import linkify_it  # type: ignore[import-untyped] # noqa: F401
 
-    md = markdown_it.MarkdownIt("gfm-like", {"highlight": highlight_code, "html": True})
+        has_linkify = True
+    except ImportError:
+        pass
+
+    md = markdown_it.MarkdownIt(
+        "gfm-like",
+        {"highlight": highlight_code, "html": True, "linkify": has_linkify},
+    )
 
     default_fence = md.renderer.rules.get("fence")
 
