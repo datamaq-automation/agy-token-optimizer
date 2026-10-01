@@ -6,7 +6,7 @@ El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com
 ## [No Publicado / Último Release] - 2026-10-01
 
 ### 🚀 Nuevas Características (Features)
-- docs(adr): formalizar politica de arbitraje economico y temporal google flat-rate vs deepseek off-peak (ADR-0008)
+- feat: add model arbitrage policy for google and deepseek
 - feat(preview): agregar boton copiar markdown al portapapeles y fijar firefox
 - feat(aplicacion): agregar suite de pruebas unitarias para agy-stage-layer y client tools
 - feat(ui): implementar orquestador de staging por capas arquitectonicas
@@ -74,6 +74,7 @@ El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com
 - fix(types): resolver variables potencialmente no ligadas y tipado estricto de Path a str
 
 ### 📚 Documentación & Gobernanza
+- docs(adr): formalizar politica de arbitraje economico y temporal google flat-rate vs deepseek off-peak
 - docs(changelog): actualizar entradas automáticas del generador de changelog
 - docs(changelog): sincronizar notas de versión para build local en iGPU
 - docs: formalizar política Navegador First con delegación a subagente pro para plan
