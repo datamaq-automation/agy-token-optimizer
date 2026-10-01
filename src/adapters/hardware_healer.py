@@ -25,13 +25,22 @@ class DeterministicHardwareHealer(IPostEditHealer):
         target_path = Path(target_file)
         actions: list[str] = []
 
-        if not target_path.exists():
+        if not target_path.exists() or target_path.is_dir():
             elapsed_ms = (time.perf_counter() - start_time) * 1000.0
             return HealResult(
                 success=False,
                 file_path=target_file,
                 execution_time_ms=elapsed_ms,
                 actions_applied=["file_not_found"],
+            )
+
+        if target_path.suffix != ".py":
+            elapsed_ms = (time.perf_counter() - start_time) * 1000.0
+            return HealResult(
+                success=True,
+                file_path=target_file,
+                execution_time_ms=elapsed_ms,
+                actions_applied=["skipped_non_python"],
             )
 
         diagnostics_before = ""

@@ -16,6 +16,13 @@ echo "2. Probando Poda de AST TypeScript/JS (prune_ts_ast.js)..."
 node "$SCRIPT_DIR/skills/token-optimizer/scripts/prune_ts_ast.js" "$SCRIPT_DIR/skills/token-optimizer/scripts/prune_ts_ast.js" > /dev/null || true
 echo "   [✓] TS AST Pruning: OK"
 
+echo "2b. Probando Poda de AST Vue 3 SFC (prune_vue_ast.js)..."
+TMP_VUE=$(mktemp --suffix=.vue)
+echo '<script setup lang="ts">defineProps<{ msg: string }>()</script><template><slot /></template>' > "$TMP_VUE"
+node "$SCRIPT_DIR/skills/token-optimizer/scripts/prune_vue_ast.js" "$TMP_VUE" > /dev/null || true
+rm -f "$TMP_VUE"
+echo "   [✓] Vue SFC AST Pruning: OK"
+
 echo "3. Probando Compresor de Git Diffs (diff_compressor.py)..."
 TEST_DIFF="diff --git a/package-lock.json b/package-lock.json\n+ \"lockfileVersion\": 3\ndiff --git a/src/app.py b/src/app.py\n+ def new_logic():\n+     return True"
 RESULT=$(echo -e "$TEST_DIFF" | python3 "$SCRIPT_DIR/skills/token-optimizer/scripts/diff_compressor.py")

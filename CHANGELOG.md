@@ -3,9 +3,13 @@
 Todos los cambios notables en este proyecto son documentados automáticamente.
 El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com/).
 
-## [No Publicado / Último Release] - 2026-09-19
+## [No Publicado / Último Release] - 2026-10-01
 
 ### 🚀 Nuevas Características (Features)
+- feat(hooks): gate_pre_invocation sensible al contexto con detección de repositorios orquestadores (como DataMaq) y reducción de directivas efímeras a 1 línea sintética
+- feat(vue-ast): implementador determinista de poda de componentes Vue 3 SFC con hardware local en Node.js (prune_vue_ast.js)
+- feat(terminal): colapso automático de secuencias de progreso ANSI (\r y porcentajes crecientes) en TerminalOutputPruner con telemetría SQLite
+- feat(preview): soporte nativo de alertas estilo GitHub ([!CAUTION], etc.) y sanitización tolerante de Mermaid
 - feat(client): desacoplamiento cliente-servidor con agy-preview (KaTeX + Mermaid en Falkon) y automontaje FUSE para artefactos remotos
 - feat(build-igpu): desacoplar construcción y generación de código en hardware local (iGPU Radeon Vega 11 Vulkan) vía Ollama (qwen2.5-coder:7b / 1.5b) con validación determinística en CPU
 - feat(core): formalizar política Navegador First con delegación a subagente pro para plan
@@ -70,6 +74,7 @@ El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com
 - fix(types): resolver variables potencialmente no ligadas y tipado estricto de Path a str
 
 ### 📚 Documentación & Gobernanza
+- docs(changelog): actualizar entradas automáticas del generador de changelog
 - docs(changelog): sincronizar notas de versión para build local en iGPU
 - docs: formalizar política Navegador First con delegación a subagente pro para plan
 - docs(changelog): registrar feat selección automática de modelo por modo

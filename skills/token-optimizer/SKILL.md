@@ -23,6 +23,11 @@ Options:
 node /home/agustin/.agents/skills/token-optimizer/scripts/prune_ts_ast.js <filepath.ts>
 ```
 
+### Vue 3 SFC AST Pruning
+```bash
+node /home/agustin/.agents/skills/token-optimizer/scripts/prune_vue_ast.js <filepath.vue>
+```
+
 ### Native Tokenix CLI
 If installed on system:
 ```bash

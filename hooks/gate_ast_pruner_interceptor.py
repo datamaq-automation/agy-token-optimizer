@@ -17,7 +17,7 @@ def check_view_file(args: dict) -> dict:
 
     _, ext = os.path.splitext(filepath)
     ext_lower = ext.lower()
-    code_exts = {".py", ".ts", ".js", ".go", ".rs", ".php"}
+    code_exts = {".py", ".ts", ".js", ".vue", ".go", ".rs", ".php"}
     data_exts = {".json", ".yaml", ".yml", ".csv"}
 
     if ext_lower not in code_exts and ext_lower not in data_exts:
@@ -42,21 +42,31 @@ def check_view_file(args: dict) -> dict:
     if total_lines > 100:
         filename = os.path.basename(filepath)
         if ext_lower in data_exts:
+            prune_cmd = f"python3 /home/agustin/.agents/skills/token-optimizer/scripts/prune_data_schema.py {filepath}"
             return {
                 "decision": "deny",
                 "reason": (
                     f"GUARDIÁN DE TOKENS (Esquematización de Datos Obligatoria): '{filename}' tiene {total_lines} líneas. "
                     f"Para ahorrar 90%-98% de tokens, use un rango acotado (StartLine/EndLine) o consulte el esquema estructural local ($0 tokens): "
-                    f"'python3 /home/agustin/.agents/skills/token-optimizer/scripts/prune_data_schema.py {filepath}'."
+                    f"'{prune_cmd}'."
                 ),
             }
         else:
+            if ext_lower == ".vue":
+                prune_cmd = f"node /home/agustin/.agents/skills/token-optimizer/scripts/prune_vue_ast.js {filepath}"
+            elif ext_lower in {".ts", ".js"}:
+                prune_cmd = f"node /home/agustin/.agents/skills/token-optimizer/scripts/prune_ts_ast.js {filepath}"
+            else:
+                prune_cmd = (
+                    f"python3 /home/agustin/.agents/skills/token-optimizer/scripts/prune_python_ast.py {filepath}"
+                )
+
             return {
                 "decision": "deny",
                 "reason": (
                     f"GUARDIÁN DE TOKENS (Poda AST Obligatoria): '{filename}' tiene {total_lines} líneas. "
                     f"Para ahorrar 75%-90% de tokens, use un rango acotado (StartLine/EndLine) o ejecute la poda AST local ($0 tokens): "
-                    f"'python3 /home/agustin/.agents/skills/token-optimizer/scripts/prune_python_ast.py {filepath}'."
+                    f"'{prune_cmd}'."
                 ),
             }
 

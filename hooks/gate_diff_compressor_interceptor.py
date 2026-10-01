@@ -30,19 +30,21 @@ def process_command(cmd: str) -> dict:
     if re.match(r"^\s*ssh\b", cmd):
         return {"decision": "allow"}
 
-    # 3. Detectar comandos ruidosos de terminal (npm, pip, composer, pytest)
+    # 3. Detectar comandos ruidosos de terminal (npm, pip, composer, pytest, git push/pull/fetch)
     noisy_cmds = [
         r"\bnpm\s+(install|i|test|audit)\b",
-        r"\bpip\s+install\b",
+        r"\b(uv\s+)?pip\s+install\b",
         r"\bcomposer\s+(install|update)\b",
         r"\bpytest\b",
+        r"\bgit\s+(push|pull|fetch|clone)\b",
     ]
     is_terminal_piped = "prune_terminal_output" in cmd
     matches_noisy = any(re.search(pat, cmd) for pat in noisy_cmds)
 
     if matches_noisy and not is_terminal_piped:
-        cmd_first = cmd.split()[0]
-        optimized_cmd = f"{cmd} | python3 /home/agustin/.agents/skills/token-optimizer/scripts/prune_terminal_output.py '{cmd_first}'"
+        parts = cmd.split()
+        cmd_first = " ".join(parts[:2]) if len(parts) > 1 and parts[0] in ("git", "uv") else parts[0]
+        optimized_cmd = f"{cmd} 2>&1 | python3 /home/agustin/.agents/skills/token-optimizer/scripts/prune_terminal_output.py '{cmd_first}'"
         return {"decision": "allow", "overwrite": {"CommandLine": optimized_cmd}}
 
     return {"decision": "allow"}

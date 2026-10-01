@@ -38,6 +38,7 @@ Cuando el prompt del usuario comience o declare explícitamente un modo, el agen
 - **Poda de AST Determinística:** Para inspeccionar módulos extensos o dependencias, usar los scripts locales de poda AST para reducir entre un 75% y 90% el consumo de tokens:
   - Python: `python3 /home/agustin/.agents/skills/token-optimizer/scripts/prune_python_ast.py <archivo.py>`
   - TypeScript/JS: `node /home/agustin/.agents/skills/token-optimizer/scripts/prune_ts_ast.js <archivo.ts>`
+  - Vue 3 SFC: `node /home/agustin/.agents/skills/token-optimizer/scripts/prune_vue_ast.js <archivo.vue>`
   - CLI nativo: `tokenix read <archivo>` o `tokenix symbols <simbolo>`
 - **LSP y Búsqueda Quirúrgica:** Localizar símbolos con `grep_search` y consultar rangos específicos con `StartLine` y `EndLine`.
 

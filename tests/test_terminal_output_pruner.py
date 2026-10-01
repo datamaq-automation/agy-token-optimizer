@@ -67,6 +67,44 @@ class TestTerminalOutputPruner(unittest.TestCase):
         )
         self.assertGreaterEqual(result.reduction_ratio, 0.80)
 
+    def test_prune_git_push_progress_collapse(self) -> None:
+        """Verifica el colapso determinístico de secuencias continuas de progreso porcentual en git push."""
+        fake_git = "Contando objetos: 1%\nContando objetos: 50%\nContando objetos: 100%\n"
+        result: TerminalPruneResult = self.pruner.prune_output("git push", fake_git, 0)
+        self.assertEqual(result.clean_output, "✓ Objetos transferidos al 100% (comprimido en local)")
+        self.assertGreater(result.reduction_ratio, 0.0)
+
+    def test_prune_git_push_with_ansi_carriage_returns(self) -> None:
+        """Verifica el colapso de barras con retorno de carro (\\r) y secuencias ANSI."""
+        raw_output = (
+            "Enumerating objects: 10, done.\n"
+            "Counting objects: 10% (1/10)\rCounting objects: 50% (5/10)\rCounting objects: 100% (10/10), done.\n"
+            "Writing objects: 10% (1/10)\rWriting objects: 100% (10/10), done.\n"
+            "Total 10 (delta 2), reused 0 (delta 0), pack-reused 0\n"
+            "To github.com:owner/repo.git\n"
+            "   abc1234..def5678 master -> master\n"
+        )
+        result: TerminalPruneResult = self.pruner.prune_output("git push origin master", raw_output, 0)
+        self.assertIn("✓ Objetos transferidos al 100% (comprimido en local)", result.clean_output)
+        self.assertIn("Enumerating objects: 10, done.", result.clean_output)
+        self.assertIn("master -> master", result.clean_output)
+        self.assertNotIn("Counting objects: 10%", result.clean_output)
+        self.assertNotIn("Writing objects: 10%", result.clean_output)
+
+    def test_terminal_telemetry_recording(self) -> None:
+        """Verifica que el pruner registre telemetría en ITokenTelemetry cuando hay ahorro de tokens."""
+        from unittest.mock import MagicMock
+
+        mock_telemetry = MagicMock()
+        pruner_with_telemetry = TerminalOutputPruner(telemetry=mock_telemetry)
+        fake_git = "Contando objetos: 1%\nContando objetos: 50%\nContando objetos: 100%\n"
+        pruner_with_telemetry.prune_output("git push", fake_git, 0)
+        self.assertTrue(mock_telemetry.record_event.called)
+        event = mock_telemetry.record_event.call_args[0][0]
+        self.assertIn("TERMINAL", event.event_type)
+        self.assertEqual(event.tool_name, "git")
+        self.assertGreater(event.tokens_saved, 0)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -280,7 +280,13 @@ class AutopilotShipOrchestrator(IShipOrchestrator):
 
     def _run_local_tests(self, cwd: str) -> tuple[bool, str]:
         """Ejecuta la suite local de pytest y retorna éxito junto a su salida."""
-        res = subprocess.run(["pytest", "-q"], cwd=cwd, capture_output=True, text=True)
+        pytest_cmd = "pytest"
+        for venv_candidate in [".venv", "venv"]:
+            candidate_bin = os.path.join(cwd, venv_candidate, "bin", "pytest")
+            if os.path.exists(candidate_bin):
+                pytest_cmd = candidate_bin
+                break
+        res = subprocess.run([pytest_cmd, "-q"], cwd=cwd, capture_output=True, text=True)
         out = (res.stdout or "") + ("\n" + res.stderr if res.stderr else "")
         return (res.returncode == 0, out)
 

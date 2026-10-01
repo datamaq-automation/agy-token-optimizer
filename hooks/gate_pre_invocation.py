@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
 """Hook PreInvocation: Inyección de directivas efímeras antes de la llamada al modelo.
 
-La directiva inyectada depende del modo activo en '~/.agents/current_mode':
-  - 'plan'  : Arquitecto SDD exclusivo (la construcción se delega al modo build).
-  - 'build' : Ingeniero de implementación con capacidad operativa completa.
+La directiva inyectada depende del tipo de repositorio y del modo activo en '~/.agents/current_mode':
+  - Modo Orquestador: Se activa si AGENTS.md contiene 'orquestación'/'Repo padre' o si hay subrepositorios git.
+  - Modo Plan: Arquitecto SDD y delegación a subagente Pro.
+  - Modo Build: Ingeniero Full-Stack para ciclo TDD local.
 
 Coste: $0 tokens de disco/contexto persistente.
 """
 
 import json
 import os
+import subprocess
 import sys
+from typing import Optional
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -25,39 +28,97 @@ except Exception:  # Fail-safe: sin el módulo de estado, se asume /plan.
         pass
 
 
+PLAN_MODEL_POLICY = "browser-first: orquestar subagente con Model='pro' para arquitectura profunda"
+BUILD_MODEL_POLICY = "browser-first: sesión madre económica en Web UI (Gemini Flash Low Effort)"
+
 PLAN_DIRECTIVE = (
-    "[DIRECTIVA INMUTABLE AGY - MODO /PLAN EXCLUSIVO]\n"
-    "1. ROL: Eres exclusivamente Arquitecto SDD. PROHIBIDO modificar código en src/.\n"
-    "2. FLUJO: Analiza requerimientos, resuelve Certezas vs Dudas, consolida 'spec.md' y tests en 'tests/'.\n"
-    "3. ENTREGABLE OBLIGATORIO: Genera SIEMPRE un artefacto Markdown de planificación ('plan_<feature>.md') con la guía paso a paso para ejecutar luego en modo build.\n"
-    "4. DELEGACIÓN: La implementación se ejecuta en modo build ('agy-mode build'), no en este modo."
+    "[MODO /PLAN: Arquitecto SDD en spec.md y tests/. Prohibido modificar src/. Orquestar subagente pro para diseño]."
 )
 
 BUILD_DIRECTIVE = (
-    "[MODO BUILD ACTIVO - INGENIERO DE IMPLEMENTACIÓN]\n"
-    "1. ROL: Ingeniero de Software Full-Stack. Habilitado para crear y editar código en src/, "
-    "app/, lib/ y equivalentes, ejecutar tests, refactorizar y correr comandos de build.\n"
-    "2. FLUJO: Implementa conforme a 'spec.md' (si existe) y ejecuta el ciclo TDD/verificación: "
-    "test rojo -> implementación mínima -> test verde -> refactor.\n"
-    "3. ENTREGABLE: Código funcional y verificado, no un plan. No delegues la implementación.\n"
-    "4. LÍMITES: Siguen bloqueados los comandos destructivos irreversibles y el reescritura "
-    "forzada de historia git. Pide confirmación antes de acciones no reversibles.\n"
-    "5. VPS REMOTO: para intervenir el servidor usá 'agy-opt vps-run <cmd>', "
-    "'agy-opt vps-read <archivo> --ast', 'agy-opt vps-patch' y 'agy-opt vps-health'. "
-    "Prohibido 'ssh' crudo para consultas: la salida entra sin podar al contexto. "
-    "Los comandos interactivos, dumps binarios y operaciones largas sí van por ssh directo."
+    "[MODO /BUILD: Ingeniero de Software Full-Stack en src/ y tests/. TDD local, ruff en CPU, VPS solo lectura]."
+)
+
+ORCHESTRATOR_DIRECTIVE = (
+    "[MODO ORQUESTADOR: Solo documentación, decisiones y contratos. Prohibido tocar código de producto]."
 )
 
 
-def main() -> None:
+def check_or_trigger_tokenix_index() -> str:
+    """Verifica si el workspace está indexado en Tokenix; si no, lanza indexación silenciosa en background."""
     try:
-        _ = sys.stdin.read()
+        res = subprocess.run(
+            ["tokenix", "stats", "--no-tui"],
+            capture_output=True,
+            text=True,
+            timeout=1.5,
+        )
+        if res.returncode != 0 or "Error" in res.stderr:
+            subprocess.Popen(
+                ["tokenix", "index", "."],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                start_new_session=True,
+            )
+    except Exception:
+        pass
+    return ""
+
+
+def is_orchestrator_workspace(target_dir: Optional[str] = None) -> bool:
+    """Detecta si el directorio actual corresponde a un repositorio orquestador / paraguas."""
+    workdir = target_dir or os.getcwd()
+    try:
+        agents_md = os.path.join(workdir, "AGENTS.md")
+        if os.path.isfile(agents_md):
+            with open(agents_md, "r", encoding="utf-8", errors="ignore") as f:
+                content = f.read().lower()
+                if (
+                    "orquestación" in content
+                    or "orquestacion" in content
+                    or "repo padre" in content
+                    or "orquestador" in content
+                ):
+                    return True
+
+        with os.scandir(workdir) as entries:
+            for entry in entries:
+                if entry.is_dir(follow_symlinks=False) and not entry.name.startswith("."):
+                    sub_git = os.path.join(entry.path, ".git")
+                    if os.path.exists(sub_git):
+                        return True
+    except Exception:
+        pass
+    return False
+
+
+def get_directive(mode: str, cwd: Optional[str] = None) -> str:
+    """Determina la directiva a inyectar según el tipo de workspace y el modo activo."""
+    workdir = cwd or os.getcwd()
+    if is_orchestrator_workspace(workdir):
+        return ORCHESTRATOR_DIRECTIVE
+
+    directive = BUILD_DIRECTIVE if mode == "build" else PLAN_DIRECTIVE
+    tokenix_notice = check_or_trigger_tokenix_index()
+    if tokenix_notice:
+        directive += tokenix_notice
+    return directive
+
+
+def main() -> None:
+    workdir: Optional[str] = None
+    try:
+        raw = sys.stdin.read()
+        if raw.strip():
+            payload = json.loads(raw)
+            if isinstance(payload, dict):
+                workdir = payload.get("cwd") or payload.get("workspace") or payload.get("workingDirectory")
     except Exception:
         pass
 
     mode = read_mode()
-    directive = BUILD_DIRECTIVE if mode == "build" else PLAN_DIRECTIVE
-    audit("pre_invocation", mode, detail=directive.splitlines()[0])
+    directive = get_directive(mode, cwd=workdir)
+    audit("pre_invocation", mode, detail=directive)
 
     response = {"injectSteps": [{"ephemeralMessage": directive}]}
     print(json.dumps(response))
