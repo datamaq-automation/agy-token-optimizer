@@ -35,6 +35,14 @@ tokenix read <filepath>
 tokenix symbols <symbol_name>
 ```
 
+### Staging por Capas Arquitectónicas (Commits Atómicos)
+Clasifica y realiza staging quirúrgico de cambios según Clean Architecture o FSD:
+```bash
+agy-stage-layer status
+agy-stage-layer stage <domain|application|ui|tooling>
+agy-stage-layer commit <capa> "<mensaje>"
+```
+
 ---
 
 ## 2. Local Self-Healing (Zero Token Ping-Pong)

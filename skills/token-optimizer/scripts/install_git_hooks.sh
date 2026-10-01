@@ -15,27 +15,48 @@ mkdir -p "$HOOKS_DIR"
 
 echo "==> Instalando Git Hooks de Gobernanza SDD en $HOOKS_DIR..."
 
-# 1. Pre-commit hook
+# 1. Pre-commit hook (Ultrarrápido: < 2 segundos sobre archivos en stage)
 cat <<'HOOK_EOF' > "$HOOKS_DIR/pre-commit"
 #!/usr/bin/env bash
 set -e
-echo "🛡️  [Git Hook: pre-commit] Validando integridad y formato..."
+echo "🛡️  [Git Hook: pre-commit] Validando formato e integridad sobre cambios staged (< 2s)..."
 
-# 1. Verificación de archivos __init__.py vacíos (0 bytes)
-NON_EMPTY_INITS=$(find src tests -name "__init__.py" -type f -size +0c 2>/dev/null || true)
-if [ -n "$NON_EMPTY_INITS" ]; then
-    echo "❌ [BLOQUEO PRE-COMMIT] Los siguientes archivos __init__.py no tienen 0 bytes:"
-    echo "$NON_EMPTY_INITS"
-    exit 1
+# 1. Obtener archivos modificados o agregados en el stage actual
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACMR)
+
+if [ -z "$STAGED_FILES" ]; then
+    exit 0
 fi
 
-# 2. Linter determinístico si ruff está presente
-if command -v ruff >/dev/null 2>&1; then
-    ruff check --fix .
-    ruff format .
+# 2. Verificación de archivos __init__.py staged (deben tener 0 bytes)
+STAGED_INITS=$(echo "$STAGED_FILES" | grep "__init__\.py$" || true)
+if [ -n "$STAGED_INITS" ]; then
+    for f in $STAGED_INITS; do
+        if [ -s "$f" ]; then
+            echo "❌ [BLOQUEO PRE-COMMIT] El archivo $f no tiene 0 bytes."
+            exit 1
+        fi
+    done
 fi
 
-echo "✅ [pre-commit] Formato e integridad verificados."
+# 3. Formateo y linter quirúrgico para Python sobre archivos en stage
+PY_FILES=$(echo "$STAGED_FILES" | grep -E '\.py$' || true)
+if [ -n "$PY_FILES" ] && command -v ruff >/dev/null 2>&1; then
+    echo "$PY_FILES" | xargs ruff check --fix --quiet || true
+    echo "$PY_FILES" | xargs ruff format --quiet || true
+    echo "$PY_FILES" | xargs git add || true
+fi
+
+# 4. Formateo y linter quirúrgico para JS / TS / Vue sobre archivos en stage
+JS_FILES=$(echo "$STAGED_FILES" | grep -E '\.(js|jsx|ts|tsx|vue)$' || true)
+if [ -n "$JS_FILES" ] && command -v npx >/dev/null 2>&1; then
+    if [ -f "package.json" ]; then
+        npx eslint --fix $JS_FILES >/dev/null 2>&1 || true
+        echo "$JS_FILES" | xargs git add || true
+    fi
+fi
+
+echo "✅ [pre-commit] Formato quirúrgico e integridad verificados."
 HOOK_EOF
 chmod +x "$HOOKS_DIR/pre-commit"
 

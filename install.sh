@@ -61,10 +61,12 @@ else
     echo "  [✓] Directivas globales en $DEST_AGENTS_MD"
 fi
 
-echo "==> 8. Creando enlace simbólico del CLI maestro 'agy-opt'..."
+echo "==> 8. Creando enlace simbólico del CLI maestro 'agy-opt' y herramientas de arquitectura..."
 mkdir -p "$HOME/.local/bin"
 ln -sf "$DEST_SKILLS/token-optimizer/scripts/agy_cli.py" "$HOME/.local/bin/agy-opt"
+ln -sf "$DEST_SKILLS/token-optimizer/scripts/stage_layer_orchestrator.py" "$HOME/.local/bin/agy-stage-layer"
 echo "  [✓] 'agy-opt' disponible en $HOME/.local/bin/agy-opt"
+echo "  [✓] 'agy-stage-layer' disponible en $HOME/.local/bin/agy-stage-layer"
 
 echo "==> 9. Desplegando herramientas cliente (visualización y montaje FUSE)..."
 if [ -d "$SCRIPT_DIR/tools/client" ]; then

@@ -6,11 +6,11 @@ El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com
 ## [No Publicado / Último Release] - 2026-10-01
 
 ### 🚀 Nuevas Características (Features)
-- feat(hooks): gate_pre_invocation sensible al contexto con detección de repositorios orquestadores (como DataMaq) y reducción de directivas efímeras a 1 línea sintética
-- feat(vue-ast): implementador determinista de poda de componentes Vue 3 SFC con hardware local en Node.js (prune_vue_ast.js)
-- feat(terminal): colapso automático de secuencias de progreso ANSI (\r y porcentajes crecientes) en TerminalOutputPruner con telemetría SQLite
+- feat(layer-stage): asistente de staging y commits atómicos por capas arquitectónicas (agy-stage-layer)
+- feat(git-hooks): desacoplamiento de hooks git con pre-commit ultrarrápido (<2s) sobre cambios staged y pre-push con suite exhaustiva
+- feat(optimizer): hook sensible al contexto, poda vue 3 sfc y colapso de progreso ansi
 - feat(preview): soporte nativo de alertas estilo GitHub ([!CAUTION], etc.) y sanitización tolerante de Mermaid
-- feat(client): desacoplamiento cliente-servidor con agy-preview (KaTeX + Mermaid en Falkon) y automontaje FUSE para artefactos remotos
+- feat(client): desacoplamiento cliente-servidor con visor agy-preview (KaTeX + Mermaid) y automontaje FUSE
 - feat(build-igpu): desacoplar construcción y generación de código en hardware local (iGPU Radeon Vega 11 Vulkan) vía Ollama (qwen2.5-coder:7b / 1.5b) con validación determinística en CPU
 - feat(core): formalizar política Navegador First con delegación a subagente pro para plan
 - feat(hardware): implementar detección adaptativa de hardware y perfil navegador-first
@@ -62,10 +62,8 @@ El formato sigue las directivas de [Keep a Changelog](https://keepachangelog.com
 - refactor(credentials-loader): cerrar ciclo SDD TC-01..TC-06 verdes
 
 ### 🐛 Correcciones (Fixes)
-<<<<<<< HEAD
+- fix(preview): compatibilidad defensiva con markdown_it linkify
 - fix(types): ajustar tipo de retorno de visit_FunctionDef a ast.AST en test_healer
-=======
->>>>>>> cc9a384 (feat(client): desacoplamiento cliente-servidor con visor agy-preview (KaTeX + Mermaid) y automontaje FUSE)
 - fix(linter): eliminar import os no utilizado en hardware_tier_detector.py
 - fix(tests): inyectar mock de embedding en test_ramdisk_storage_and_sync para CI
 - fix(ci): instalar numpy y aislar tests locales con skipif en entorno CI
